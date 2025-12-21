@@ -1,0 +1,15 @@
+{
+  "metric_field": "aed_label",
+  "used": 50,
+  "skipped_gold": 0,
+  "missing_gold": 0,
+  "missing_pred": 0,
+  "tp": 29,
+  "tn": 18,
+  "fp": 3,
+  "fn": 0,
+  "accuracy": 0.94,
+  "precision": 0.906,
+  "recall": 1.0,
+  "f1": 0.951
+}

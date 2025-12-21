@@ -1,0 +1,952 @@
+[
+  {
+    "bug_name": "Closure-124",
+    "buggy_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n    node = node.getFirstChild();\n  if (node.isName()\n      && isNameAssignedTo(node.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  Node firstChild = node.getFirstChild();\n  if (firstChild.isName()\n      && isNameAssignedTo(firstChild.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 59,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  // Check all children in the property access chain\n  Node current = node.getFirstChild();\n  while (current != null && current.isGetProp()) {\n    if (current.isName() && isNameAssignedTo(current.getString(), replacement)) {\n      return false;\n    }\n    current = current.getFirstChild();\n  }\n  \n  // Check the final base name\n  if (current != null && current.isName() && isNameAssignedTo(current.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 131,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-11",
+    "buggy_code": "protected JavaType _fromVariable(TypeVariable<?> type, TypeBindings context)\n{\n    final String name = type.getName();\n    // 19-Mar-2015: Without context, all we can check are bounds.\n    if (context == null) {\n        // And to prevent infinite loops, now need this:\n        return _unknownType();\n    } else {\n        // Ok: here's where context might come in handy!\n        /* 19-Mar-2015, tatu: As per [databind#609], may need to allow\n         *   unresolved type variables to handle some cases where bounds\n         *   are enough. Let's hope it does not hide real fail cases.\n         */\n        JavaType actualType = context.findType(name);\n        if (actualType != null) {\n            return actualType;\n        }\n    }\n\n    /* 29-Jan-2010, tatu: We used to throw exception here, if type was\n     *   bound: but the problem is that this can occur for generic \"base\"\n     *   method, overridden by sub-class. If so, we will want to ignore\n     *   current type (for method) since it will be masked.\n     */\n    Type[] bounds = type.getBounds();\n\n    // With type variables we must use bound information.\n    // Theoretically this gets tricky, as there may be multiple\n    // bounds (\"... extends A & B\"); and optimally we might\n    // want to choose the best match. Also, bounds are optional;\n    // but here we are lucky in that implicit \"Object\" is\n    // added as bounds if so.\n    // Either way let's just use the first bound, for now, and\n    // worry about better match later on if there is need.\n\n    /* 29-Jan-2010, tatu: One more problem are recursive types\n     *   (T extends Comparable<T>). Need to add \"placeholder\"\n     *   for resolution to catch those.\n     */\n    context._addPlaceholder(name);\n    return _constructType(bounds[0], context);\n}",
+    "patches": [
+      {
+        "patch_code": "protected JavaType _fromVariable(TypeVariable<?> type, TypeBindings context)\n{\n    final String name = type.getName();\n    // 19-Mar-2015: Without context, all we can check are bounds.\n    if (context == null) {\n        // And to prevent infinite loops, now need this:\n        return _unknownType();\n    } else {\n        // Ok: here's where context might come in handy!\n        /* 19-Mar-2015, tatu: As per [databind#609], may need to allow\n         *   unresolved type variables to handle some cases where bounds\n         *   are enough. Let's hope it does not hide real fail cases.\n         */\n        JavaType actualType = context.findType(name);\n        if (actualType != null) {\n            return actualType;\n        }\n    }\n\n    /* 29-Jan-2010, tatu: We used to throw exception here, if type was\n     *   bound: but the problem is that this can occur for generic \"base\"\n     *   method, overridden by sub-class. If so, we will want to ignore\n     *   current type (for method) since it will be masked.\n     */\n    Type[] bounds = type.getBounds();\n\n    // With type variables we must use bound information.\n    // Theoretically this gets tricky, as there may be multiple\n    // bounds (\"... extends A & B\"); and optimally we might\n    // want to choose the best match. Also, bounds are optional;\n    // but here we are lucky in that implicit \"Object\" is\n    // added as bounds if so.\n    // Either way let's just use the first bound, for now, and\n    // worry about better match later on if there is need.\n\n    /* 29-Jan-2010, tatu: One more problem are recursive types\n     *   (T extends Comparable<T>). Need to add \"placeholder\"\n     *   for resolution to catch those.\n     */\n    \n    // For locally declared type variables (method type parameters),\n    // we should use the bounds directly rather than trying to resolve\n    // from context, as they are not available in the outer context\n    if (bounds.length == 0) {\n        return _unknownType();\n    }\n    \n    // Add placeholder to prevent infinite recursion for self-referential types\n    context._addPlaceholder(name);\n    return _constructType(bounds[0], context);\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 69,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected JavaType _fromVariable(TypeVariable<?> type, TypeBindings context)\n{\n    final String name = type.getName();\n    // 19-Mar-2015: Without context, all we can check are bounds.\n    if (context == null) {\n        // And to prevent infinite loops, now need this:\n        return _unknownType();\n    } else {\n        // Ok: here's where context might come in handy!\n        /* 19-Mar-2015, tatu: As per [databind#609], may need to allow\n         *   unresolved type variables to handle some cases where bounds\n         *   are enough. Let's hope it does not hide real fail cases.\n         */\n        JavaType actualType = context.findType(name);\n        if (actualType != null) {\n            return actualType;\n        }\n    }\n\n    /* 29-Jan-2010, tatu: We used to throw exception here, if type was\n     *   bound: but the problem is that this can occur for generic \"base\"\n     *   method, overridden by sub-class. If so, we will want to ignore\n     *   current type (for method) since it will be masked.\n     */\n    Type[] bounds = type.getBounds();\n\n    // With type variables we must use bound information.\n    // Theoretically this gets tricky, as there may be multiple\n    // bounds (\"... extends A & B\"); and optimally we might\n    // want to choose the best match. Also, bounds are optional;\n    // but here we are lucky in that implicit \"Object\" is\n    // added as bounds if so.\n    // Either way let's just use the first bound, for now, and\n    // worry about better match later on if there is need.\n\n    /* 29-Jan-2010, tatu: One more problem are recursive types\n     *   (T extends Comparable<T>). Need to add \"placeholder\"\n     *   for resolution to catch those.\n     *   \n     *   Also: for method-level type variables (local declarations),\n     *   we cannot resolve them from class-level context, so we must\n     *   use the bounds directly.\n     */\n    if (bounds.length == 0) {\n        return _unknownType();\n    }\n    \n    // Check if this is a method-level type variable that won't be resolvable\n    // from the current context - if so, use the bounds directly\n    context._addPlaceholder(name);\n    return _constructType(bounds[0], context);\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 83,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-10",
+    "buggy_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (!hasAttr(attributeKey)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        URL base;\n        try {\n            try {\n                base = new URL(baseUri);\n            } catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n                URL abs = new URL(relUrl);\n                return abs.toExternalForm();\n            }\n            // workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired\n            URL abs = new URL(base, relUrl);\n            return abs.toExternalForm();\n        } catch (MalformedURLException e) {\n            return \"\";\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (!hasAttr(attributeKey)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        URL base;\n        try {\n            try {\n                base = new URL(baseUri);\n            } catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n                URL abs = new URL(relUrl);\n                return abs.toExternalForm();\n            }\n            \n            // Handle relative URLs that start with '?' by appending to the base path\n            if (relUrl.startsWith(\"?\")) {\n                String basePath = base.getPath();\n                if (basePath == null || basePath.isEmpty()) {\n                    basePath = \"/\";\n                }\n                // Remove any existing query string from base URL\n                int queryIndex = basePath.indexOf('?');\n                if (queryIndex >= 0) {\n                    basePath = basePath.substring(0, queryIndex);\n                }\n                relUrl = basePath + relUrl;\n            }\n            \n            URL abs = new URL(base, relUrl);\n            return abs.toExternalForm();\n        } catch (MalformedURLException e) {\n            return \"\";\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 147,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (!hasAttr(attributeKey)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        URL base;\n        try {\n            try {\n                base = new URL(baseUri);\n            } catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n                URL abs = new URL(relUrl);\n                return abs.toExternalForm();\n            }\n            // workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired\n            if (relUrl.startsWith(\"?\")) {\n                return baseUri + relUrl;\n            }\n            URL abs = new URL(base, relUrl);\n            return abs.toExternalForm();\n        } catch (MalformedURLException e) {\n            return \"\";\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 18,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "JacksonCore-23",
+    "buggy_code": "public DefaultPrettyPrinter createInstance() {\n    return new DefaultPrettyPrinter(this);\n}",
+    "patches": [
+      {
+        "patch_code": "public DefaultPrettyPrinter createInstance() {\n    if (getClass() != DefaultPrettyPrinter.class) {\n        throw new IllegalStateException(\"Failed `createInstance()`: \"+getClass().getName()\n                +\" does not override this method; must instantiate directly or override this method\");\n    }\n    return new DefaultPrettyPrinter(this);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 52,
+        "label": "a"
+      },
+      {
+        "patch_code": "public DefaultPrettyPrinter createInstance() {\n    if (getClass() != DefaultPrettyPrinter.class) {\n        throw new IllegalStateException(\"Failed `createInstance()`: \" + getClass().getName()\n                + \" does not override this method\");\n    }\n    return new DefaultPrettyPrinter(this);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 44,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Gson-18",
+    "buggy_code": "static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n    // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n  checkArgument(supertype.isAssignableFrom(contextRawType));\n  return resolve(context, contextRawType,\n      $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n}",
+    "patches": [
+      {
+        "patch_code": "static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n    // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n    checkArgument(supertype.isAssignableFrom(contextRawType));\n    Type resolved = resolve(context, contextRawType,\n        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n    \n    // Handle wildcard types by returning their upper bounds\n    if (resolved instanceof WildcardType) {\n        WildcardType wildcard = (WildcardType) resolved;\n        Type[] upperBounds = wildcard.getUpperBounds();\n        if (upperBounds.length > 0) {\n            // Use the first upper bound (typically there's only one)\n            return upperBounds[0];\n        }\n    }\n    \n    return resolved;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 137,
+        "label": "a"
+      },
+      {
+        "patch_code": "static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {\n    // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead\n    checkArgument(supertype.isAssignableFrom(contextRawType));\n    Type resolved = resolve(context, contextRawType,\n        $Gson$Types.getGenericSupertype(context, contextRawType, supertype));\n    \n    // Handle wildcard types by returning their upper bounds\n    if (resolved instanceof WildcardType) {\n        WildcardType wildcard = (WildcardType) resolved;\n        Type[] upperBounds = wildcard.getUpperBounds();\n        if (upperBounds.length > 0) {\n            return upperBounds[0];\n        }\n    }\n    return resolved;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 122,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Cli-23",
+    "buggy_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        int lastPos = pos;\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        } else\n        if (pos == lastPos)\n        {\n            throw new RuntimeException(\"Text too long for line - throwing exception to avoid infinite loop [CLI-162]: \" + text);\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n            return sb;\n        }\n        \n        // Check if we can't wrap the text (word longer than available width)\n        if (pos <= padding.length())\n        {\n            // If we can't find a wrap position beyond the padding,\n            // we need to break the word at the available width\n            pos = width;\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 103,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n            return sb;\n        }\n        \n        // Check if we're making progress - if the wrap position is at or before\n        // the padding length, we can't wrap properly\n        if (pos <= nextLineTabStop)\n        {\n            throw new RuntimeException(\"Text too long for line - throwing exception to avoid infinite loop [CLI-162]: \" + text);\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 52,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Closure-159",
+    "buggy_code": "private void findCalledFunctions(\n    Node node, Set<String> changed) {\n  Preconditions.checkArgument(changed != null);\n  // For each referenced function, add a new reference\n  if (node.getType() == Token.CALL) {\n    Node child = node.getFirstChild();\n    if (child.getType() == Token.NAME) {\n      changed.add(child.getString());\n    }\n  }\n\n  for (Node c = node.getFirstChild(); c != null; c = c.getNext()) {\n    findCalledFunctions(c, changed);\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "private void findCalledFunctions(\n    Node node, Set<String> changed) {\n  Preconditions.checkArgument(changed != null);\n  // For each referenced function, add a new reference\n  if (node.getType() == Token.CALL) {\n    Node child = node.getFirstChild();\n    if (child.getType() == Token.NAME) {\n      changed.add(child.getString());\n    } else if (child.getType() == Token.GETPROP) {\n      // Handle method calls like obj.method()\n      Node functionNameNode = child.getFirstChild().getNext();\n      if (functionNameNode != null && functionNameNode.getType() == Token.STRING) {\n        changed.add(functionNameNode.getString());\n      }\n    }\n  }\n\n  for (Node c = node.getFirstChild(); c != null; c = c.getNext()) {\n    findCalledFunctions(c, changed);\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 72,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void findCalledFunctions(\n    Node node, Set<String> changed) {\n  Preconditions.checkArgument(changed != null);\n  // For each referenced function, add a new reference\n  if (node.getType() == Token.CALL) {\n    Node child = node.getFirstChild();\n    if (child.getType() == Token.NAME) {\n      changed.add(child.getString());\n    } else if (child.getType() == Token.GETPROP) {\n      // Handle method calls like obj.method()\n      Node target = child.getFirstChild();\n      while (target.getNext() != null) {\n        target = target.getNext();\n      }\n      if (target.getType() == Token.NAME) {\n        changed.add(target.getString());\n      }\n    }\n  }\n\n  for (Node c = node.getFirstChild(); c != null; c = c.getNext()) {\n    findCalledFunctions(c, changed);\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 83,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Compress-39",
+    "buggy_code": "public static String sanitize(String s) {\n        final char[] chars = s.toCharArray();\n        final int len = chars.length;\n        final StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < len; i++) {\n            final char c = chars[i];\n            if (!Character.isISOControl(c)) {\n                Character.UnicodeBlock block = Character.UnicodeBlock.of(c);\n                if (block != null && block != Character.UnicodeBlock.SPECIALS) {\n                    sb.append(c);\n                    continue;\n                }\n            }\n            sb.append('?');\n        }\n        return sb.toString();\n    }",
+    "patches": [
+      {
+        "patch_code": "public static String sanitize(String s) {\n    if (s == null) {\n        return null;\n    }\n    final char[] chars = s.toCharArray();\n    final int len = chars.length;\n    final StringBuilder sb = new StringBuilder();\n    for (int i = 0; i < len; i++) {\n        final char c = chars[i];\n        if (!Character.isISOControl(c)) {\n            Character.UnicodeBlock block = Character.UnicodeBlock.of(c);\n            if (block != null && block != Character.UnicodeBlock.SPECIALS) {\n                sb.append(c);\n                continue;\n            }\n        }\n        sb.append('?');\n    }\n    return sb.toString();\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 258,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static String sanitize(String s) {\n    if (s == null) {\n        return null;\n    }\n    final char[] chars = s.toCharArray();\n    final int len = chars.length;\n    final StringBuilder sb = new StringBuilder(len);\n    for (int i = 0; i < len; i++) {\n        final char c = chars[i];\n        if (!Character.isISOControl(c)) {\n            Character.UnicodeBlock block = Character.UnicodeBlock.of(c);\n            if (block != null && block != Character.UnicodeBlock.SPECIALS) {\n                sb.append(c);\n                continue;\n            }\n        }\n        sb.append('?');\n    }\n    return sb.toString();\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 259,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Csv-2",
+    "buggy_code": "public String get(final String name) {\n    if (mapping == null) {\n        throw new IllegalStateException(\n                \"No header mapping was specified, the record values can't be accessed by name\");\n    }\n    final Integer index = mapping.get(name);\n        return index != null ? values[index.intValue()] : null;\n}",
+    "patches": [
+      {
+        "patch_code": "public String get(final String name) {\n    if (mapping == null) {\n        throw new IllegalStateException(\n                \"No header mapping was specified, the record values can't be accessed by name\");\n    }\n    final Integer index = mapping.get(name);\n    if (index != null && index.intValue() < values.length) {\n        return values[index.intValue()];\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 50,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String get(final String name) {\n    if (mapping == null) {\n        throw new IllegalStateException(\n                \"No header mapping was specified, the record values can't be accessed by name\");\n    }\n    final Integer index = mapping.get(name);\n    if (index != null && index >= 0 && index < values.length) {\n        return values[index];\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 48,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Cli-19",
+    "buggy_code": "private void processOptionToken(String token, boolean stopAtNonOption)\n{\n    if (options.hasOption(token))\n    {\n        currentOption = options.getOption(token);\n        tokens.add(token);\n    }\n    else if (stopAtNonOption)\n    {\n        eatTheRest = true;\n        tokens.add(token);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "private void processOptionToken(String token, boolean stopAtNonOption)\n{\n    if (options.hasOption(token))\n    {\n        currentOption = options.getOption(token);\n        tokens.add(token);\n    }\n    else if (stopAtNonOption)\n    {\n        eatTheRest = true;\n    }\n    else\n    {\n        tokens.add(token);\n    }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 3,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void processOptionToken(String token, boolean stopAtNonOption)\n{\n    if (options.hasOption(token))\n    {\n        currentOption = options.getOption(token);\n        tokens.add(token);\n    }\n    else if (stopAtNonOption)\n    {\n        eatTheRest = true;\n        tokens.add(token);\n    }\n    else\n    {\n        tokens.add(token);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 10,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-85",
+    "buggy_code": "    public JsonSerializer<?> createContextual(SerializerProvider serializers,\n            BeanProperty property) throws JsonMappingException\n    {\n        if (property == null) {\n            return this;\n        }\n        JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n        if (format == null) {\n            return this;\n        }\n        // Simple case first: serialize as numeric timestamp?\n        JsonFormat.Shape shape = format.getShape();\n        if (shape.isNumeric()) {\n            return withFormat(Boolean.TRUE, null);\n        }\n\n        // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n        // First: custom pattern will override things\n                if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n                                || format.hasLocale() || format.hasTimeZone()) {\n                    TimeZone tz = format.getTimeZone();\n                    final String pattern = format.hasPattern()\n                                    ? format.getPattern()\n                                    : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n            final Locale loc = format.hasLocale()\n                            ? format.getLocale()\n                            : serializers.getLocale();\n                    SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                    if (tz == null) {\n                        tz = serializers.getTimeZone();\n                    }\n            df.setTimeZone(tz);\n            return withFormat(Boolean.FALSE, df);\n        }\n\n        // Otherwise, need one of these changes:\n\n\n        // Jackson's own `StdDateFormat` is quite easy to deal with...\n\n        // 08-Jun-2017, tatu: Unfortunately there's no generally usable\n        //    mechanism for changing `DateFormat` instances (or even clone()ing)\n        //    So: require it be `SimpleDateFormat`; can't config other types\n//            serializers.reportBadDefinition(handledType(), String.format(\n            // Ugh. No way to change `Locale`, create copy; must re-crete completely:\n        return this;\n    }",
+    "patches": [
+      {
+        "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property == null) {\n        return this;\n    }\n    JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n    if (format == null) {\n        return this;\n    }\n    // Simple case first: serialize as numeric timestamp?\n    JsonFormat.Shape shape = format.getShape();\n    if (shape.isNumeric()) {\n        return withFormat(Boolean.TRUE, null);\n    }\n\n    // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n    // First: custom pattern will override things\n    if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n            || format.hasLocale() || format.hasTimeZone()) {\n        TimeZone tz = format.getTimeZone();\n        DateFormat df = serializers.getConfig().getDateFormat();\n        \n        // If we have a pattern, create a new SimpleDateFormat with that pattern\n        if (format.hasPattern()) {\n            final Locale loc = format.hasLocale() \n                    ? format.getLocale() \n                    : serializers.getLocale();\n            SimpleDateFormat sdf = new SimpleDateFormat(format.getPattern(), loc);\n            if (tz == null) {\n                tz = serializers.getTimeZone();\n            }\n            sdf.setTimeZone(tz);\n            return withFormat(Boolean.FALSE, sdf);\n        }\n        \n        // Otherwise, clone and configure the existing date format\n        if (tz == null) {\n            tz = serializers.getTimeZone();\n        }\n        df = (DateFormat) df.clone();\n        df.setTimeZone(tz);\n        if (format.hasLocale()) {\n            // For StdDateFormat, we can use withLocale, otherwise we can't change locale\n            if (df instanceof StdDateFormat) {\n                df = ((StdDateFormat) df).withLocale(format.getLocale());\n            }\n            // For other DateFormat types, we can't change locale after creation\n        }\n        return withFormat(Boolean.FALSE, df);\n    }\n\n    return this;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 764,
+        "label": "a"
+      },
+      {
+        "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n            BeanProperty property) throws JsonMappingException\n    {\n        if (property == null) {\n            return this;\n        }\n        JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n        if (format == null) {\n            return this;\n        }\n        // Simple case first: serialize as numeric timestamp?\n        JsonFormat.Shape shape = format.getShape();\n        if (shape.isNumeric()) {\n            return withFormat(Boolean.TRUE, null);\n        }\n\n        // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n        // First: custom pattern will override things\n                if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n                                || format.hasLocale() || format.hasTimeZone()) {\n                    TimeZone tz = format.getTimeZone();\n                    DateFormat df = serializers.getConfig().getDateFormat();\n                    if (format.hasPattern() || format.hasLocale() || format.hasTimeZone()) {\n                        final String pattern = format.hasPattern()\n                                        ? format.getPattern()\n                                        : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                        final Locale loc = format.hasLocale()\n                                        ? format.getLocale()\n                                        : serializers.getLocale();\n                        df = new SimpleDateFormat(pattern, loc);\n                    } else {\n                        // otherwise need to clone, re-set timezone:\n                        df = (DateFormat) df.clone();\n                    }\n                    if (tz == null) {\n                        tz = serializers.getTimeZone();\n                    }\n                    df.setTimeZone(tz);\n                    return withFormat(Boolean.FALSE, df);\n                }\n\n        // Otherwise, need one of these changes:\n\n\n        // Jackson's own `StdDateFormat` is quite easy to deal with...\n\n        // 08-Jun-2017, tatu: Unfortunately there's no generally usable\n        //    mechanism for changing `DateFormat` instances (or even clone()ing)\n        //    So: require it be `SimpleDateFormat`; can't config other types\n//            serializers.reportBadDefinition(handledType(), String.format(\n            // Ugh. No way to change `Locale`, create copy; must re-crete completely:\n        return this;\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 204,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Compress-13",
+    "buggy_code": "protected void setName(String name) {\n    this.name = name;\n}",
+    "patches": [
+      {
+        "patch_code": "protected void setName(String name) {\n    // Handle WinZip Unicode entries with umlauts - ensure proper directory detection\n    if (name != null) {\n        // Replace backslashes with forward slashes to handle WinZip Unicode entries\n        name = name.replace('\\\\', '/');\n        \n        // Check if this is a directory entry\n        // WinZip Unicode directories might not have the trailing slash in the name\n        // but should be detected as directories based on external file attributes\n        if (name.endsWith(\"/\")) {\n            // Standard case: entry name ends with slash\n            this.name = name;\n            setSize(0);\n            // Directory flag should be set by caller based on external attributes\n        } else {\n            this.name = name;\n        }\n    } else {\n        this.name = null;\n    }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 157,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected void setName(String name) {\n    // Normalize path separators - replace backslashes with forward slashes\n    if (name != null) {\n        this.name = name.replace('\\\\', '/');\n    } else {\n        this.name = null;\n    }\n    \n    // For WinZip Unicode entries, ensure directory detection works correctly\n    // Check if the normalized name ends with '/' to mark as directory\n    if (this.name != null && this.name.endsWith(\"/\")) {\n        setSize(0);\n        setMethod(-1);\n        setExtra(); // Clear extra field to avoid conflicts\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 127,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Closure-53",
+    "buggy_code": "private void replaceAssignmentExpression(Var v, Reference ref,\n                                         Map<String, String> varmap) {\n  // Compute all of the assignments necessary\n  List<Node> nodes = Lists.newArrayList();\n  Node val = ref.getAssignedValue();\n  blacklistVarReferencesInTree(val, v.scope);\n  Preconditions.checkState(val.getType() == Token.OBJECTLIT);\n  Set<String> all = Sets.newLinkedHashSet(varmap.keySet());\n  for (Node key = val.getFirstChild(); key != null;\n       key = key.getNext()) {\n    String var = key.getString();\n    Node value = key.removeFirstChild();\n    // TODO(user): Copy type information.\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)), value));\n    all.remove(var);\n  }\n\n  // TODO(user): Better source information.\n  for (String var : all) {\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)),\n               NodeUtil.newUndefinedNode(null)));\n  }\n\n  Node replacement;\n    // All assignments evaluate to true, so make sure that the\n    // expr statement evaluates to true in case it matters.\n    nodes.add(new Node(Token.TRUE));\n\n    // Join these using COMMA.  A COMMA node must have 2 children, so we\n    // create a tree. In the tree the first child be the COMMA to match\n    // the parser, otherwise tree equality tests fail.\n    nodes = Lists.reverse(nodes);\n    replacement = new Node(Token.COMMA);\n    Node cur = replacement;\n    int i;\n    for (i = 0; i < nodes.size() - 2; i++) {\n      cur.addChildToFront(nodes.get(i));\n      Node t = new Node(Token.COMMA);\n      cur.addChildToFront(t);\n      cur = t;\n    }\n    cur.addChildToFront(nodes.get(i));\n    cur.addChildToFront(nodes.get(i + 1));\n\n  Node replace = ref.getParent();\n  replacement.copyInformationFromForTree(replace);\n\n  if (replace.getType() == Token.VAR) {\n    replace.getParent().replaceChild(\n        replace, NodeUtil.newExpr(replacement));\n  } else {\n    replace.getParent().replaceChild(replace, replacement);\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "private void replaceAssignmentExpression(Var v, Reference ref,\n                                         Map<String, String> varmap) {\n  // Compute all of the assignments necessary\n  List<Node> nodes = Lists.newArrayList();\n  Node val = ref.getAssignedValue();\n  blacklistVarReferencesInTree(val, v.scope);\n  Preconditions.checkState(val.getType() == Token.OBJECTLIT);\n  Set<String> all = Sets.newLinkedHashSet(varmap.keySet());\n  for (Node key = val.getFirstChild(); key != null;\n       key = key.getNext()) {\n    String var = key.getString();\n    Node value = key.removeFirstChild();\n    // TODO(user): Copy type information.\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)), value));\n    all.remove(var);\n  }\n\n  // TODO(user): Better source information.\n  for (String var : all) {\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)),\n               NodeUtil.newUndefinedNode(null)));\n  }\n\n  Node replacement;\n    // All assignments evaluate to true, so make sure that the\n    // expr statement evaluates to true in case it matters.\n    nodes.add(new Node(Token.TRUE));\n\n    // Join these using COMMA.  A COMMA node must have 2 children, so we\n    // create a tree. In the tree the first child be the COMMA to match\n    // the parser, otherwise tree equality tests fail.\n    nodes = Lists.reverse(nodes);\n    replacement = new Node(Token.COMMA);\n    Node cur = replacement;\n    int i;\n    for (i = 0; i < nodes.size() - 2; i++) {\n      cur.addChildToFront(nodes.get(i));\n      Node t = new Node(Token.COMMA);\n      cur.addChildToFront(t);\n      cur = t;\n    }\n    \n    // Handle the last two nodes (or only one node if size == 1)\n    if (nodes.size() == 1) {\n      // If there's only one node, just use it directly\n      replacement = nodes.get(0);\n    } else {\n      cur.addChildToFront(nodes.get(i));\n      cur.addChildToFront(nodes.get(i + 1));\n    }\n\n  Node replace = ref.getParent();\n  replacement.copyInformationFromForTree(replace);\n\n  if (replace.getType() == Token.VAR) {\n    replace.getParent().replaceChild(\n        replace, NodeUtil.newExpr(replacement));\n  } else {\n    replace.getParent().replaceChild(replace, replacement);\n  }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 109,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void replaceAssignmentExpression(Var v, Reference ref,\n                                         Map<String, String> varmap) {\n  // Compute all of the assignments necessary\n  List<Node> nodes = Lists.newArrayList();\n  Node val = ref.getAssignedValue();\n  blacklistVarReferencesInTree(val, v.scope);\n  Preconditions.checkState(val.getType() == Token.OBJECTLIT);\n  Set<String> all = Sets.newLinkedHashSet(varmap.keySet());\n  for (Node key = val.getFirstChild(); key != null;\n       key = key.getNext()) {\n    String var = key.getString();\n    Node value = key.removeFirstChild();\n    // TODO(user): Copy type information.\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)), value));\n    all.remove(var);\n  }\n\n  // TODO(user): Better source information.\n  for (String var : all) {\n    nodes.add(\n      new Node(Token.ASSIGN,\n               Node.newString(Token.NAME, varmap.get(var)),\n               NodeUtil.newUndefinedNode(null)));\n  }\n\n  Node replacement;\n    // All assignments evaluate to true, so make sure that the\n    // expr statement evaluates to true in case it matters.\n    nodes.add(new Node(Token.TRUE));\n\n    // Join these using COMMA.  A COMMA node must have 2 children, so we\n    // create a tree. In the tree the first child be the COMMA to match\n    // the parser, otherwise tree equality tests fail.\n    nodes = Lists.reverse(nodes);\n    replacement = new Node(Token.COMMA);\n    Node cur = replacement;\n    int i;\n    for (i = 0; i < nodes.size() - 2; i++) {\n      cur.addChildToFront(nodes.get(i));\n      Node t = new Node(Token.COMMA);\n      cur.addChildToFront(t);\n      cur = t;\n    }\n    if (nodes.size() >= 2) {\n      cur.addChildToFront(nodes.get(i));\n      cur.addChildToFront(nodes.get(i + 1));\n    } else if (nodes.size() == 1) {\n      // If there's only one node, we don't need comma operators\n      replacement = nodes.get(0);\n    }\n    // If nodes.size() == 0, replacement remains as an empty COMMA node\n\n  Node replace = ref.getParent();\n  replacement.copyInformationFromForTree(replace);\n\n  if (replace.getType() == Token.VAR) {\n    replace.getParent().replaceChild(\n        replace, NodeUtil.newExpr(replacement));\n  } else {\n    replace.getParent().replaceChild(replace, replacement);\n  }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 124,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Lang-6",
+    "buggy_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            char[] c = Character.toChars(Character.codePointAt(input, pos));\n            out.write(c);\n            pos+= c.length;\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            pos += Character.charCount(Character.codePointAt(input, pos));\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            // Ensure we don't go beyond the string length when getting code point\n            int cp = Character.codePointAt(input, pos);\n            char[] c = Character.toChars(cp);\n            out.write(c);\n            pos += Character.charCount(cp);\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            // Ensure we don't go beyond the string length\n            if (pos >= len) {\n                break;\n            }\n            int cp = Character.codePointAt(input, pos);\n            pos += Character.charCount(cp);\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 138,
+        "label": "a"
+      },
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            int cp = Character.codePointAt(input, pos);\n            char[] c = Character.toChars(cp);\n            out.write(c);\n            pos += Character.charCount(cp);\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            pos += Character.charCount(Character.codePointAt(input, pos));\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 60,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Cli-38",
+    "buggy_code": "private boolean isShortOption(String token)\n{\n    // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n    if (!token.startsWith(\"-\") || token.length() == 1)\n    {\n        return false;\n    }\n\n    // remove leading \"-\" and \"=value\"\n    int pos = token.indexOf(\"=\");\n    String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);\n    return options.hasShortOption(optName);\n    // check for several concatenated short options\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean isShortOption(String token)\n{\n    // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n    if (!token.startsWith(\"-\") || token.length() == 1)\n    {\n        return false;\n    }\n\n    // remove leading \"-\" and \"=value\"\n    int pos = token.indexOf(\"=\");\n    String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);\n    \n    // Check if this is actually a long option (starts with \"--\" or has a long option name)\n    if (token.startsWith(\"--\") || optName.length() > 1) {\n        return false;\n    }\n    \n    return options.hasShortOption(optName);\n    // check for several concatenated short options\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 50,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean isShortOption(String token)\n{\n    // short options (-S, -SV, -S=V, -SV1=V2, -S1S2)\n    if (!token.startsWith(\"-\") || token.length() == 1)\n    {\n        return false;\n    }\n\n    // remove leading \"-\" and \"=value\"\n    int pos = token.indexOf(\"=\");\n    String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);\n    \n    // Check if this is actually a long option (starts with \"--\")\n    if (token.startsWith(\"--\"))\n    {\n        return false;\n    }\n    \n    // Check if the option name contains only valid short option characters\n    for (int i = 0; i < optName.length(); i++)\n    {\n        if (!options.hasShortOption(String.valueOf(optName.charAt(i))))\n        {\n            return false;\n        }\n    }\n    \n    return true;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 113,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-39",
+    "buggy_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patches": [
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                try {\n                    docData = Charset.forName(foundCharset).decode(byteData).toString();\n                    doc = parser.parseInput(docData, baseUri);\n                } catch (IllegalCharsetNameException e) {\n                    // if the charset is not supported, fall back to default\n                    charsetName = defaultCharset;\n                    byteData.rewind();\n                    docData = Charset.forName(defaultCharset).decode(byteData).toString();\n                    doc = parser.parseInput(docData, baseUri);\n                }\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n        doc = parser.parseInput(docData, baseUri);\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n    }\n    doc.outputSettings().charset(charsetName != null ? charsetName : defaultCharset);\n    return doc;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 153,
+        "label": "a"
+      },
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset = null;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n            }\n            if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                try {\n                    if (Charset.isSupported(meta.attr(\"charset\"))) {\n                        foundCharset = meta.attr(\"charset\");\n                    }\n                } catch (IllegalCharsetNameException e) {\n                    foundCharset = null;\n                }\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                \n                // Instead of setting doc to null and re-parsing, update the existing document\n                // This preserves the original parsing structure\n                doc = null;\n                doc = parser.parseInput(docData, baseUri);\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n        doc = null;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n    }\n    if (charsetName != null) {\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 191,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Closure-107",
+    "buggy_code": "protected CompilerOptions createOptions() {\n  CompilerOptions options = new CompilerOptions();\n  if (flags.processJqueryPrimitives) {\n    options.setCodingConvention(new JqueryCodingConvention());\n  } else {\n    options.setCodingConvention(new ClosureCodingConvention());\n  }\n\n  options.setExtraAnnotationNames(flags.extraAnnotationName);\n\n  CompilationLevel level = flags.compilationLevel;\n  level.setOptionsForCompilationLevel(options);\n\n  if (flags.debug) {\n    level.setDebugOptionsForCompilationLevel(options);\n  }\n\n  if (flags.useTypesForOptimization) {\n    level.setTypeBasedOptimizationOptions(options);\n  }\n\n  if (flags.generateExports) {\n    options.setGenerateExports(flags.generateExports);\n  }\n\n  WarningLevel wLevel = flags.warningLevel;\n  wLevel.setOptionsForWarningLevel(options);\n  for (FormattingOption formattingOption : flags.formatting) {\n    formattingOption.applyToOptions(options);\n  }\n\n  options.closurePass = flags.processClosurePrimitives;\n\n  options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level &&\n      flags.processJqueryPrimitives;\n\n  options.angularPass = flags.angularPass;\n\n  if (!flags.translationsFile.isEmpty()) {\n    try {\n      options.messageBundle = new XtbMessageBundle(\n          new FileInputStream(flags.translationsFile),\n          flags.translationsProject);\n    } catch (IOException e) {\n      throw new RuntimeException(\"Reading XTB file\", e);\n    }\n  } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level) {\n    // In SIMPLE or WHITESPACE mode, if the user hasn't specified a\n    // translations file, they might reasonably try to write their own\n    // implementation of goog.getMsg that makes the substitution at\n    // run-time.\n    //\n    // In ADVANCED mode, goog.getMsg is going to be renamed anyway,\n    // so we might as well inline it. But shut off the i18n warnings,\n    // because the user didn't really ask for i18n.\n    options.messageBundle = new EmptyMessageBundle();\n  }\n\n  return options;\n}",
+    "patches": [
+      {
+        "patch_code": "protected CompilerOptions createOptions() {\n  CompilerOptions options = new CompilerOptions();\n  if (flags.processJqueryPrimitives) {\n    options.setCodingConvention(new JqueryCodingConvention());\n  } else {\n    options.setCodingConvention(new ClosureCodingConvention());\n  }\n\n  options.setExtraAnnotationNames(flags.extraAnnotationName);\n\n  CompilationLevel level = flags.compilationLevel;\n  level.setOptionsForCompilationLevel(options);\n\n  if (flags.debug) {\n    level.setDebugOptionsForCompilationLevel(options);\n  }\n\n  if (flags.useTypesForOptimization) {\n    level.setTypeBasedOptimizationOptions(options);\n  }\n\n  if (flags.generateExports) {\n    options.setGenerateExports(flags.generateExports);\n  }\n\n  WarningLevel wLevel = flags.warningLevel;\n  wLevel.setOptionsForWarningLevel(options);\n  for (FormattingOption formattingOption : flags.formatting) {\n    formattingOption.applyToOptions(options);\n  }\n\n  options.closurePass = flags.processClosurePrimitives;\n\n  options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level &&\n      flags.processJqueryPrimitives;\n\n  options.angularPass = flags.angularPass;\n\n  if (!flags.translationsFile.isEmpty()) {\n    try {\n      options.messageBundle = new XtbMessageBundle(\n          new FileInputStream(flags.translationsFile),\n          flags.translationsProject);\n    } catch (IOException e) {\n      throw new RuntimeException(\"Reading XTB file\", e);\n    }\n  } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processClosurePrimitives) {\n    // Only use EmptyMessageBundle in ADVANCED mode when we're processing Closure primitives\n    // This ensures MSG_ variables are properly handled by the i18n system\n    options.messageBundle = new EmptyMessageBundle();\n  }\n\n  return options;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 152,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected CompilerOptions createOptions() {\n  CompilerOptions options = new CompilerOptions();\n  if (flags.processJqueryPrimitives) {\n    options.setCodingConvention(new JqueryCodingConvention());\n  } else {\n    options.setCodingConvention(new ClosureCodingConvention());\n  }\n\n  options.setExtraAnnotationNames(flags.extraAnnotationName);\n\n  CompilationLevel level = flags.compilationLevel;\n  level.setOptionsForCompilationLevel(options);\n\n  if (flags.debug) {\n    level.setDebugOptionsForCompilationLevel(options);\n  }\n\n  if (flags.useTypesForOptimization) {\n    level.setTypeBasedOptimizationOptions(options);\n  }\n\n  if (flags.generateExports) {\n    options.setGenerateExports(flags.generateExports);\n  }\n\n  WarningLevel wLevel = flags.warningLevel;\n  wLevel.setOptionsForWarningLevel(options);\n  for (FormattingOption formattingOption : flags.formatting) {\n    formattingOption.applyToOptions(options);\n  }\n\n  options.closurePass = flags.processClosurePrimitives;\n\n  options.jqueryPass = CompilationLevel.ADVANCED_OPTIMIZATIONS == level &&\n      flags.processJqueryPrimitives;\n\n  options.angularPass = flags.angularPass;\n\n  if (!flags.translationsFile.isEmpty()) {\n    try {\n      options.messageBundle = new XtbMessageBundle(\n          new FileInputStream(flags.translationsFile),\n          flags.translationsProject);\n    } catch (IOException e) {\n      throw new RuntimeException(\"Reading XTB file\", e);\n    }\n  } else if (CompilationLevel.ADVANCED_OPTIMIZATIONS == level && flags.processClosurePrimitives) {\n    // Only use EmptyMessageBundle in ADVANCED mode when we're processing Closure primitives\n    // This prevents the compiler from enforcing i18n message rules when not using Closure\n    options.messageBundle = new EmptyMessageBundle();\n  }\n\n  return options;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 154,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Codec-18",
+    "buggy_code": "public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n    if (cs1 == cs2) {\n        return true;\n    }\n    if (cs1 == null || cs2 == null) {\n        return false;\n    }\n    if (cs1 instanceof String && cs2 instanceof String) {\n        return cs1.equals(cs2);\n    }\n    return CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, Math.max(cs1.length(), cs2.length()));\n}",
+    "patches": [
+      {
+        "patch_code": "public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n    if (cs1 == cs2) {\n        return true;\n    }\n    if (cs1 == null || cs2 == null) {\n        return false;\n    }\n    if (cs1 instanceof String && cs2 instanceof String) {\n        return cs1.equals(cs2);\n    }\n    if (cs1.length() != cs2.length()) {\n        return false;\n    }\n    return CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, cs1.length());\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 75,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static boolean equals(final CharSequence cs1, final CharSequence cs2) {\n    if (cs1 == cs2) {\n        return true;\n    }\n    if (cs1 == null || cs2 == null) {\n        return false;\n    }\n    if (cs1 instanceof String && cs2 instanceof String) {\n        return cs1.equals(cs2);\n    }\n    int length1 = cs1.length();\n    int length2 = cs2.length();\n    if (length1 != length2) {\n        return false;\n    }\n    return CharSequenceUtils.regionMatches(cs1, false, 0, cs2, 0, length1);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 81,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Lang-19",
+    "buggy_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n\n            // Check there's more than just an x after the &#\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(input.charAt(end) != ';') \n        {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n        System.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patches": [
+      {
+        "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        // Check if we have at least one character after \"&#\"\n        if(start >= seqEnd) {\n            return 0;\n        }\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n            // Check there's more than just an x after the &#\n            if(start >= seqEnd) {\n                return 0;\n            }\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(end < seqEnd && input.charAt(end) != ';') {\n            end++;\n        }\n\n        // If we reached the end without finding a semicolon, end is at seqEnd\n        // Check that we have at least one digit\n        if(end == start) {\n            return 0;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + (end < seqEnd ? 1 : 0);\n    }\n    return 0;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 196,
+        "label": "a"
+      },
+      {
+        "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        // Check if we have at least one character after \"&#\"\n        if(start >= seqEnd) {\n            return 0;\n        }\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n\n            // Check there's more than just an x after the &#\n            if(start >= seqEnd) {\n                return 0;\n            }\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(end < seqEnd && input.charAt(end) != ';') {\n            end++;\n        }\n\n        // If we reached the end without finding a semicolon, end is at seqEnd\n        // Check that we have at least one digit\n        if(end == start) {\n            return 0;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + (end < seqEnd ? 1 : 0); // +1 for semicolon if present\n    }\n    return 0;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 204,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-86",
+    "buggy_code": "public XmlDeclaration asXmlDeclaration() {\n    String data = getData();\n    Document doc = Jsoup.parse(\"<\" + data.substring(1, data.length() -1) + \">\", baseUri(), Parser.xmlParser());\n    XmlDeclaration decl = null;\n    if (doc.childNodeSize() > 0) {\n        Element el = doc.child(0);\n        decl = new XmlDeclaration(NodeUtils.parser(doc).settings().normalizeTag(el.tagName()), data.startsWith(\"!\"));\n        decl.attributes().addAll(el.attributes());\n    }\n    return decl;\n}",
+    "patches": [
+      {
+        "patch_code": "public XmlDeclaration asXmlDeclaration() {\n    String data = getData();\n    Document doc = Jsoup.parse(\"<\" + data.substring(1, data.length() -1) + \">\", baseUri(), Parser.xmlParser());\n    XmlDeclaration decl = null;\n    if (doc.childNodeSize() > 0) {\n        Element el = doc.child(0);\n        if (el != null) {\n            decl = new XmlDeclaration(NodeUtils.parser(doc).settings().normalizeTag(el.tagName()), data.startsWith(\"!\"));\n            decl.attributes().addAll(el.attributes());\n        }\n    }\n    return decl;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 109,
+        "label": "a"
+      },
+      {
+        "patch_code": "public XmlDeclaration asXmlDeclaration() {\n    String data = getData();\n    // Check if the data has enough characters for substring operation\n    if (data.length() < 2) {\n        return null;\n    }\n    \n    // Extract the content between the first and last character (removing ! and --)\n    String content = data.substring(1, data.length() - 1);\n    \n    // Ensure the content is not empty and doesn't contain only whitespace\n    if (content.trim().isEmpty()) {\n        return null;\n    }\n    \n    Document doc = Jsoup.parse(\"<\" + content + \">\", baseUri(), Parser.xmlParser());\n    XmlDeclaration decl = null;\n    if (doc.childNodeSize() > 0) {\n        Element el = doc.child(0);\n        decl = new XmlDeclaration(NodeUtils.parser(doc).settings().normalizeTag(el.tagName()), data.startsWith(\"!\"));\n        decl.attributes().addAll(el.attributes());\n    }\n    return decl;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 164,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Cli-2",
+    "buggy_code": "protected void burstToken(String token, boolean stopAtNonOption)\n    {\n        int tokenLength = token.length();\n\n        for (int i = 1; i < tokenLength; i++)\n        {\n            String ch = String.valueOf(token.charAt(i));\n            boolean hasOption = options.hasOption(ch);\n\n            if (hasOption)\n            {\n                tokens.add(\"-\" + ch);\n                currentOption = options.getOption(ch);\n\n                if (currentOption.hasArg() && (token.length() != (i + 1)))\n                {\n                    tokens.add(token.substring(i + 1));\n\n                    break;\n                }\n            }\n            else if (stopAtNonOption)\n            {\n                process(token.substring(i));\n            }\n            else\n            {\n                tokens.add(\"-\" + ch);\n            }\n        }\n    }",
+    "patches": [
+      {
+        "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    int tokenLength = token.length();\n\n    for (int i = 1; i < tokenLength; i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n        boolean hasOption = options.hasOption(ch);\n\n        if (hasOption)\n        {\n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg() && (token.length() != (i + 1)))\n            {\n                tokens.add(token.substring(i + 1));\n\n                break;\n            }\n        }\n        else if (stopAtNonOption)\n        {\n            process(token.substring(i));\n            break;\n        }\n        else\n        {\n            tokens.add(\"-\" + ch);\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 294,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    // if the token is just a single hyphen, add it and return\n    if (\"-\".equals(token))\n    {\n        tokens.add(token);\n        return;\n    }\n    \n    // if the token starts with two hyphens, add it as is and return\n    if (token.startsWith(\"--\"))\n    {\n        tokens.add(token);\n        return;\n    }\n    \n    int tokenLength = token.length();\n\n    for (int i = 1; i < tokenLength; i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n        boolean hasOption = options.hasOption(ch);\n\n        if (hasOption)\n        {\n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg() && (token.length() != (i + 1)))\n            {\n                tokens.add(token.substring(i + 1));\n\n                break;\n            }\n        }\n        else if (stopAtNonOption)\n        {\n            process(token.substring(i));\n            break;\n        }\n        else\n        {\n            tokens.add(\"-\" + ch);\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 370,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Codec-17",
+    "buggy_code": "public static String newStringIso8859_1(final byte[] bytes) {\n    return new String(bytes, Charsets.ISO_8859_1);\n}",
+    "patches": [
+      {
+        "patch_code": "public static String newStringIso8859_1(final byte[] bytes) {\n    return bytes == null ? null : new String(bytes, Charsets.ISO_8859_1);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 29,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static String newStringIso8859_1(final byte[] bytes) {\n    return newString(bytes, Charsets.ISO_8859_1);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 21,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Closure-130",
+    "buggy_code": "private void inlineAliases(GlobalNamespace namespace) {\n  // Invariant: All the names in the worklist meet condition (a).\n  Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pop();\n\n    // Don't attempt to inline a getter or setter property as a variable.\n    if (name.type == Name.Type.GET || name.type == Name.Type.SET) {\n      continue;\n    }\n\n    if (name.globalSets == 1 && name.localSets == 0 &&\n        name.aliasingGets > 0) {\n      // {@code name} meets condition (b). Find all of its local aliases\n      // and try to inline them.\n      List<Ref> refs = Lists.newArrayList(name.getRefs());\n      for (Ref ref : refs) {\n        if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {\n          // {@code name} meets condition (c). Try to inline it.\n          if (inlineAliasIfPossible(ref, namespace)) {\n            name.removeRef(ref);\n          }\n        }\n      }\n    }\n\n    // Check if {@code name} has any aliases left after the\n    // local-alias-inlining above.\n    if ((name.type == Name.Type.OBJECTLIT ||\n         name.type == Name.Type.FUNCTION) &&\n        name.aliasingGets == 0 && name.props != null) {\n      // All of {@code name}'s children meet condition (a), so they can be\n      // added to the worklist.\n      workList.addAll(name.props);\n    }\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "private void inlineAliases(GlobalNamespace namespace) {\n  // Invariant: All the names in the worklist meet condition (a).\n  Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pop();\n\n    // Don't attempt to inline a getter or setter property as a variable.\n    if (name.type == Name.Type.GET || name.type == Name.Type.SET) {\n      continue;\n    }\n\n    // Don't inline the special \"arguments\" variable\n    if (\"arguments\".equals(name.getFullName())) {\n      continue;\n    }\n\n    if (name.globalSets == 1 && name.localSets == 0 &&\n        name.aliasingGets > 0) {\n      // {@code name} meets condition (b). Find all of its local aliases\n      // and try to inline them.\n      List<Ref> refs = Lists.newArrayList(name.getRefs());\n      for (Ref ref : refs) {\n        if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {\n          // {@code name} meets condition (c). Try to inline it.\n          if (inlineAliasIfPossible(ref, namespace)) {\n            name.removeRef(ref);\n          }\n        }\n      }\n    }\n\n    // Check if {@code name} has any aliases left after the\n    // local-alias-inlining above.\n    if ((name.type == Name.Type.OBJECTLIT ||\n         name.type == Name.Type.FUNCTION) &&\n        name.aliasingGets == 0 && name.props != null) {\n      // All of {@code name}'s children meet condition (a), so they can be\n      // added to the worklist.\n      workList.addAll(name.props);\n    }\n  }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 31,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void inlineAliases(GlobalNamespace namespace) {\n  // Invariant: All the names in the worklist meet condition (a).\n  Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pop();\n\n    // Don't attempt to inline a getter or setter property as a variable.\n    if (name.type == Name.Type.GET || name.type == Name.Type.SET) {\n      continue;\n    }\n\n    // Don't inline the 'arguments' object as it has special behavior\n    if (name.getFullName() != null && name.getFullName().equals(\"arguments\")) {\n      continue;\n    }\n\n    if (name.globalSets == 1 && name.localSets == 0 &&\n        name.aliasingGets > 0) {\n      // {@code name} meets condition (b). Find all of its local aliases\n      // and try to inline them.\n      List<Ref> refs = Lists.newArrayList(name.getRefs());\n      for (Ref ref : refs) {\n        if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {\n          // {@code name} meets condition (c). Try to inline it.\n          if (inlineAliasIfPossible(ref, namespace)) {\n            name.removeRef(ref);\n          }\n        }\n      }\n    }\n\n    // Check if {@code name} has any aliases left after the\n    // local-alias-inlining above.\n    if ((name.type == Name.Type.OBJECTLIT ||\n         name.type == Name.Type.FUNCTION) &&\n        name.aliasingGets == 0 && name.props != null) {\n      // All of {@code name}'s children meet condition (a), so they can be\n      // added to the worklist.\n      workList.addAll(name.props);\n    }\n  }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 45,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-39",
+    "buggy_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // 29-Jan-2016, tatu: Simple skipping for all other tokens, but FIELD_NAME bit\n    //    special unfortunately\n        p.skipChildren();\n    return null;\n}",
+    "patches": [
+      {
+        "patch_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // Skip the entire current value, not just its children\n    p.skipChildren();\n    p.nextToken(); // Move to the next token after the skipped value\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 65,
+        "label": "a"
+      },
+      {
+        "patch_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // For structured values (START_OBJECT, START_ARRAY), skip children\n    if (p.isExpectedStartObjectToken() || p.isExpectedStartArrayToken()) {\n        p.skipChildren();\n    } else {\n        // For other token types (like FIELD_NAME, VALUE_STRING, etc.), \n        // we need to consume the current token by advancing the parser\n        p.nextToken();\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 92,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Csv-7",
+    "buggy_code": "private Map<String, Integer> initializeHeader() throws IOException {\n        Map<String, Integer> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<String, Integer>();\n\n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values();\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n\n            // build the name to index mappings\n            if (header != null) {\n                for (int i = 0; i < header.length; i++) {\n                    hdrMap.put(header[i], Integer.valueOf(i));\n                }\n            }\n        }\n        return hdrMap;\n    }",
+    "patches": [
+      {
+        "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n    Map<String, Integer> hdrMap = null;\n    final String[] formatHeader = this.format.getHeader();\n    if (formatHeader != null) {\n        hdrMap = new LinkedHashMap<String, Integer>();\n\n        String[] header = null;\n        if (formatHeader.length == 0) {\n            // read the header from the first line of the file\n            final CSVRecord nextRecord = this.nextRecord();\n            if (nextRecord != null) {\n                header = nextRecord.values();\n            }\n        } else {\n            if (this.format.getSkipHeaderRecord()) {\n                this.nextRecord();\n            }\n            header = formatHeader;\n        }\n\n        // build the name to index mappings\n        if (header != null) {\n            for (int i = 0; i < header.length; i++) {\n                String headerName = header[i];\n                // Check for duplicate headers\n                if (hdrMap.containsKey(headerName)) {\n                    throw new IllegalArgumentException(\"Duplicate header name found: '\" + headerName + \"'\");\n                }\n                hdrMap.put(headerName, Integer.valueOf(i));\n            }\n        }\n    }\n    return hdrMap;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 402,
+        "label": "a"
+      },
+      {
+        "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n    Map<String, Integer> hdrMap = null;\n    final String[] formatHeader = this.format.getHeader();\n    if (formatHeader != null) {\n        hdrMap = new LinkedHashMap<String, Integer>();\n\n        String[] header = null;\n        if (formatHeader.length == 0) {\n            // read the header from the first line of the file\n            final CSVRecord nextRecord = this.nextRecord();\n            if (nextRecord != null) {\n                header = nextRecord.values();\n            }\n        } else {\n            if (this.format.getSkipHeaderRecord()) {\n                this.nextRecord();\n            }\n            header = formatHeader;\n        }\n\n        // build the name to index mappings\n        if (header != null) {\n            for (int i = 0; i < header.length; i++) {\n                String headerName = header[i];\n                if (hdrMap.containsKey(headerName)) {\n                    // Handle duplicate header names by appending a counter\n                    int counter = 1;\n                    String uniqueName;\n                    do {\n                        uniqueName = headerName + \"[\" + counter + \"]\";\n                        counter++;\n                    } while (hdrMap.containsKey(uniqueName));\n                    hdrMap.put(uniqueName, Integer.valueOf(i));\n                } else {\n                    hdrMap.put(headerName, Integer.valueOf(i));\n                }\n            }\n        }\n    }\n    return hdrMap;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 440,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-53",
+    "buggy_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        if (last == 0 || last != ESC) {\n            if (c.equals(open)) {\n                depth++;\n                if (start == -1)\n                    start = pos;\n            }\n            else if (c.equals(close))\n                depth--;\n        }\n\n        if (depth > 0 && last != 0)\n            end = pos; // don't include the outer match pair in the return\n        last = c;\n    } while (depth > 0);\n    return (end >= 0) ? queue.substring(start, end) : \"\";\n}",
+    "patches": [
+      {
+        "patch_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        if (last == 0 || last != ESC) {\n            if (c.equals(open)) {\n                depth++;\n                if (start == -1)\n                    start = pos;\n            }\n            else if (c.equals(close))\n                depth--;\n        }\n\n        if (depth > 0 && last != 0)\n            end = pos; // don't include the outer match pair in the return\n        \n        // Update last character, handling escape sequences\n        if (c == ESC && last == ESC) {\n            last = 0; // escaped backslash, reset last\n        } else {\n            last = c;\n        }\n    } while (depth > 0);\n    return (end >= 0) ? queue.substring(start, end) : \"\";\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 46,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n    boolean inEscape = false;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        \n        if (!inEscape && c == ESC) {\n            inEscape = true;\n        } else {\n            if (!inEscape) {\n                if (c.equals(open)) {\n                    depth++;\n                    if (start == -1)\n                        start = pos - 1; // -1 because we already consumed this char\n                }\n                else if (c.equals(close)) {\n                    depth--;\n                }\n            }\n            inEscape = false;\n        }\n\n        if (depth > 0 && start != -1)\n            end = pos; // don't include the outer match pair in the return\n        last = c;\n    } while (depth > 0);\n    \n    return (start >= 0 && end >= 0) ? queue.substring(start, end) : \"\";\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 214,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Cli-33",
+    "buggy_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n    {\n        StringBuffer sb = new StringBuffer(text.length());\n\n        renderWrappedText(sb, width, nextLineTabStop, text);\n        pw.println(sb.toString());\n    }",
+    "patches": [
+      {
+        "patch_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n{\n    StringBuffer sb = new StringBuffer(text.length());\n\n    renderWrappedTextBlock(sb, width, nextLineTabStop, text);\n    pw.println(sb.toString());\n}\n\n/**\n * Render the specified text as a wrapped block with preserved whitespace.\n */\nprotected void renderWrappedTextBlock(StringBuffer sb, int width, \n                                     int nextLineTabStop, String text)\n{\n    if (text == null) {\n        return;\n    }\n    \n    // Split the text into lines while preserving original line breaks and whitespace\n    String[] lines = text.split(\"\\n\", -1); // -1 to preserve trailing empty lines\n    \n    for (int i = 0; i < lines.length; i++) {\n        if (i > 0) {\n            sb.append(getNewLine());\n        }\n        renderWrappedText(sb, width, nextLineTabStop, lines[i]);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 210,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n{\n    // If this is footer text with explicit formatting, preserve the formatting\n    if (text != null && text.contains(\"\\n\")) {\n        // For multi-line text, print it as-is to preserve formatting\n        pw.println(text);\n    } else {\n        StringBuffer sb = new StringBuffer(text.length());\n        renderWrappedText(sb, width, nextLineTabStop, text);\n        pw.println(sb.toString());\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 62,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-84",
+    "buggy_code": "public void head(org.jsoup.nodes.Node source, int depth) {\n    namespacesStack.push(new HashMap<>(namespacesStack.peek())); // inherit from above on the stack\n    if (source instanceof org.jsoup.nodes.Element) {\n        org.jsoup.nodes.Element sourceEl = (org.jsoup.nodes.Element) source;\n\n        String prefix = updateNamespaces(sourceEl);\n        String namespace = namespacesStack.peek().get(prefix);\n        String tagName = sourceEl.tagName();\n\n        Element el = \n            doc.createElementNS(namespace, tagName);\n        copyAttributes(sourceEl, el);\n        if (dest == null) { // sets up the root\n            doc.appendChild(el);\n        } else {\n            dest.appendChild(el);\n        }\n        dest = el; // descend\n    } else if (source instanceof org.jsoup.nodes.TextNode) {\n        org.jsoup.nodes.TextNode sourceText = (org.jsoup.nodes.TextNode) source;\n        Text text = doc.createTextNode(sourceText.getWholeText());\n        dest.appendChild(text);\n    } else if (source instanceof org.jsoup.nodes.Comment) {\n        org.jsoup.nodes.Comment sourceComment = (org.jsoup.nodes.Comment) source;\n        Comment comment = doc.createComment(sourceComment.getData());\n        dest.appendChild(comment);\n    } else if (source instanceof org.jsoup.nodes.DataNode) {\n        org.jsoup.nodes.DataNode sourceData = (org.jsoup.nodes.DataNode) source;\n        Text node = doc.createTextNode(sourceData.getWholeData());\n        dest.appendChild(node);\n    } else {\n        // unhandled\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public void head(org.jsoup.nodes.Node source, int depth) {\n    namespacesStack.push(new HashMap<>(namespacesStack.peek())); // inherit from above on the stack\n    if (source instanceof org.jsoup.nodes.Element) {\n        org.jsoup.nodes.Element sourceEl = (org.jsoup.nodes.Element) source;\n\n        String prefix = updateNamespaces(sourceEl);\n        String namespace = namespacesStack.peek().get(prefix);\n        String tagName = sourceEl.tagName();\n\n        Element el;\n        if (namespace != null) {\n            // Use namespace-aware creation if namespace is declared\n            el = doc.createElementNS(namespace, tagName);\n        } else {\n            // Fall back to non-namespace creation for undeclared prefixes\n            el = doc.createElement(tagName);\n        }\n        copyAttributes(sourceEl, el);\n        if (dest == null) { // sets up the root\n            doc.appendChild(el);\n        } else {\n            dest.appendChild(el);\n        }\n        dest = el; // descend\n    } else if (source instanceof org.jsoup.nodes.TextNode) {\n        org.jsoup.nodes.TextNode sourceText = (org.jsoup.nodes.TextNode) source;\n        Text text = doc.createTextNode(sourceText.getWholeText());\n        dest.appendChild(text);\n    } else if (source instanceof org.jsoup.nodes.Comment) {\n        org.jsoup.nodes.Comment sourceComment = (org.jsoup.nodes.Comment) source;\n        Comment comment = doc.createComment(sourceComment.getData());\n        dest.appendChild(comment);\n    } else if (source instanceof org.jsoup.nodes.DataNode) {\n        org.jsoup.nodes.DataNode sourceData = (org.jsoup.nodes.DataNode) source;\n        Text node = doc.createTextNode(sourceData.getWholeData());\n        dest.appendChild(node);\n    } else {\n        // unhandled\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 70,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void head(org.jsoup.nodes.Node source, int depth) {\n    namespacesStack.push(new HashMap<>(namespacesStack.peek())); // inherit from above on the stack\n    if (source instanceof org.jsoup.nodes.Element) {\n        org.jsoup.nodes.Element sourceEl = (org.jsoup.nodes.Element) source;\n\n        String prefix = updateNamespaces(sourceEl);\n        String namespace = namespacesStack.peek().get(prefix);\n        String tagName = sourceEl.tagName();\n\n        Element el;\n        if (namespace != null) {\n            el = doc.createElementNS(namespace, tagName);\n        } else {\n            // If no namespace is defined, create element without namespace\n            el = doc.createElementNS(null, tagName);\n        }\n        copyAttributes(sourceEl, el);\n        if (dest == null) { // sets up the root\n            doc.appendChild(el);\n        } else {\n            dest.appendChild(el);\n        }\n        dest = el; // descend\n    } else if (source instanceof org.jsoup.nodes.TextNode) {\n        org.jsoup.nodes.TextNode sourceText = (org.jsoup.nodes.TextNode) source;\n        Text text = doc.createTextNode(sourceText.getWholeText());\n        dest.appendChild(text);\n    } else if (source instanceof org.jsoup.nodes.Comment) {\n        org.jsoup.nodes.Comment sourceComment = (org.jsoup.nodes.Comment) source;\n        Comment comment = doc.createComment(sourceComment.getData());\n        dest.appendChild(comment);\n    } else if (source instanceof org.jsoup.nodes.DataNode) {\n        org.jsoup.nodes.DataNode sourceData = (org.jsoup.nodes.DataNode) source;\n        Text node = doc.createTextNode(sourceData.getWholeData());\n        dest.appendChild(node);\n    } else {\n        // unhandled\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 61,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-77",
+    "buggy_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive()) {\n            // Let's make it possible to materialize abstract types.\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(type.getRawClass())) {\n            return null;\n        }\n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }",
+    "patches": [
+      {
+        "patch_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        \n        // Security fix: Check for potentially dangerous types before proceeding\n        Class<?> rawClass = type.getRawClass();\n        if (_isPotentialSecurityRisk(rawClass)) {\n            return null;\n        }\n        \n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive()) {\n            // Let's make it possible to materialize abstract types.\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                // Security fix: Check the concrete type as well\n                if (_isPotentialSecurityRisk(concreteType.getRawClass())) {\n                    return null;\n                }\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(type.getRawClass())) {\n            return null;\n        }\n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }\n\n    /**\n     * Security check: Determine if a class represents a potential security risk\n     * for deserialization.\n     */\n    protected boolean _isPotentialSecurityRisk(Class<?> clazz) {\n        String className = clazz.getName();\n        \n        // Block known dangerous types and patterns\n        return className.startsWith(\"java.util.logging.\") ||\n               className.startsWith(\"com.sun.\") ||\n               className.startsWith(\"java.lang.Process\") ||\n               className.startsWith(\"javax.management.\") ||\n               className.startsWith(\"javax.xml.\") ||\n               className.startsWith(\"org.apache.\") && \n                   (className.contains(\"xalan\") || className.contains(\"xbean\")) ||\n               className.contains(\"ScriptEngineManager\") ||\n               className.contains(\"GroovyClassLoader\") ||\n               className.contains(\"org.springframework.\") && \n                   className.contains(\"SerializableTypeWrapper\") ||\n               // Add other dangerous patterns as needed\n               false;\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 271,
+        "label": "a"
+      },
+      {
+        "patch_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        final Class<?> rawClass = type.getRawClass();\n        \n        // Security fix: Check for potentially dangerous types before proceeding\n        if (_isDangerousType(rawClass)) {\n            return null;\n        }\n        \n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive()) {\n            // Let's make it possible to materialize abstract types.\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                // Security fix: Check the concrete type as well\n                if (_isDangerousType(concreteType.getRawClass())) {\n                    return null;\n                }\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(rawClass)) {\n            return null;\n        }\n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }\n\n    /**\n     * Security fix: Check if the given class is a potentially dangerous type\n     * that should not be deserialized.\n     */\n    protected boolean _isDangerousType(Class<?> clazz) {\n        // Check for basic dangerous types\n        String className = clazz.getName();\n        \n        // Block java.lang.Class and related reflection types\n        if (className.startsWith(\"java.lang.Class\") ||\n            className.startsWith(\"java.lang.reflect.\") ||\n            className.startsWith(\"java.rmi.\") ||\n            className.startsWith(\"javax.management.\") ||\n            className.startsWith(\"javax.xml.\")) {\n            return true;\n        }\n        \n        // Block specific dangerous types\n        if (className.equals(\"java.lang.Class\") ||\n            className.equals(\"java.lang.ProcessBuilder\") ||\n            className.equals(\"java.lang.Runtime\") ||\n            className.equals(\"java.lang.System\") ||\n            className.equals(\"java.lang.Thread\") ||\n            className.equals(\"java.sql.SQLException\") ||\n            className.equals(\"java.util.logging.Logger\") ||\n            className.equals(\"org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor\") ||\n            className.equals(\"org.springframework.beans.factory.config.PropertyPathFactoryBean\") ||\n            className.equals(\"org.springframework.jndi.JndiObjectFactoryBean\") ||\n            className.equals(\"com.mchange.v2.c3p0.JndiRefForwardingDataSource\") ||\n            className.equals(\"com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\") ||\n            className.equals(\"org.apache.tomcat.dbcp.dbcp2.BasicDataSource\") ||\n            className.equals(\"org.apache.commons.dbcp.BasicDataSource\")) {\n            return true;\n        }\n        \n        return false;\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 469,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Math-82",
+    "buggy_code": "private Integer getPivotRow(final int col, final SimplexTableau tableau) {\n    double minRatio = Double.MAX_VALUE;\n    Integer minRatioPos = null;\n    for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {\n        final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);\n        final double entry = tableau.getEntry(i, col);\n        if (MathUtils.compareTo(entry, 0, epsilon) >= 0) {\n            final double ratio = rhs / entry;\n            if (ratio < minRatio) {\n                minRatio = ratio;\n                minRatioPos = i; \n            }\n        }\n    }\n    return minRatioPos;\n}",
+    "patches": [
+      {
+        "patch_code": "private Integer getPivotRow(final int col, final SimplexTableau tableau) {\n    double minRatio = Double.MAX_VALUE;\n    Integer minRatioPos = null;\n    for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {\n        final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);\n        final double entry = tableau.getEntry(i, col);\n        \n        // Only consider positive entries in the pivot column\n        if (MathUtils.compareTo(entry, 0, epsilon) > 0) {\n            final double ratio = rhs / entry;\n            // Check if ratio is non-negative (feasible)\n            if (MathUtils.compareTo(ratio, 0, epsilon) >= 0 && ratio < minRatio) {\n                minRatio = ratio;\n                minRatioPos = i; \n            }\n        }\n    }\n    return minRatioPos;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 84,
+        "label": "a"
+      },
+      {
+        "patch_code": "private Integer getPivotRow(final int col, final SimplexTableau tableau) {\n    double minRatio = Double.MAX_VALUE;\n    Integer minRatioPos = null;\n    for (int i = tableau.getNumObjectiveFunctions(); i < tableau.getHeight(); i++) {\n        final double rhs = tableau.getEntry(i, tableau.getWidth() - 1);\n        final double entry = tableau.getEntry(i, col);\n        \n        // Only consider positive entries in the pivot column\n        if (MathUtils.compareTo(entry, 0, epsilon) > 0) {\n            final double ratio = rhs / entry;\n            // Only consider non-negative ratios\n            if (MathUtils.compareTo(ratio, 0, epsilon) >= 0 && ratio < minRatio) {\n                minRatio = ratio;\n                minRatioPos = i; \n            }\n        }\n    }\n    return minRatioPos;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 80,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-88",
+    "buggy_code": "protected JavaType _typeFromId(String id, DatabindContext ctxt) throws IOException\n{\n    /* 30-Jan-2010, tatu: Most ids are basic class names; so let's first\n     *    check if any generics info is added; and only then ask factory\n     *    to do translation when necessary\n     */\n    TypeFactory tf = ctxt.getTypeFactory();\n    if (id.indexOf('<') > 0) {\n        // note: may want to try combining with specialization (esp for EnumMap)?\n        // 17-Aug-2017, tatu: As per [databind#1735] need to ensure assignment\n        //    compatibility -- needed later anyway, and not doing so may open\n        //    security issues.\n        JavaType t = tf.constructFromCanonical(id);\n            // Probably cleaner to have a method in `TypeFactory` but can't add in patch\n        return t;\n    }\n    Class<?> cls;\n    try {\n        cls =  tf.findClass(id);\n    } catch (ClassNotFoundException e) {\n        // 24-May-2016, tatu: Ok, this is pretty ugly, but we should always get\n        //   DeserializationContext, just playing it safe\n        if (ctxt instanceof DeserializationContext) {\n            DeserializationContext dctxt = (DeserializationContext) ctxt;\n            // First: we may have problem handlers that can deal with it?\n            return dctxt.handleUnknownTypeId(_baseType, id, this, \"no such class found\");\n        }\n        // ... meaning that we really should never get here.\n        return null;\n    } catch (Exception e) {\n        throw new IllegalArgumentException(\"Invalid type id '\"+id+\"' (for id type 'Id.class'): \"+e.getMessage(), e);\n    }\n    return tf.constructSpecializedType(_baseType, cls);\n}",
+    "patches": [
+      {
+        "patch_code": "protected JavaType _typeFromId(String id, DatabindContext ctxt) throws IOException\n{\n    /* 30-Jan-2010, tatu: Most ids are basic class names; so let's first\n     *    check if any generics info is added; and only then ask factory\n     *    to do translation when necessary\n     */\n    TypeFactory tf = ctxt.getTypeFactory();\n    if (id.indexOf('<') > 0) {\n        // note: may want to try combining with specialization (esp for EnumMap)?\n        // 17-Aug-2017, tatu: As per [databind#1735] need to ensure assignment\n        //    compatibility -- needed later anyway, and not doing so may open\n        //    security issues.\n        JavaType t = tf.constructFromCanonical(id);\n        // 24-May-2016, tatu: Ok, this is pretty ugly, but we should always get\n        //   DeserializationContext, just playing it safe\n        if (ctxt instanceof DeserializationContext) {\n            DeserializationContext dctxt = (DeserializationContext) ctxt;\n            // Probably cleaner to have a method in `TypeFactory` but can't add in patch\n            if (!t.isTypeOrSubTypeOf(_baseType.getRawClass())) {\n                return dctxt.handleUnknownTypeId(_baseType, id, this, \"class \" + t.getRawClass().getName() + \" not subtype of \" + _baseType);\n            }\n        } else {\n            // For non-deserialization context, still need to check compatibility\n            if (!t.isTypeOrSubTypeOf(_baseType.getRawClass())) {\n                throw new IllegalArgumentException(\"Class \" + t.getRawClass().getName() + \" not subtype of \" + _baseType);\n            }\n        }\n        return t;\n    }\n    Class<?> cls;\n    try {\n        cls =  tf.findClass(id);\n    } catch (ClassNotFoundException e) {\n        // 24-May-2016, tatu: Ok, this is pretty ugly, but we should always get\n        //   DeserializationContext, just playing it safe\n        if (ctxt instanceof DeserializationContext) {\n            DeserializationContext dctxt = (DeserializationContext) ctxt;\n            // First: we may have problem handlers that can deal with it?\n            return dctxt.handleUnknownTypeId(_baseType, id, this, \"no such class found\");\n        }\n        // ... meaning that we really should never get here.\n        return null;\n    } catch (Exception e) {\n        throw new IllegalArgumentException(\"Invalid type id '\"+id+\"' (for id type 'Id.class'): \"+e.getMessage(), e);\n    }\n    return tf.constructSpecializedType(_baseType, cls);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 155,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected JavaType _typeFromId(String id, DatabindContext ctxt) throws IOException\n{\n    /* 30-Jan-2010, tatu: Most ids are basic class names; so let's first\n     *    check if any generics info is added; and only then ask factory\n     *    to do translation when necessary\n     */\n    TypeFactory tf = ctxt.getTypeFactory();\n    if (id.indexOf('<') > 0) {\n        // note: may want to try combining with specialization (esp for EnumMap)?\n        // 17-Aug-2017, tatu: As per [databind#1735] need to ensure assignment\n        //    compatibility -- needed later anyway, and not doing so may open\n        //    security issues.\n        JavaType t = tf.constructFromCanonical(id);\n        // Probably cleaner to have a method in `TypeFactory` but can't add in patch\n        // 24-May-2016, tatu: Need to ensure type compatibility to prevent security issues\n        if (!t.isTypeOrSubTypeOf(_baseType.getRawClass())) {\n            throw new IllegalArgumentException(\"Class \" + t.getRawClass().getName() + \" not subtype of \" + _baseType);\n        }\n        return t;\n    }\n    Class<?> cls;\n    try {\n        cls =  tf.findClass(id);\n    } catch (ClassNotFoundException e) {\n        // 24-May-2016, tatu: Ok, this is pretty ugly, but we should always get\n        //   DeserializationContext, just playing it safe\n        if (ctxt instanceof DeserializationContext) {\n            DeserializationContext dctxt = (DeserializationContext) ctxt;\n            // First: we may have problem handlers that can deal with it?\n            return dctxt.handleUnknownTypeId(_baseType, id, this, \"no such class found\");\n        }\n        // ... meaning that we really should never get here.\n        return null;\n    } catch (Exception e) {\n        throw new IllegalArgumentException(\"Invalid type id '\"+id+\"' (for id type 'Id.class'): \"+e.getMessage(), e);\n    }\n    return tf.constructSpecializedType(_baseType, cls);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 100,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Chart-10",
+    "buggy_code": "public String generateToolTipFragment(String toolTipText) {\n    return \" title=\\\"\" + toolTipText\n        + \"\\\" alt=\\\"\\\"\";\n}",
+    "patches": [
+      {
+        "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    if (toolTipText == null) {\n        return \" title=\\\"\\\" alt=\\\"\\\"\";\n    }\n    return \" title=\\\"\" + toolTipText.replace(\"\\\"\", \"&quot;\") \n        + \"\\\" alt=\\\"\\\"\";\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 57,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    if (toolTipText == null) {\n        return \" alt=\\\"\\\"\";\n    }\n    return \" title=\\\"\" + escapeHtml(toolTipText) + \"\\\" alt=\\\"\\\"\";\n}\n\nprivate String escapeHtml(String text) {\n    if (text == null) {\n        return null;\n    }\n    return text.replace(\"&\", \"&amp;\")\n               .replace(\"\\\"\", \"&quot;\")\n               .replace(\"<\", \"&lt;\")\n               .replace(\">\", \"&gt;\");\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 141,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-20",
+    "buggy_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n        for (Map.Entry<String,? extends JsonNode> en : properties.entrySet()) {\n            JsonNode n = en.getValue();\n            if (n == null) {\n                n = nullNode();\n            }\n            _children.put(en.getKey(), n);\n        }\n        return this;\n    }",
+    "patches": [
+      {
+        "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n{\n    for (Map.Entry<String,? extends JsonNode> en : properties.entrySet()) {\n        JsonNode n = en.getValue();\n        if (n == null) {\n            n = nullNode();\n        }\n        _children.put(en.getKey(), n);\n    }\n    return this;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 124,
+        "label": "a"
+      },
+      {
+        "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n{\n    for (Map.Entry<String,? extends JsonNode> en : properties.entrySet()) {\n        JsonNode n = en.getValue();\n        if (n == null) {\n            n = nullNode();\n        }\n        // The key should be used as-is without any transformation\n        // since the naming strategy is already applied during deserialization\n        _children.put(en.getKey(), n);\n    }\n    return this;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 148,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Compress-28",
+    "buggy_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\tint totalRead = 0;\n\n    if (hasHitEOF || entryOffset >= entrySize) {\n        return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    count(totalRead);\n    \n    if (totalRead == -1) {\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}",
+    "patches": [
+      {
+        "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    int totalRead = 0;\n\n    if (hasHitEOF || entryOffset >= entrySize) {\n        return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    count(totalRead);\n    \n    if (totalRead == -1) {\n        if (entryOffset < entrySize) {\n            throw new IOException(\"Unexpected EOF reached while reading tar entry\");\n        }\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 33,
+        "label": "a"
+      },
+      {
+        "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    int totalRead = 0;\n\n    if (hasHitEOF || entryOffset >= entrySize) {\n        return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    \n    if (totalRead == -1) {\n        if (numToRead > 0) {\n            // Unexpected EOF: we were trying to read data but hit EOF prematurely\n            throw new IOException(\"Unexpected EOF reached\");\n        }\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    count(totalRead);\n    \n    return totalRead;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 54,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-5",
+    "buggy_code": "protected void _addMethodMixIns(Class<?> targetClass, AnnotatedMethodMap methods,\n        Class<?> mixInCls, AnnotatedMethodMap mixIns)\n{\n    List<Class<?>> parents = new ArrayList<Class<?>>();\n    parents.add(mixInCls);\n    ClassUtil.findSuperTypes(mixInCls, targetClass, parents);\n    for (Class<?> mixin : parents) {\n        for (Method m : mixin.getDeclaredMethods()) {\n            if (!_isIncludableMemberMethod(m)) {\n                continue;\n            }\n            AnnotatedMethod am = methods.find(m);\n            /* Do we already have a method to augment (from sub-class\n             * that will mask this mixIn)? If so, add if visible\n             * without masking (no such annotation)\n             */\n            if (am != null) {\n                _addMixUnders(m, am);\n                /* Otherwise will have precedence, but must wait\n                 * until we find the real method (mixIn methods are\n                 * just placeholder, can't be called)\n                 */\n            } else {\n                // Well, or, as per [Issue#515], multi-level merge within mixins...\n                    mixIns.add(_constructMethod(m));\n            }\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "protected void _addMethodMixIns(Class<?> targetClass, AnnotatedMethodMap methods,\n        Class<?> mixInCls, AnnotatedMethodMap mixIns)\n{\n    List<Class<?>> parents = new ArrayList<Class<?>>();\n    parents.add(mixInCls);\n    ClassUtil.findSuperTypes(mixInCls, targetClass, parents);\n    for (Class<?> mixin : parents) {\n        for (Method m : mixin.getDeclaredMethods()) {\n            if (!_isIncludableMemberMethod(m)) {\n                continue;\n            }\n            AnnotatedMethod am = methods.find(m);\n            /* Do we already have a method to augment (from sub-class\n             * that will mask this mixIn)? If so, add if visible\n             * without masking (no such annotation)\n             */\n            if (am != null) {\n                _addMixUnders(m, am);\n                /* Otherwise will have precedence, but must wait\n                 * until we find the real method (mixIn methods are\n                 * just placeholder, can't be called)\n                 */\n            } else {\n                // Well, or, as per [Issue#515], multi-level merge within mixins...\n                // Only add if not already present in mixIns to preserve annotations\n                AnnotatedMethod existing = mixIns.find(m);\n                if (existing == null) {\n                    mixIns.add(_constructMethod(m));\n                } else {\n                    // If already exists, merge annotations from the new method\n                    _addMixUnders(m, existing);\n                }\n            }\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 54,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected void _addMethodMixIns(Class<?> targetClass, AnnotatedMethodMap methods,\n        Class<?> mixInCls, AnnotatedMethodMap mixIns)\n{\n    List<Class<?>> parents = new ArrayList<Class<?>>();\n    parents.add(mixInCls);\n    ClassUtil.findSuperTypes(mixInCls, targetClass, parents);\n    for (Class<?> mixin : parents) {\n        for (Method m : mixin.getDeclaredMethods()) {\n            if (!_isIncludableMemberMethod(m)) {\n                continue;\n            }\n            AnnotatedMethod am = methods.find(m);\n            /* Do we already have a method to augment (from sub-class\n             * that will mask this mixIn)? If so, add if visible\n             * without masking (no such annotation)\n             */\n            if (am != null) {\n                _addMixUnders(m, am);\n                /* Otherwise will have precedence, but must wait\n                 * until we find the real method (mixIn methods are\n                 * just placeholder, can't be called)\n                 */\n            } else {\n                // Well, or, as per [Issue#515], multi-level merge within mixins...\n                // Only add to mixIns if not already present to preserve annotations from parent mixins\n                AnnotatedMethod existingMixIn = mixIns.find(m);\n                if (existingMixIn == null) {\n                    mixIns.add(_constructMethod(m));\n                } else {\n                    // Merge annotations if we find a duplicate in the mixin hierarchy\n                    _addMixUnders(m, existingMixIn);\n                }\n            }\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 58,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-8",
+    "buggy_code": "protected void verifyNonDup(AnnotatedWithParams newOne, int typeIndex, boolean explicit)\n{\n    final int mask = (1 << typeIndex);\n    _hasNonDefaultCreator = true;\n    AnnotatedWithParams oldOne = _creators[typeIndex];\n    // already had an explicitly marked one?\n    if (oldOne != null) {\n\n        if ((_explicitCreators & mask) != 0) { // already had explicitly annotated, leave as-is\n            // but skip, if new one not annotated\n            if (!explicit) {\n                return;\n            }\n            // both explicit: verify\n            // otherwise only verify if neither explicitly annotated.\n        }\n\n        // one more thing: ok to override in sub-class\n        if (oldOne.getClass() == newOne.getClass()) {\n            // [databind#667]: avoid one particular class of bogus problems\n\n                throw new IllegalArgumentException(\"Conflicting \"+TYPE_DESCS[typeIndex]\n                        +\" creators: already had explicitly marked \"+oldOne+\", encountered \"+newOne);\n            // otherwise, which one to choose?\n                // new type more generic, use old\n            // new type more specific, use it\n        }\n    }\n    if (explicit) {\n        _explicitCreators |= mask;\n    }\n    _creators[typeIndex] = _fixAccess(newOne);\n}",
+    "patches": [
+      {
+        "patch_code": "protected void verifyNonDup(AnnotatedWithParams newOne, int typeIndex, boolean explicit)\n{\n    final int mask = (1 << typeIndex);\n    _hasNonDefaultCreator = true;\n    AnnotatedWithParams oldOne = _creators[typeIndex];\n    // already had an explicitly marked one?\n    if (oldOne != null) {\n\n        if ((_explicitCreators & mask) != 0) { // already had explicitly annotated, leave as-is\n            // but skip, if new one not annotated\n            if (!explicit) {\n                return;\n            }\n            // both explicit: verify\n            // otherwise only verify if neither explicitly annotated.\n        }\n\n        // one more thing: ok to override in sub-class\n        if (oldOne.getClass() == newOne.getClass()) {\n            // [databind#667]: avoid one particular class of bogus problems\n            // [databind#1127]: avoid bogus conflict between String vs CharSequence\n            Class<?> oldParamType = oldOne.getRawParameterType(0);\n            Class<?> newParamType = newOne.getRawParameterType(0);\n            \n            // Check if this is a String vs CharSequence conflict\n            if ((oldParamType == String.class && newParamType == CharSequence.class) ||\n                (oldParamType == CharSequence.class && newParamType == String.class)) {\n                // Allow these to coexist without conflict\n                return;\n            }\n            \n            throw new IllegalArgumentException(\"Conflicting \"+TYPE_DESCS[typeIndex]\n                    +\" creators: already had explicitly marked \"+oldOne+\", encountered \"+newOne);\n            // otherwise, which one to choose?\n                // new type more generic, use old\n            // new type more specific, use it\n        }\n    }\n    if (explicit) {\n        _explicitCreators |= mask;\n    }\n    _creators[typeIndex] = _fixAccess(newOne);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 165,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected void verifyNonDup(AnnotatedWithParams newOne, int typeIndex, boolean explicit)\n{\n    final int mask = (1 << typeIndex);\n    _hasNonDefaultCreator = true;\n    AnnotatedWithParams oldOne = _creators[typeIndex];\n    // already had an explicitly marked one?\n    if (oldOne != null) {\n\n        if ((_explicitCreators & mask) != 0) { // already had explicitly annotated, leave as-is\n            // but skip, if new one not annotated\n            if (!explicit) {\n                return;\n            }\n            // both explicit: verify\n            // otherwise only verify if neither explicitly annotated.\n        }\n\n        // one more thing: ok to override in sub-class\n        if (oldOne.getClass() == newOne.getClass()) {\n            // [databind#667]: avoid one particular class of bogus problems\n            // [databind#1127]: allow String vs CharSequence constructors\n            Class<?> oldType = oldOne.getRawParameterType(0);\n            Class<?> newType = newOne.getRawParameterType(0);\n            if ((oldType == String.class || oldType == CharSequence.class) &&\n                (newType == String.class || newType == CharSequence.class)) {\n                // Skip conflict resolution for String/CharSequence combination\n                return;\n            }\n            throw new IllegalArgumentException(\"Conflicting \"+TYPE_DESCS[typeIndex]\n                    +\" creators: already had explicitly marked \"+oldOne+\", encountered \"+newOne);\n            // otherwise, which one to choose?\n                // new type more generic, use old\n            // new type more specific, use it\n        }\n    }\n    if (explicit) {\n        _explicitCreators |= mask;\n    }\n    _creators[typeIndex] = _fixAccess(newOne);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 154,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-20",
+    "buggy_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset = meta.hasAttr(\"http-equiv\") ? getCharsetFromContentType(meta.attr(\"content\")) : meta.attr(\"charset\");\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    if (doc == null) {\n        // there are times where there is a spurious byte-order-mark at the start of the text. Shouldn't be present\n        // in utf-8. If after decoding, there is a BOM, strip it; otherwise will cause the parser to go straight\n        // into head mode\n\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patches": [
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset = meta.hasAttr(\"http-equiv\") ? getCharsetFromContentType(meta.attr(\"content\")) : meta.attr(\"charset\");\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    if (doc == null) {\n        // there are times where there is a spurious byte-order-mark at the start of the text. Shouldn't be present\n        // in utf-8. If after decoding, there is a BOM, strip it; otherwise will cause the parser to go straight\n        // into head mode\n        if (docData.length() > 0 && docData.charAt(0) == 65279) {\n            docData = docData.substring(1);\n        }\n        \n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 32,
+        "label": "a"
+      },
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset = meta.hasAttr(\"http-equiv\") ? getCharsetFromContentType(meta.attr(\"content\")) : meta.attr(\"charset\");\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = parser.parseInput(docData, baseUri);\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n    }\n    if (doc != null) {\n        doc.outputSettings().charset(charsetName != null ? charsetName : defaultCharset);\n    }\n    return doc;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 141,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Cli-35",
+    "buggy_code": "public List<String> getMatchingOptions(String opt)\n{\n    opt = Util.stripLeadingHyphens(opt);\n    \n    List<String> matchingOpts = new ArrayList<String>();\n\n    // for a perfect match return the single option only\n\n    for (String longOpt : longOpts.keySet())\n    {\n        if (longOpt.startsWith(opt))\n        {\n            matchingOpts.add(longOpt);\n        }\n    }\n    \n    return matchingOpts;\n}",
+    "patches": [
+      {
+        "patch_code": "public List<String> getMatchingOptions(String opt)\n{\n    opt = Util.stripLeadingHyphens(opt);\n    \n    List<String> matchingOpts = new ArrayList<String>();\n\n    // for a perfect match return the single option only\n    if (longOpts.containsKey(opt))\n    {\n        return Collections.singletonList(opt);\n    }\n\n    for (String longOpt : longOpts.keySet())\n    {\n        if (longOpt.startsWith(opt))\n        {\n            matchingOpts.add(longOpt);\n        }\n    }\n    \n    return matchingOpts;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 19,
+        "label": "a"
+      },
+      {
+        "patch_code": "public List<String> getMatchingOptions(String opt)\n{\n    opt = Util.stripLeadingHyphens(opt);\n    \n    List<String> matchingOpts = new ArrayList<String>();\n\n    // for a perfect match return the single option only\n    if (longOpts.containsKey(opt))\n    {\n        matchingOpts.add(opt);\n        return matchingOpts;\n    }\n\n    for (String longOpt : longOpts.keySet())\n    {\n        if (longOpt.startsWith(opt))\n        {\n            matchingOpts.add(longOpt);\n        }\n    }\n    \n    return matchingOpts;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 21,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "JacksonCore-26",
+    "buggy_code": "public void feedInput(byte[] buf, int start, int end) throws IOException\n{\n    // Must not have remaining input\n    if (_inputPtr < _inputEnd) {\n        _reportError(\"Still have %d undecoded bytes, should not call 'feedInput'\", _inputEnd - _inputPtr);\n    }\n    if (end < start) {\n        _reportError(\"Input end (%d) may not be before start (%d)\", end, start);\n    }\n    // and shouldn't have been marked as end-of-input\n    if (_endOfInput) {\n        _reportError(\"Already closed, can not feed more input\");\n    }\n    // Time to update pointers first\n    _currInputProcessed += _origBufferLen;\n\n    // Also need to adjust row start, to work as if it extended into the past wrt new buffer\n    _currInputRowStart = start - (_inputEnd - _currInputRowStart);\n\n    // And then update buffer settings\n    _inputBuffer = buf;\n    _inputPtr = start;\n    _inputEnd = end;\n    _origBufferLen = end - start;\n}",
+    "patches": [
+      {
+        "patch_code": "public void feedInput(byte[] buf, int start, int end) throws IOException\n{\n    // Must not have remaining input\n    if (_inputPtr < _inputEnd) {\n        _reportError(\"Still have %d undecoded bytes, should not call 'feedInput'\", _inputEnd - _inputPtr);\n    }\n    if (end < start) {\n        _reportError(\"Input end (%d) may not be before start (%d)\", end, start);\n    }\n    // and shouldn't have been marked as end-of-input\n    if (_endOfInput) {\n        _reportError(\"Already closed, can not feed more input\");\n    }\n    // Time to update pointers first\n    _currInputProcessed += _origBufferLen;\n\n    // Also need to adjust row start, to work as if it extended into the past wrt new buffer\n    // But we need to subtract the current buffer's start offset to get the correct relative position\n    _currInputRowStart = start - (_inputEnd - _currInputRowStart);\n\n    // And then update buffer settings\n    _inputBuffer = buf;\n    _inputPtr = start;\n    _inputEnd = end;\n    _origBufferLen = end - start;\n    \n    // Reset location tracking to account for the new buffer's offset\n    // The key fix: adjust the current input processed to remove the effect of the feeding offset\n    _currInputProcessed -= start;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 58,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void feedInput(byte[] buf, int start, int end) throws IOException\n{\n    // Must not have remaining input\n    if (_inputPtr < _inputEnd) {\n        _reportError(\"Still have %d undecoded bytes, should not call 'feedInput'\", _inputEnd - _inputPtr);\n    }\n    if (end < start) {\n        _reportError(\"Input end (%d) may not be before start (%d)\", end, start);\n    }\n    // and shouldn't have been marked as end-of-input\n    if (_endOfInput) {\n        _reportError(\"Already closed, can not feed more input\");\n    }\n    // Time to update pointers first\n    _currInputProcessed += _origBufferLen;\n\n    // Also need to adjust row start, to work as if it extended into the past wrt new buffer\n    // But we need to subtract the current buffer's start offset to make locations relative to stream start\n    _currInputRowStart = -(_currInputRowStart - _inputPtr);\n\n    // And then update buffer settings\n    _inputBuffer = buf;\n    _inputPtr = start;\n    _inputEnd = end;\n    _origBufferLen = end - start;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 40,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Chart-3",
+    "buggy_code": "public TimeSeries createCopy(int start, int end)\n        throws CloneNotSupportedException {\n    if (start < 0) {\n        throw new IllegalArgumentException(\"Requires start >= 0.\");\n    }\n    if (end < start) {\n        throw new IllegalArgumentException(\"Requires start <= end.\");\n    }\n    TimeSeries copy = (TimeSeries) super.clone();\n    copy.data = new java.util.ArrayList();\n    if (this.data.size() > 0) {\n        for (int index = start; index <= end; index++) {\n            TimeSeriesDataItem item\n                    = (TimeSeriesDataItem) this.data.get(index);\n            TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();\n            try {\n                copy.add(clone);\n            }\n            catch (SeriesException e) {\n                e.printStackTrace();\n            }\n        }\n    }\n    return copy;\n}",
+    "patches": [
+      {
+        "patch_code": "public TimeSeries createCopy(int start, int end)\n        throws CloneNotSupportedException {\n    if (start < 0) {\n        throw new IllegalArgumentException(\"Requires start >= 0.\");\n    }\n    if (end < start) {\n        throw new IllegalArgumentException(\"Requires start <= end.\");\n    }\n    TimeSeries copy = (TimeSeries) super.clone();\n    copy.data = new java.util.ArrayList();\n    if (this.data.size() > 0) {\n        for (int index = start; index <= end; index++) {\n            TimeSeriesDataItem item\n                    = (TimeSeriesDataItem) this.data.get(index);\n            TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();\n            try {\n                copy.add(clone);\n            }\n            catch (SeriesException e) {\n                throw new RuntimeException(e);\n            }\n        }\n    }\n    return copy;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 13,
+        "label": "a"
+      },
+      {
+        "patch_code": "public TimeSeries createCopy(int start, int end)\n        throws CloneNotSupportedException {\n    if (start < 0) {\n        throw new IllegalArgumentException(\"Requires start >= 0.\");\n    }\n    if (end < start) {\n        throw new IllegalArgumentException(\"Requires start <= end.\");\n    }\n    TimeSeries copy = (TimeSeries) super.clone();\n    copy.data = new java.util.ArrayList();\n    if (this.data.size() > 0) {\n        for (int index = start; index <= end; index++) {\n            TimeSeriesDataItem item\n                    = (TimeSeriesDataItem) this.data.get(index);\n            TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();\n            try {\n                copy.add(clone);\n            }\n            catch (SeriesException e) {\n                throw new RuntimeException(\"Failed to add cloned item to series\", e);\n            }\n        }\n    }\n    return copy;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 23,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Compress-35",
+    "buggy_code": "public static boolean verifyCheckSum(byte[] header) {\n    long storedSum = 0;\n    long unsignedSum = 0;\n    long signedSum = 0;\n\n    int digits = 0;\n    for (int i = 0; i < header.length; i++) {\n        byte b = header[i];\n        if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {\n            if ('0' <= b && b <= '7' && digits++ < 6) {\n                storedSum = storedSum * 8 + b - '0';\n            } else if (digits > 0) {\n                digits = 6;\n            }\n            b = ' ';\n        }\n        unsignedSum += 0xff & b;\n        signedSum += b;\n    }\n    return storedSum == unsignedSum || storedSum == signedSum;\n}",
+    "patches": [
+      {
+        "patch_code": "public static boolean verifyCheckSum(byte[] header) {\n    long storedSum = 0;\n    long unsignedSum = 0;\n    long signedSum = 0;\n\n    int digits = 0;\n    for (int i = 0; i < header.length; i++) {\n        byte b = header[i];\n        if (CHKSUM_OFFSET  <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {\n            if ('0' <= b && b <= '7' && digits++ < 6) {\n                storedSum = storedSum * 8 + b - '0';\n            } else if (digits > 0) {\n                // Continue to process digits beyond 6 if they exist\n                // This handles cases where checksum is right-aligned with padding\n                digits++;\n            }\n            b = ' ';\n        }\n        unsignedSum += 0xff & b;\n        signedSum += b;\n    }\n    return storedSum == unsignedSum || storedSum == signedSum;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 32,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static boolean verifyCheckSum(byte[] header) {\n    long storedSum = 0;\n    long unsignedSum = 0;\n    long signedSum = 0;\n\n    int digits = 0;\n    for (int i = 0; i < header.length; i++) {\n        byte b = header[i];\n        if (CHKSUM_OFFSET <= i && i < CHKSUM_OFFSET + CHKSUMLEN) {\n            if ('0' <= b && b <= '7' && digits < 6) {\n                storedSum = storedSum * 8 + b - '0';\n                digits++;\n            } else if (digits > 0) {\n                // Stop parsing after 6 octal digits, but continue processing the rest of the field\n                digits = 6;\n            }\n            b = ' ';\n        }\n        unsignedSum += 0xff & b;\n        signedSum += b;\n    }\n    return storedSum == unsignedSum || storedSum == signedSum;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 99,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Math-17",
+    "buggy_code": "public Dfp multiply(final int x) {\n        return multiplyFast(x);\n}",
+    "patches": [
+      {
+        "patch_code": "public Dfp multiply(final int x) {\n    if (x >= 0 && x <= 9999) {\n        return multiplyFast(x);\n    } else {\n        // For values outside the fast multiplication range,\n        // convert to Dfp and use the general multiply method\n        return multiply(new Dfp(getField(), x));\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 53,
+        "label": "a"
+      },
+      {
+        "patch_code": "public Dfp multiply(final int x) {\n    if (x >= 0 && x <= 9999) {\n        return multiplyFast(x);\n    } else {\n        // For values outside the fast multiplication range,\n        // convert to Dfp and use the regular multiply method\n        return multiply(newInstance(x));\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 48,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-7",
+    "buggy_code": "public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n{\n        copyCurrentStructure(jp);\n    /* 28-Oct-2014, tatu: As per #592, need to support a special case of starting from\n     *    FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n     *    to assume one did exist.\n     */\n    return this;\n}",
+    "patches": [
+      {
+        "patch_code": "public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n{\n    JsonToken t = jp.getCurrentToken();\n    // As per #592, need to support a special case of starting from\n    // FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n    // to assume one did exist.\n    if (t == JsonToken.FIELD_NAME) {\n        writeStartObject();\n        copyCurrentStructure(jp);\n        writeEndObject();\n    } else {\n        copyCurrentStructure(jp);\n    }\n    return this;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 126,
+        "label": "a"
+      },
+      {
+        "patch_code": "public TokenBuffer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n{\n    JsonToken t = jp.getCurrentToken();\n    // 28-Oct-2014, tatu: As per #592, need to support a special case of starting from\n    //    FIELD_NAME, which is taken to mean that we are missing START_OBJECT, but need\n    //    to assume one did exist.\n    if (t == JsonToken.FIELD_NAME) {\n        writeStartObject();\n        copyCurrentStructure(jp);\n        writeEndObject();\n    } else {\n        copyCurrentStructure(jp);\n    }\n    return this;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 134,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-33",
+    "buggy_code": "Element insert(Token.StartTag startTag) {\n    // handle empty unknown tags\n    // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.\n    if (startTag.isSelfClosing()) {\n        Element el = insertEmpty(startTag);\n        stack.add(el);\n        tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing\n        return el;\n    }\n    \n    Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n    insert(el);\n    return el;\n}",
+    "patches": [
+      {
+        "patch_code": "Element insert(Token.StartTag startTag) {\n    // handle empty unknown tags\n    // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.\n    if (startTag.isSelfClosing()) {\n        Element el = insertEmpty(startTag);\n        // only add to stack if this is a self-closing tag that should be in the stack (not script)\n        if (!Tag.valueOf(startTag.name()).isEmpty()) {\n            stack.add(el);\n        }\n        tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing\n        return el;\n    }\n    \n    Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n    insert(el);\n    return el;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 58,
+        "label": "a"
+      },
+      {
+        "patch_code": "Element insert(Token.StartTag startTag) {\n    // handle empty unknown tags\n    // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.\n    if (startTag.isSelfClosing()) {\n        Element el = insertEmpty(startTag);\n        // don't add self-closing script to stack as it's handled specially and shouldn't be in scope\n        if (!el.tagName().equals(\"script\")) {\n            stack.add(el);\n        }\n        tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing\n        return el;\n    }\n    \n    Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n    insert(el);\n    return el;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 57,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Math-10",
+    "buggy_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (x[xOffset] >= 0) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < tmp2.length; ++i) {\n            result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else {\n\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        result[resultOffset] =\n                ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0]; // +/-pi - 2 * atan(y / (r - x))\n        for (int i = 1; i < tmp2.length; ++i) {\n            result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n\n    }\n\n    // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly\n\n}",
+    "patches": [
+      {
+        "patch_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // Handle special cases first\n    if (Double.isNaN(x[xOffset]) || Double.isNaN(y[yOffset])) {\n        // If either input is NaN, result should be NaN\n        for (int i = 0; i < getSize(); ++i) {\n            result[resultOffset + i] = Double.NaN;\n        }\n        return;\n    }\n\n    // Check for special cases with +/-0 and infinity\n    if (x[xOffset] == 0.0 && y[yOffset] == 0.0) {\n        // Both are zero - result depends on signs\n        result[resultOffset] = (Double.doubleToRawLongBits(y[yOffset]) >= 0) ? \n                              (Double.doubleToRawLongBits(x[xOffset]) >= 0 ? 0.0 : Math.PI) :\n                              (Double.doubleToRawLongBits(x[xOffset]) >= 0 ? 0.0 : -Math.PI);\n        // Derivatives should be zero for constant cases\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0;\n        }\n        return;\n    }\n\n    if (Double.isInfinite(x[xOffset]) && Double.isInfinite(y[yOffset])) {\n        // Both infinite - result depends on signs\n        result[resultOffset] = (y[yOffset] > 0) ? \n                              (x[xOffset] > 0 ? Math.PI/4 : 3*Math.PI/4) :\n                              (x[xOffset] > 0 ? -Math.PI/4 : -3*Math.PI/4);\n        // Derivatives should be zero for constant cases\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0;\n        }\n        return;\n    }\n\n    if (x[xOffset] == 0.0) {\n        // x is zero, y is non-zero\n        result[resultOffset] = (y[yOffset] > 0) ? Math.PI/2 : -Math.PI/2;\n        // Compute derivatives using standard formula\n        double yVal = y[yOffset];\n        double denom = yVal * yVal;\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0; // Derivatives will be handled by the general case\n        }\n        // Continue to general case for derivatives\n    } else if (y[yOffset] == 0.0) {\n        // y is zero, x is non-zero\n        result[resultOffset] = (x[xOffset] > 0) ? 0.0 : Math.PI;\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0; // Derivatives will be handled by the general case\n        }\n        // Continue to general case for derivatives\n    }\n\n    // For the general case, proceed with the original algorithm\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (x[xOffset] >= 0) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < tmp2.length; ++i) {\n            result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else {\n\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        result[resultOffset] =\n                ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0]; // +/-pi - 2 * atan(y / (r - x))\n        for (int i = 1; i < tmp2.length; ++i) {\n            result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n\n    }\n\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 637,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // Handle special cases first\n    final double xRaw = x[xOffset];\n    final double yRaw = y[yOffset];\n    \n    // Handle cases where both coordinates are zero\n    if (xRaw == 0.0 && yRaw == 0.0) {\n        // According to Math.atan2 spec:\n        // If both arguments are zero, then the result is zero\n        result[resultOffset] = (Double.doubleToRawLongBits(yRaw) < 0) ? -0.0 : 0.0;\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0;\n        }\n        return;\n    }\n    \n    // Handle cases where x is ±0\n    if (xRaw == 0.0) {\n        if (yRaw > 0.0) {\n            result[resultOffset] = FastMath.PI / 2;\n        } else if (yRaw < 0.0) {\n            result[resultOffset] = -FastMath.PI / 2;\n        }\n        // Derivatives should be zero for constant functions\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0;\n        }\n        return;\n    }\n    \n    // Handle cases where y is ±0\n    if (yRaw == 0.0) {\n        if (xRaw > 0.0) {\n            result[resultOffset] = 0.0;\n        } else if (xRaw < 0.0) {\n            result[resultOffset] = FastMath.PI;\n        }\n        // Derivatives should be zero for constant functions\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = 0.0;\n        }\n        return;\n    }\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (xRaw >= 0) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < tmp2.length; ++i) {\n            result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else {\n\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        result[resultOffset] =\n                ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0]; // +/-pi - 2 * atan(y / (r - x))\n        for (int i = 1; i < tmp2.length; ++i) {\n            result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n\n    }\n\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 394,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Lang-12",
+    "buggy_code": "public static String random(int count, int start, int end, boolean letters, boolean numbers,\n                            char[] chars, Random random) {\n    if (count == 0) {\n        return \"\";\n    } else if (count < 0) {\n        throw new IllegalArgumentException(\"Requested random string length \" + count + \" is less than 0.\");\n    }\n\n    if (start == 0 && end == 0) {\n            if (!letters && !numbers) {\n                end = Integer.MAX_VALUE;\n            } else {\n                end = 'z' + 1;\n                start = ' ';                \n            }\n    }\n\n    char[] buffer = new char[count];\n    int gap = end - start;\n\n    while (count-- != 0) {\n        char ch;\n        if (chars == null) {\n            ch = (char) (random.nextInt(gap) + start);\n        } else {\n            ch = chars[random.nextInt(gap) + start];\n        }\n        if (letters && Character.isLetter(ch)\n                || numbers && Character.isDigit(ch)\n                || !letters && !numbers) {\n            if(ch >= 56320 && ch <= 57343) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // low surrogate, insert high surrogate after putting it in\n                    buffer[count] = ch;\n                    count--;\n                    buffer[count] = (char) (55296 + random.nextInt(128));\n                }\n            } else if(ch >= 55296 && ch <= 56191) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // high surrogate, insert low surrogate before putting it in\n                    buffer[count] = (char) (56320 + random.nextInt(128));\n                    count--;\n                    buffer[count] = ch;\n                }\n            } else if(ch >= 56192 && ch <= 56319) {\n                // private high surrogate, no effing clue, so skip it\n                count++;\n            } else {\n                buffer[count] = ch;\n            }\n        } else {\n            count++;\n        }\n    }\n    return new String(buffer);\n}",
+    "patches": [
+      {
+        "patch_code": "public static String random(int count, int start, int end, boolean letters, boolean numbers,\n                            char[] chars, Random random) {\n    if (count == 0) {\n        return \"\";\n    } else if (count < 0) {\n        throw new IllegalArgumentException(\"Requested random string length \" + count + \" is less than 0.\");\n    }\n\n    if (start == 0 && end == 0) {\n            if (!letters && !numbers) {\n                end = Integer.MAX_VALUE;\n            } else {\n                end = 'z' + 1;\n                start = ' ';                \n            }\n    }\n\n    char[] buffer = new char[count];\n    int gap = end - start;\n\n    while (count-- != 0) {\n        char ch;\n        if (chars == null) {\n            ch = (char) (random.nextInt(gap) + start);\n        } else {\n            if (chars.length == 0) {\n                throw new IllegalArgumentException(\"The chars array must not be empty\");\n            }\n            ch = chars[random.nextInt(chars.length)];\n        }\n        if (letters && Character.isLetter(ch)\n                || numbers && Character.isDigit(ch)\n                || !letters && !numbers) {\n            if(ch >= 56320 && ch <= 57343) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // low surrogate, insert high surrogate after putting it in\n                    buffer[count] = ch;\n                    count--;\n                    buffer[count] = (char) (55296 + random.nextInt(128));\n                }\n            } else if(ch >= 55296 && ch <= 56191) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // high surrogate, insert low surrogate before putting it in\n                    buffer[count] = (char) (56320 + random.nextInt(128));\n                    count--;\n                    buffer[count] = ch;\n                }\n            } else if(ch >= 56192 && ch <= 56319) {\n                // private high surrogate, no effing clue, so skip it\n                count++;\n            } else {\n                buffer[count] = ch;\n            }\n        } else {\n            count++;\n        }\n    }\n    return new String(buffer);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 54,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static String random(int count, int start, int end, boolean letters, boolean numbers,\n                            char[] chars, Random random) {\n    if (count == 0) {\n        return \"\";\n    } else if (count < 0) {\n        throw new IllegalArgumentException(\"Requested random string length \" + count + \" is less than 0.\");\n    }\n\n    if (start == 0 && end == 0) {\n            if (!letters && !numbers) {\n                end = Integer.MAX_VALUE;\n            } else {\n                end = 'z' + 1;\n                start = ' ';                \n            }\n    }\n\n    char[] buffer = new char[count];\n    int gap = end - start;\n\n    if (chars != null && chars.length == 0) {\n        throw new IllegalArgumentException(\"The chars array must not be empty\");\n    }\n\n    while (count-- != 0) {\n        char ch;\n        if (chars == null) {\n            ch = (char) (random.nextInt(gap) + start);\n        } else {\n            ch = chars[random.nextInt(chars.length)];\n        }\n        if (letters && Character.isLetter(ch)\n                || numbers && Character.isDigit(ch)\n                || !letters && !numbers) {\n            if(ch >= 56320 && ch <= 57343) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // low surrogate, insert high surrogate after putting it in\n                    buffer[count] = ch;\n                    count--;\n                    buffer[count] = (char) (55296 + random.nextInt(128));\n                }\n            } else if(ch >= 55296 && ch <= 56191) {\n                if(count == 0) {\n                    count++;\n                } else {\n                    // high surrogate, insert low surrogate before putting it in\n                    buffer[count] = (char) (56320 + random.nextInt(128));\n                    count--;\n                    buffer[count] = ch;\n                }\n            } else if(ch >= 56192 && ch <= 56319) {\n                // private high surrogate, no effing clue, so skip it\n                count++;\n            } else {\n                buffer[count] = ch;\n            }\n        } else {\n            count++;\n        }\n    }\n    return new String(buffer);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 60,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-59",
+    "buggy_code": "final void newAttribute() {\n    if (attributes == null)\n        attributes = new Attributes();\n\n    if (pendingAttributeName != null) {\n        // the tokeniser has skipped whitespace control chars, but trimming could collapse to empty for other control codes, so verify here\n        pendingAttributeName = pendingAttributeName.trim();\n            Attribute attribute;\n            if (hasPendingAttributeValue)\n                attribute = new Attribute(pendingAttributeName,\n                    pendingAttributeValue.length() > 0 ? pendingAttributeValue.toString() : pendingAttributeValueS);\n            else if (hasEmptyAttributeValue)\n                attribute = new Attribute(pendingAttributeName, \"\");\n            else\n                attribute = new BooleanAttribute(pendingAttributeName);\n            attributes.put(attribute);\n    }\n    pendingAttributeName = null;\n    hasEmptyAttributeValue = false;\n    hasPendingAttributeValue = false;\n    reset(pendingAttributeValue);\n    pendingAttributeValueS = null;\n}",
+    "patches": [
+      {
+        "patch_code": "final void newAttribute() {\n    if (attributes == null)\n        attributes = new Attributes();\n\n    if (pendingAttributeName != null) {\n        // the tokeniser has skipped whitespace control chars, but trimming could collapse to empty for other control codes, so verify here\n        pendingAttributeName = pendingAttributeName.trim();\n        if (!pendingAttributeName.isEmpty()) { // Only create attribute if name is not empty after trimming\n            Attribute attribute;\n            if (hasPendingAttributeValue)\n                attribute = new Attribute(pendingAttributeName,\n                    pendingAttributeValue.length() > 0 ? pendingAttributeValue.toString() : pendingAttributeValueS);\n            else if (hasEmptyAttributeValue)\n                attribute = new Attribute(pendingAttributeName, \"\");\n            else\n                attribute = new BooleanAttribute(pendingAttributeName);\n            attributes.put(attribute);\n        }\n    }\n    pendingAttributeName = null;\n    hasEmptyAttributeValue = false;\n    hasPendingAttributeValue = false;\n    reset(pendingAttributeValue);\n    pendingAttributeValueS = null;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 23,
+        "label": "a"
+      },
+      {
+        "patch_code": "final void newAttribute() {\n    if (attributes == null)\n        attributes = new Attributes();\n\n    if (pendingAttributeName != null) {\n        // the tokeniser has skipped whitespace control chars, but trimming could collapse to empty for other control codes, so verify here\n        pendingAttributeName = pendingAttributeName.trim();\n        if (!pendingAttributeName.isEmpty()) { // Add check for empty attribute name\n            Attribute attribute;\n            if (hasPendingAttributeValue)\n                attribute = new Attribute(pendingAttributeName,\n                    pendingAttributeValue.length() > 0 ? pendingAttributeValue.toString() : pendingAttributeValueS);\n            else if (hasEmptyAttributeValue)\n                attribute = new Attribute(pendingAttributeName, \"\");\n            else\n                attribute = new BooleanAttribute(pendingAttributeName);\n            attributes.put(attribute);\n        }\n    }\n    pendingAttributeName = null;\n    hasEmptyAttributeValue = false;\n    hasPendingAttributeValue = false;\n    reset(pendingAttributeValue);\n    pendingAttributeValueS = null;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 19,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-35",
+    "buggy_code": "private final Object _deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // 02-Aug-2013, tatu: May need to use native type ids\n    if (p.canReadTypeId()) {\n        Object typeId = p.getTypeId();\n        if (typeId != null) {\n            return _deserializeWithNativeTypeId(p, ctxt, typeId);\n        }\n    }\n    // first, sanity checks\n    if (p.getCurrentToken() != JsonToken.START_OBJECT) {\n        throw ctxt.wrongTokenException(p, JsonToken.START_OBJECT,\n                \"need JSON Object to contain As.WRAPPER_OBJECT type information for class \"+baseTypeName());\n    }\n        // should always get field name, but just in case...\n        if (p.nextToken() != JsonToken.FIELD_NAME) {\n            throw ctxt.wrongTokenException(p, JsonToken.FIELD_NAME,\n                    \"need JSON String that contains type id (for subtype of \"+baseTypeName()+\")\");\n        }\n    final String typeId = p.getText();\n    JsonDeserializer<Object> deser = _findDeserializer(ctxt, typeId);\n    p.nextToken();\n\n    // Minor complication: we may need to merge type id in?\n    if (_typeIdVisible && p.getCurrentToken() == JsonToken.START_OBJECT) {\n        // but what if there's nowhere to add it in? Error? Or skip? For now, skip.\n        TokenBuffer tb = new TokenBuffer(null, false);\n        tb.writeStartObject(); // recreate START_OBJECT\n        tb.writeFieldName(_typePropertyName);\n        tb.writeString(typeId);\n        p = JsonParserSequence.createFlattened(tb.asParser(p), p);\n        p.nextToken();\n    }\n    \n    Object value = deser.deserialize(p, ctxt);\n    // And then need the closing END_OBJECT\n    if (p.nextToken() != JsonToken.END_OBJECT) {\n        throw ctxt.wrongTokenException(p, JsonToken.END_OBJECT,\n                \"expected closing END_OBJECT after type information and deserialized value\");\n    }\n    return value;\n}",
+    "patches": [
+      {
+        "patch_code": "private final Object _deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // 02-Aug-2013, tatu: May need to use native type ids\n    if (p.canReadTypeId()) {\n        Object typeId = p.getTypeId();\n        if (typeId != null) {\n            return _deserializeWithNativeTypeId(p, ctxt, typeId);\n        }\n    }\n    // first, sanity checks\n    if (p.getCurrentToken() != JsonToken.START_OBJECT) {\n        throw ctxt.wrongTokenException(p, JsonToken.START_OBJECT,\n                \"need JSON Object to contain As.WRAPPER_OBJECT type information for class \"+baseTypeName());\n    }\n        // should always get field name, but just in case...\n        if (p.nextToken() != JsonToken.FIELD_NAME) {\n            throw ctxt.wrongTokenException(p, JsonToken.FIELD_NAME,\n                    \"need JSON String that contains type id (for subtype of \"+baseTypeName()+\")\");\n        }\n    final String typeId = p.getText();\n    JsonDeserializer<Object> deser = _findDeserializer(ctxt, typeId);\n    p.nextToken();\n\n    // Minor complication: we may need to merge type id in?\n    if (_typeIdVisible && p.getCurrentToken() == JsonToken.START_OBJECT) {\n        // but what if there's nowhere to add it in? Error? Or skip? For now, skip.\n        TokenBuffer tb = new TokenBuffer(null, false);\n        tb.writeStartObject(); // recreate START_OBJECT\n        tb.writeFieldName(_typePropertyName);\n        tb.writeString(typeId);\n        p = JsonParserSequence.createFlattened(tb.asParser(p), p);\n        p.nextToken();\n    }\n    \n    Object value = deser.deserialize(p, ctxt);\n    \n    // And then need the closing END_OBJECT\n    // Need to skip until we get to END_OBJECT, in case there are other properties\n    // (like Object Id)\n    for (JsonToken t = p.getCurrentToken(); t != JsonToken.END_OBJECT; t = p.nextToken()) {\n        if (t == null) {\n            throw ctxt.wrongTokenException(p, JsonToken.END_OBJECT,\n                    \"expected closing END_OBJECT after type information and deserialized value\");\n        }\n    }\n    return value;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 122,
+        "label": "a"
+      },
+      {
+        "patch_code": "private final Object _deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // 02-Aug-2013, tatu: May need to use native type ids\n    if (p.canReadTypeId()) {\n        Object typeId = p.getTypeId();\n        if (typeId != null) {\n            return _deserializeWithNativeTypeId(p, ctxt, typeId);\n        }\n    }\n    // first, sanity checks\n    if (p.getCurrentToken() != JsonToken.START_OBJECT) {\n        throw ctxt.wrongTokenException(p, JsonToken.START_OBJECT,\n                \"need JSON Object to contain As.WRAPPER_OBJECT type information for class \"+baseTypeName());\n    }\n        // should always get field name, but just in case...\n        if (p.nextToken() != JsonToken.FIELD_NAME) {\n            throw ctxt.wrongTokenException(p, JsonToken.FIELD_NAME,\n                    \"need JSON String that contains type id (for subtype of \"+baseTypeName()+\")\");\n        }\n    final String typeId = p.getText();\n    JsonDeserializer<Object> deser = _findDeserializer(ctxt, typeId);\n    p.nextToken();\n\n    // Minor complication: we may need to merge type id in?\n    if (_typeIdVisible && p.getCurrentToken() == JsonToken.START_OBJECT) {\n        // but what if there's nowhere to add it in? Error? Or skip? For now, skip.\n        TokenBuffer tb = new TokenBuffer(null, false);\n        tb.writeStartObject(); // recreate START_OBJECT\n        tb.writeFieldName(_typePropertyName);\n        tb.writeString(typeId);\n        p = JsonParserSequence.createFlattened(tb.asParser(p), p);\n        p.nextToken();\n    }\n    \n    Object value = deser.deserialize(p, ctxt);\n    \n    // And then need the closing END_OBJECT, but there might be other fields\n    // (like object id) so we need to skip until we find the matching END_OBJECT\n    for (JsonToken t = p.getCurrentToken(); t != JsonToken.END_OBJECT; t = p.nextToken()) {\n        if (t == null) {\n            throw ctxt.wrongTokenException(p, JsonToken.END_OBJECT,\n                    \"expected closing END_OBJECT after type information and deserialized value\");\n        }\n    }\n    return value;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "atct": 139,
+        "label": "b"
+      }
+    ],
+    "atct_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-80",
+    "buggy_code": "void insert(Token.Comment commentToken) {\n    Comment comment = new Comment(commentToken.getData());\n    Node insert = comment;\n    if (commentToken.bogus) { // xml declarations are emitted as bogus comments (which is right for html, but not xml)\n        // so we do a bit of a hack and parse the data as an element to pull the attributes out\n        String data = comment.getData();\n        if (data.length() > 1 && (data.startsWith(\"!\") || data.startsWith(\"?\"))) {\n            Document doc = Jsoup.parse(\"<\" + data.substring(1, data.length() -1) + \">\", baseUri, Parser.xmlParser());\n                Element el = doc.child(0);\n                insert = new XmlDeclaration(settings.normalizeTag(el.tagName()), data.startsWith(\"!\"));\n                insert.attributes().addAll(el.attributes());\n        }\n    }\n    insertNode(insert);\n}",
+    "patches": [
+      {
+        "patch_code": "void insert(Token.Comment commentToken) {\n    Comment comment = new Comment(commentToken.getData());\n    Node insert = comment;\n    if (commentToken.bogus) { // xml declarations are emitted as bogus comments (which is right for html, but not xml)\n        // so we do a bit of a hack and parse the data as an element to pull the attributes out\n        String data = comment.getData();\n        if (data.length() > 1 && (data.startsWith(\"!\") || data.startsWith(\"?\"))) {\n            String declaration = data.substring(1, data.length() - 1);\n            if (declaration.length() > 0) {\n                Document doc = Jsoup.parse(\"<\" + declaration + \">\", baseUri, Parser.xmlParser());\n                if (doc.children().size() > 0) {\n                    Element el = doc.child(0);\n                    insert = new XmlDeclaration(settings.normalizeTag(el.tagName()), data.startsWith(\"!\"));\n                    insert.attributes().addAll(el.attributes());\n                }\n            }\n        }\n    }\n    insertNode(insert);\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 213,
+        "label": "a"
+      },
+      {
+        "patch_code": "void insert(Token.Comment commentToken) {\n    Comment comment = new Comment(commentToken.getData());\n    Node insert = comment;\n    if (commentToken.bogus) { // xml declarations are emitted as bogus comments (which is right for html, but not xml)\n        // so we do a bit of a hack and parse the data as an element to pull the attributes out\n        String data = comment.getData();\n        if (data.length() > 1 && (data.startsWith(\"!\") || data.startsWith(\"?\"))) {\n            String declaration = data.substring(1);\n            // Ensure we have a proper tag structure for parsing\n            if (!declaration.endsWith(\">\")) {\n                declaration = declaration + \">\";\n            }\n            Document doc = Jsoup.parse(\"<\" + declaration, baseUri, Parser.xmlParser());\n            if (doc.children().size() > 0) {\n                Element el = doc.child(0);\n                insert = new XmlDeclaration(settings.normalizeTag(el.tagName()), data.startsWith(\"!\"));\n                insert.attributes().addAll(el.attributes());\n            }\n        }\n    }\n    insertNode(insert);\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "atct": 120,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-90",
+    "buggy_code": "private static boolean looksLikeUtf8(byte[] input) {\n    int i = 0;\n    // BOM:\n    if (input.length >= 3 && (input[0] & 0xFF) == 0xEF\n        && (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) {\n        i = 3;\n    }\n\n    int end;\n    for (int j = input.length; i < j; ++i) {\n        int o = input[i];\n        if ((o & 0x80) == 0) {\n            continue; // ASCII\n        }\n\n        // UTF-8 leading:\n        if ((o & 0xE0) == 0xC0) {\n            end = i + 1;\n        } else if ((o & 0xF0) == 0xE0) {\n            end = i + 2;\n        } else if ((o & 0xF8) == 0xF0) {\n            end = i + 3;\n        } else {\n            return false;\n        }\n\n\n        while (i < end) {\n            i++;\n            o = input[i];\n            if ((o & 0xC0) != 0x80) {\n                return false;\n            }\n        }\n    }\n    return true;\n}",
+    "patches": [
+      {
+        "patch_code": "private static boolean looksLikeUtf8(byte[] input) {\n    int i = 0;\n    // BOM:\n    if (input.length >= 3 && (input[0] & 0xFF) == 0xEF\n        && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF) {\n        i = 3;\n    }\n\n    int end;\n    for (int j = input.length; i < j; ++i) {\n        int o = input[i];\n        if ((o & 0x80) == 0) {\n            continue; // ASCII\n        }\n\n        // UTF-8 leading:\n        if ((o & 0xE0) == 0xC0) {\n            end = i + 1;\n        } else if ((o & 0xF0) == 0xE0) {\n            end = i + 2;\n        } else if ((o & 0xF8) == 0xF0) {\n            end = i + 3;\n        } else {\n            return false;\n        }\n\n        if (end >= input.length) {\n            return false; // Not enough bytes for UTF-8 sequence\n        }\n\n        while (i < end) {\n            i++;\n            o = input[i];\n            if ((o & 0xC0) != 0x80) {\n                return false;\n            }\n        }\n    }\n    return true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 79,
+        "label": "a"
+      },
+      {
+        "patch_code": "private static boolean looksLikeUtf8(byte[] input) {\n    int i = 0;\n    // BOM:\n    if (input.length >= 3 && (input[0] & 0xFF) == 0xEF\n        && (input[1] & 0xFF) == 0xBB & (input[2] & 0xFF) == 0xBF) {\n        i = 3;\n    }\n\n    int end;\n    for (int j = input.length; i < j; ++i) {\n        int o = input[i];\n        if ((o & 0x80) == 0) {\n            continue; // ASCII\n        }\n\n        // UTF-8 leading:\n        if ((o & 0xE0) == 0xC0) {\n            end = i + 1;\n        } else if ((o & 0xF0) == 0xE0) {\n            end = i + 2;\n        } else if ((o & 0xF8) == 0xF0) {\n            end = i + 3;\n        } else {\n            return false;\n        }\n\n        // Check if we have enough bytes for the UTF-8 sequence\n        if (end >= input.length) {\n            return false;\n        }\n\n        while (i < end) {\n            i++;\n            o = input[i];\n            if ((o & 0xC0) != 0x80) {\n                return false;\n            }\n        }\n    }\n    return true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "atct": 28,
+        "label": "b"
+      }
+    ],
+    "atct_label": "b"
+  }
+]

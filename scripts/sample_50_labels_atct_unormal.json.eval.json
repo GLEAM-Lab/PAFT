@@ -1,0 +1,15 @@
+{
+  "metric_field": "atct_label",
+  "used": 50,
+  "skipped_gold": 0,
+  "missing_gold": 0,
+  "missing_pred": 0,
+  "tp": 13,
+  "tn": 11,
+  "fp": 9,
+  "fn": 17,
+  "accuracy": 0.48,
+  "precision": 0.5909,
+  "recall": 0.4333,
+  "f1": 0.5
+}

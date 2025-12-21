@@ -1,0 +1,1052 @@
+[
+  {
+    "bug_name": "Math-95",
+    "buggy_code": "protected double getInitialDomain(double p) {\n    double ret;\n    double d = getDenominatorDegreesOfFreedom();\n        // use mean\n        ret = d / (d - 2.0);\n    return ret;\n}",
+    "patches": [
+      {
+        "patch_code": "protected double getInitialDomain(double p) {\n    double ret;\n    double d = getDenominatorDegreesOfFreedom();\n    if (d <= 2.0) {\n        // Use a reasonable default when denominator degrees of freedom <= 2\n        // The mode of F distribution is used as initial domain when d1 > 2\n        // For d1 <= 2, we use a safe positive value\n        ret = 1.0;\n    } else {\n        // use mean\n        ret = d / (d - 2.0);\n    }\n    return ret;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 50.0,
+        "atd": 264.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected double getInitialDomain(double p) {\n    double ret;\n    double d = getDenominatorDegreesOfFreedom();\n    if (d <= 2.0) {\n        // use median for small denominator degrees of freedom\n        ret = getMedian(p);\n    } else {\n        // use mean\n        ret = d / (d - 2.0);\n    }\n    return ret;\n}\n\nprivate double getMedian(double p) {\n    // For F-distribution with small denominator degrees of freedom,\n    // use a reasonable initial value that avoids division by zero\n    // This is a simplified approximation - in practice you might want\n    // a more sophisticated approach\n    double numeratorDF = getNumeratorDegreesOfFreedom();\n    double denominatorDF = getDenominatorDegreesOfFreedom();\n    \n    // Use a reasonable starting point that avoids infinity\n    // For denominator DF = 2, the mean doesn't exist, so we use a value\n    // that should work well for bracketing\n    if (denominatorDF <= 2.0) {\n        return 1.0; // Reasonable starting point for bracketing\n    } else {\n        return denominatorDF / (denominatorDF - 2.0);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 23.33,
+        "atd": 883.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-33",
+    "buggy_code": "Element insert(Token.StartTag startTag) {\n    // handle empty unknown tags\n    // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.\n    if (startTag.isSelfClosing()) {\n        Element el = insertEmpty(startTag);\n        stack.add(el);\n        tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing\n        return el;\n    }\n    \n    Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n    insert(el);\n    return el;\n}",
+    "patches": [
+      {
+        "patch_code": "Element insert(Token.StartTag startTag) {\n    // handle empty unknown tags\n    // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.\n    if (startTag.isSelfClosing()) {\n        Element el = insertEmpty(startTag);\n        // only add to stack if this is a self-closing tag that should be in the stack (not script)\n        if (!Tag.valueOf(startTag.name()).isEmpty()) {\n            stack.add(el);\n        }\n        tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing\n        return el;\n    }\n    \n    Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n    insert(el);\n    return el;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 76.47,
+        "atd": 169.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "void insert(Token.StartTag startTag) {\n    if (startTag.isSelfClosing()) {\n        insertEmpty(startTag);\n    } else {\n        Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);\n        insert(el);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 37.5,
+        "atd": 354.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Lang-17",
+    "buggy_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = Character.codePointCount(input, 0, input.length());\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            char[] c = Character.toChars(Character.codePointAt(input, pos));\n            out.write(c);\n        }\n        else {\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n                if (pos < len - 2) {\n            pos += Character.charCount(Character.codePointAt(input, pos));\n                } else {\n                    pos++;\n                }\n            }\n            pos--;\n        }\n        pos++;\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            char c = input.charAt(pos);\n            out.write(c);\n        } else {\n            // contract with translators is that they have to understand codepoints \n            // and they just took care of a surrogate pair\n            for (int pt = 0; pt < consumed; pt++) {\n                pos += Character.charCount(Character.codePointAt(input, pos));\n            }\n            pos--;\n        }\n        pos++;\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 72.0,
+        "atd": 201.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            char c1 = input.charAt(pos);\n            // Handle high surrogate followed by low surrogate (supplementary characters)\n            if (Character.isHighSurrogate(c1) && pos + 1 < len) {\n                char c2 = input.charAt(pos + 1);\n                if (Character.isLowSurrogate(c2)) {\n                    // Valid surrogate pair - write both characters\n                    out.write(c1);\n                    out.write(c2);\n                    pos++;\n                } else {\n                    // Invalid surrogate pair - write replacement character\n                    out.write('\\uFFFD');\n                }\n            } else {\n                // Regular character or isolated surrogate\n                out.write(c1);\n            }\n        } else {\n            // contract with translators is that they have to understand codepoints \n            // and they just took care of a surrogate pair\n            for (int pt = 0; pt < consumed; pt++) {\n                pos += Character.charCount(Character.codePointAt(input, pos));\n            }\n            pos--;\n        }\n        pos++;\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 47.5,
+        "atd": 770.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Lang-40",
+    "buggy_code": "public static boolean containsIgnoreCase(String str, String searchStr) {\n    if (str == null || searchStr == null) {\n        return false;\n    }\n    return contains(str.toUpperCase(), searchStr.toUpperCase());\n}",
+    "patches": [
+      {
+        "patch_code": "public static boolean containsIgnoreCase(String str, String searchStr) {\n    if (str == null || searchStr == null) {\n        return false;\n    }\n    final int len = searchStr.length();\n    final int max = str.length() - len;\n    for (int i = 0; i <= max; i++) {\n        if (str.regionMatches(true, i, searchStr, 0, len)) {\n            return true;\n        }\n    }\n    return false;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 38.46,
+        "atd": 197.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static boolean containsIgnoreCase(String str, String searchStr) {\n    if (str == null || searchStr == null) {\n        return false;\n    }\n    final int len = searchStr.length();\n    final int max = str.length() - len;\n    for (int i = 0; i <= max; i++) {\n        if (regionMatches(str, i, searchStr)) {\n            return true;\n        }\n    }\n    return false;\n}\n\nprivate static boolean regionMatches(String str, int strStart, String searchStr) {\n    if (strStart < 0 || strStart + searchStr.length() > str.length()) {\n        return false;\n    }\n    for (int i = 0; i < searchStr.length(); i++) {\n        char c1 = str.charAt(strStart + i);\n        char c2 = searchStr.charAt(i);\n        if (c1 != c2) {\n            // Try converting both characters to uppercase and compare\n            char u1 = Character.toUpperCase(c1);\n            char u2 = Character.toUpperCase(c2);\n            if (u1 != u2) {\n                // If uppercase doesn't match, try lowercase\n                if (Character.toLowerCase(u1) != Character.toLowerCase(u2)) {\n                    return false;\n                }\n            }\n        }\n    }\n    return true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 14.29,
+        "atd": 942.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Closure-150",
+    "buggy_code": "@Override public void visit(NodeTraversal t, Node n, Node parent) {\n  if (n == scope.getRootNode()) return;\n\n  if (n.getType() == Token.LP && parent == scope.getRootNode()) {\n    handleFunctionInputs(parent);\n    return;\n  }\n\n  attachLiteralTypes(n);\n  switch (n.getType()) {\n    case Token.FUNCTION:\n      if (parent.getType() == Token.NAME) {\n        return;\n      }\n      defineDeclaredFunction(n, parent);\n      break;\n    case Token.CATCH:\n      defineCatch(n, parent);\n      break;\n    case Token.VAR:\n      defineVar(n, parent);\n      break;\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "@Override public void visit(NodeTraversal t, Node n, Node parent) {\n  if (n == scope.getRootNode()) return;\n\n  if (n.getType() == Token.LP && parent.getType() == Token.FUNCTION) {\n    handleFunctionInputs(parent);\n    return;\n  }\n\n  attachLiteralTypes(n);\n  switch (n.getType()) {\n    case Token.FUNCTION:\n      if (parent.getType() == Token.NAME) {\n        return;\n      }\n      defineDeclaredFunction(n, parent);\n      break;\n    case Token.CATCH:\n      defineCatch(n, parent);\n      break;\n    case Token.VAR:\n      defineVar(n, parent);\n      break;\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 95.83,
+        "atd": 25.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "@Override public void visit(NodeTraversal t, Node n, Node parent) {\n  if (n == scope.getRootNode()) return;\n\n  if (n.getType() == Token.LP && parent == scope.getRootNode()) {\n    handleFunctionInputs(parent);\n    return;\n  }\n\n  attachLiteralTypes(n);\n  switch (n.getType()) {\n    case Token.FUNCTION:\n      // Check if this is a function expression being assigned to a property\n      if (parent.getType() == Token.ASSIGN) {\n        // Handle function assignments to properties (like ns.a = function(b) {})\n        defineDeclaredFunction(n, parent);\n      } else if (parent.getType() != Token.NAME) {\n        // Handle other function expressions (not named function declarations)\n        defineDeclaredFunction(n, parent);\n      }\n      break;\n    case Token.CATCH:\n      defineCatch(n, parent);\n      break;\n    case Token.VAR:\n      defineVar(n, parent);\n      break;\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 75.0,
+        "atd": 324.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Math-88",
+    "buggy_code": "protected RealPointValuePair getSolution() {\n    double[] coefficients = new double[getOriginalNumDecisionVariables()];\n    Integer basicRow =\n        getBasicRow(getNumObjectiveFunctions() + getOriginalNumDecisionVariables());\n    double mostNegative = basicRow == null ? 0 : getEntry(basicRow, getRhsOffset());\n    for (int i = 0; i < coefficients.length; i++) {\n        basicRow = getBasicRow(getNumObjectiveFunctions() + i);\n            // if multiple variables can take a given value \n            // then we choose the first and set the rest equal to 0\n            coefficients[i] =\n                (basicRow == null ? 0 : getEntry(basicRow, getRhsOffset())) -\n                (restrictToNonNegative ? 0 : mostNegative);\n        if (basicRow != null) {\n            for (int j = getNumObjectiveFunctions(); j < getNumObjectiveFunctions() + i; j++) {\n                if (tableau.getEntry(basicRow, j) == 1) {\n                     coefficients[i] = 0;\n                }\n            }\n        }\n    }\n    return new RealPointValuePair(coefficients, f.getValue(coefficients));\n}",
+    "patches": [
+      {
+        "patch_code": "protected RealPointValuePair getSolution() {\n    double[] coefficients = new double[getOriginalNumDecisionVariables()];\n    Integer basicRow =\n        getBasicRow(getNumObjectiveFunctions() + getOriginalNumDecisionVariables());\n    double mostNegative = basicRow == null ? 0 : getEntry(basicRow, getRhsOffset());\n    for (int i = 0; i < coefficients.length; i++) {\n        basicRow = getBasicRow(getNumObjectiveFunctions() + i);\n        if (basicRow != null) {\n            coefficients[i] = getEntry(basicRow, getRhsOffset());\n            // Check if this is truly a basic variable by verifying \n            // there's exactly one '1' in its column in basic rows\n            boolean isBasic = true;\n            for (int j = 0; j < getHeight(); j++) {\n                if (j != basicRow && Math.abs(getEntry(j, getNumObjectiveFunctions() + i)) > 1.0e-6) {\n                    isBasic = false;\n                    break;\n                }\n            }\n            if (!isBasic) {\n                coefficients[i] = 0;\n            }\n        } else {\n            coefficients[i] = 0;\n        }\n        \n        if (!restrictToNonNegative) {\n            coefficients[i] = coefficients[i] - mostNegative;\n        }\n    }\n    return new RealPointValuePair(coefficients, f.getValue(coefficients));\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 45.16,
+        "atd": 514.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected RealPointValuePair getSolution() {\n    double[] coefficients = new double[getOriginalNumDecisionVariables()];\n    Integer basicRow =\n        getBasicRow(getNumObjectiveFunctions() + getOriginalNumDecisionVariables());\n    double mostNegative = basicRow == null ? 0 : getEntry(basicRow, getRhsOffset());\n    for (int i = 0; i < coefficients.length; i++) {\n        basicRow = getBasicRow(getNumObjectiveFunctions() + i);\n        // if multiple variables can take a given value \n        // then we choose the first and set the rest equal to 0\n        coefficients[i] =\n            (basicRow == null ? 0 : getEntry(basicRow, getRhsOffset())) -\n            (restrictToNonNegative ? 0 : mostNegative);\n        if (basicRow != null) {\n            for (int j = getNumObjectiveFunctions(); j < getNumObjectiveFunctions() + i; j++) {\n                if (tableau.getEntry(basicRow, j) == 1) {\n                     coefficients[i] = 0;\n                }\n            }\n        }\n    }\n    return new RealPointValuePair(coefficients, f.getValue(coefficients));\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 77.27,
+        "atd": 20.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "JxPath-22",
+    "buggy_code": "public static String getNamespaceURI(Node node) {\n    if (node instanceof Document) {\n        node = ((Document) node).getDocumentElement();\n    }\n\n    Element element = (Element) node;\n\n    String uri = element.getNamespaceURI();\n    if (uri == null) {\n        String prefix = getPrefix(node);\n        String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n\n        Node aNode = node;\n        while (aNode != null) {\n            if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                Attr attr = ((Element) aNode).getAttributeNode(qname);\n                if (attr != null) {\n                    return attr.getValue();\n                }\n            }\n            aNode = aNode.getParentNode();\n        }\n        return null;\n    }\n    return uri;\n}",
+    "patches": [
+      {
+        "patch_code": "public static String getNamespaceURI(Node node) {\n    if (node instanceof Document) {\n        node = ((Document) node).getDocumentElement();\n    }\n\n    // Handle non-element nodes\n    if (node.getNodeType() != Node.ELEMENT_NODE) {\n        return node.getNamespaceURI();\n    }\n\n    Element element = (Element) node;\n\n    String uri = element.getNamespaceURI();\n    if (uri == null) {\n        String prefix = getPrefix(node);\n        String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n\n        Node aNode = node;\n        while (aNode != null) {\n            if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                Attr attr = ((Element) aNode).getAttributeNode(qname);\n                if (attr != null) {\n                    return attr.getValue();\n                }\n            }\n            aNode = aNode.getParentNode();\n        }\n        return null;\n    }\n    return uri;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 83.87,
+        "atd": 129.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static String getNamespaceURI(Node node) {\n    if (node instanceof Document) {\n        node = ((Document) node).getDocumentElement();\n    }\n\n    Element element = (Element) node;\n\n    String uri = element.getNamespaceURI();\n    if (uri == null) {\n        String prefix = getPrefix(node);\n        String qname = prefix == null ? \"xmlns\" : \"xmlns:\" + prefix;\n\n        Node aNode = node;\n        while (aNode != null) {\n            if (aNode.getNodeType() == Node.ELEMENT_NODE) {\n                Attr attr = ((Element) aNode).getAttributeNode(qname);\n                if (attr != null) {\n                    return attr.getValue();\n                }\n            }\n            aNode = aNode.getParentNode();\n        }\n        return null;\n    }\n    \n    // Fix: Check if this element explicitly declares an empty namespace\n    if (uri.length() == 0) {\n        // Check if this element has an xmlns attribute with empty value\n        if (element.hasAttribute(\"xmlns\") && element.getAttribute(\"xmlns\").length() == 0) {\n            return null; // Treat as no namespace\n        }\n        \n        // Check if any ancestor explicitly reset the namespace to empty\n        Node parent = element.getParentNode();\n        while (parent != null && parent.getNodeType() == Node.ELEMENT_NODE) {\n            Element parentElem = (Element) parent;\n            if (parentElem.hasAttribute(\"xmlns\") && parentElem.getAttribute(\"xmlns\").length() == 0) {\n                // Found an ancestor that reset namespace to empty, so this element is truly in no namespace\n                return null;\n            }\n            parent = parent.getParentNode();\n        }\n    }\n    \n    return uri;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 56.52,
+        "atd": 910.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Cli-8",
+    "buggy_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, nextLineTabStop);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 96.88,
+        "atd": 15.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, nextLineTabStop);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n\n        if (pos >= nextLineTabStop) {\n            sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n            pos = text.substring(pos).trim().indexOf(' ') == -1 ? -1 : pos;\n        } else {\n            pos = -1;\n        }\n\n        if (pos == -1) {\n            sb.append(text);\n            return sb;\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 73.81,
+        "atd": 255.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Math-25",
+    "buggy_code": "private void guessAOmega() {\n    // initialize the sums for the linear model between the two integrals\n    double sx2 = 0;\n    double sy2 = 0;\n    double sxy = 0;\n    double sxz = 0;\n    double syz = 0;\n\n    double currentX = observations[0].getX();\n    double currentY = observations[0].getY();\n    double f2Integral = 0;\n    double fPrime2Integral = 0;\n    final double startX = currentX;\n    for (int i = 1; i < observations.length; ++i) {\n        // one step forward\n        final double previousX = currentX;\n        final double previousY = currentY;\n        currentX = observations[i].getX();\n        currentY = observations[i].getY();\n\n        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>\n        // considering a linear model for f (and therefore constant f')\n        final double dx = currentX - previousX;\n        final double dy = currentY - previousY;\n        final double f2StepIntegral =\n            dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;\n        final double fPrime2StepIntegral = dy * dy / dx;\n\n        final double x = currentX - startX;\n        f2Integral += f2StepIntegral;\n        fPrime2Integral += fPrime2StepIntegral;\n\n        sx2 += x * x;\n        sy2 += f2Integral * f2Integral;\n        sxy += x * f2Integral;\n        sxz += x * fPrime2Integral;\n        syz += f2Integral * fPrime2Integral;\n    }\n\n    // compute the amplitude and pulsation coefficients\n    double c1 = sy2 * sxz - sxy * syz;\n    double c2 = sxy * sxz - sx2 * syz;\n    double c3 = sx2 * sy2 - sxy * sxy;\n    if ((c1 / c2 < 0) || (c2 / c3 < 0)) {\n        final int last = observations.length - 1;\n        // Range of the observations, assuming that the\n        // observations are sorted.\n        final double xRange = observations[last].getX() - observations[0].getX();\n        if (xRange == 0) {\n            throw new ZeroException();\n        }\n        omega = 2 * Math.PI / xRange;\n\n        double yMin = Double.POSITIVE_INFINITY;\n        double yMax = Double.NEGATIVE_INFINITY;\n        for (int i = 1; i < observations.length; ++i) {\n            final double y = observations[i].getY();\n            if (y < yMin) {\n                yMin = y;\n            }\n            if (y > yMax) {\n                yMax = y;\n            }\n        }\n        a = 0.5 * (yMax - yMin);\n    } else {\n            // In some ill-conditioned cases (cf. MATH-844), the guesser\n            // procedure cannot produce sensible results.\n\n        a = FastMath.sqrt(c1 / c2);\n        omega = FastMath.sqrt(c2 / c3);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "private void guessAOmega() {\n    // initialize the sums for the linear model between the two integrals\n    double sx2 = 0;\n    double sy2 = 0;\n    double sxy = 0;\n    double sxz = 0;\n    double syz = 0;\n\n    double currentX = observations[0].getX();\n    double currentY = observations[0].getY();\n    double f2Integral = 0;\n    double fPrime2Integral = 0;\n    final double startX = currentX;\n    for (int i = 1; i < observations.length; ++i) {\n        // one step forward\n        final double previousX = currentX;\n        final double previousY = currentY;\n        currentX = observations[i].getX();\n        currentY = observations[i].getY();\n\n        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>\n        // considering a linear model for f (and therefore constant f')\n        final double dx = currentX - previousX;\n        final double dy = currentY - previousY;\n        final double f2StepIntegral =\n            dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;\n        final double fPrime2StepIntegral = dy * dy / dx;\n\n        final double x = currentX - startX;\n        f2Integral += f2StepIntegral;\n        fPrime2Integral += fPrime2StepIntegral;\n\n        sx2 += x * x;\n        sy2 += f2Integral * f2Integral;\n        sxy += x * f2Integral;\n        sxz += x * fPrime2Integral;\n        syz += f2Integral * fPrime2Integral;\n    }\n\n    // compute the amplitude and pulsation coefficients\n    double c1 = sy2 * sxz - sxy * syz;\n    double c2 = sxy * sxz - sx2 * syz;\n    double c3 = sx2 * sy2 - sxy * sxy;\n    if ((c1 / c2 < 0) || (c2 / c3 < 0)) {\n        final int last = observations.length - 1;\n        // Range of the observations, assuming that the\n        // observations are sorted.\n        final double xRange = observations[last].getX() - observations[0].getX();\n        if (xRange == 0) {\n            throw new ZeroException();\n        }\n        omega = 2 * Math.PI / xRange;\n\n        double yMin = Double.POSITIVE_INFINITY;\n        double yMax = Double.NEGATIVE_INFINITY;\n        for (int i = 0; i < observations.length; ++i) {\n            final double y = observations[i].getY();\n            if (y < yMin) {\n                yMin = y;\n            }\n            if (y > yMax) {\n                yMax = y;\n            }\n        }\n        a = 0.5 * (yMax - yMin);\n    } else {\n        if (c2 == 0) {\n            // In some ill-conditioned cases (cf. MATH-844), the guesser\n            // procedure cannot produce sensible results.\n            omega = 0;\n            a = 0;\n        } else {\n            a = FastMath.sqrt(c1 / c2);\n            omega = FastMath.sqrt(c2 / c3);\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 89.61,
+        "atd": 100.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void guessAOmega() {\n    // initialize the sums for the linear model between the two integrals\n    double sx2 = 0;\n    double sy2 = 0;\n    double sxy = 0;\n    double sxz = 0;\n    double syz = 0;\n\n    double currentX = observations[0].getX();\n    double currentY = observations[0].getY();\n    double f2Integral = 0;\n    double fPrime2Integral = 0;\n    final double startX = currentX;\n    for (int i = 1; i < observations.length; ++i) {\n        // one step forward\n        final double previousX = currentX;\n        final double previousY = currentY;\n        currentX = observations[i].getX();\n        currentY = observations[i].getY();\n\n        // update the integrals of f<sup>2</sup> and f'<sup>2</sup>\n        // considering a linear model for f (and therefore constant f')\n        final double dx = currentX - previousX;\n        final double dy = currentY - previousY;\n        final double f2StepIntegral =\n            dx * (previousY * previousY + previousY * currentY + currentY * currentY) / 3;\n        final double fPrime2StepIntegral = dy * dy / dx;\n\n        final double x = currentX - startX;\n        f2Integral += f2StepIntegral;\n        fPrime2Integral += fPrime2StepIntegral;\n\n        sx2 += x * x;\n        sy2 += f2Integral * f2Integral;\n        sxy += x * f2Integral;\n        sxz += x * fPrime2Integral;\n        syz += f2Integral * fPrime2Integral;\n    }\n\n    // compute the amplitude and pulsation coefficients\n    double c1 = sy2 * sxz - sxy * syz;\n    double c2 = sxy * sxz - sx2 * syz;\n    double c3 = sx2 * sy2 - sxy * sxy;\n    if ((c1 / c2 < 0) || (c2 / c3 < 0) || (c1 <= 0) || (c2 <= 0) || (c3 <= 0)) {\n        final int last = observations.length - 1;\n        // Range of the observations, assuming that the\n        // observations are sorted.\n        final double xRange = observations[last].getX() - observations[0].getX();\n        if (xRange == 0) {\n            throw new ZeroException();\n        }\n        \n        // Use the RMS value as a better estimate for amplitude\n        double ySumSquares = 0;\n        double yMean = 0;\n        for (int i = 0; i < observations.length; i++) {\n            final double y = observations[i].getY();\n            yMean += y;\n            ySumSquares += y * y;\n        }\n        yMean /= observations.length;\n        \n        // Amplitude estimate using RMS (root mean square) of centered data\n        double yRms = FastMath.sqrt(ySumSquares / observations.length - yMean * yMean);\n        a = FastMath.sqrt(2) * yRms; // For a sine wave, RMS = amplitude / sqrt(2)\n        \n        // Estimate omega using the number of zero crossings\n        int zeroCrossings = 0;\n        boolean previousPositive = observations[0].getY() - yMean >= 0;\n        for (int i = 1; i < observations.length; i++) {\n            boolean currentPositive = observations[i].getY() - yMean >= 0;\n            if (previousPositive != currentPositive) {\n                zeroCrossings++;\n                previousPositive = currentPositive;\n            }\n        }\n        \n        if (zeroCrossings > 0) {\n            // Each zero crossing represents half a period\n            double averagePeriod = 2 * xRange / zeroCrossings;\n            omega = 2 * Math.PI / averagePeriod;\n        } else {\n            // Fallback: use the full range as one period\n            omega = 2 * Math.PI / xRange;\n        }\n    } else {\n        // In some ill-conditioned cases (cf. MATH-844), the guesser\n        // procedure cannot produce sensible results.\n        a = FastMath.sqrt(c1 / c2);\n        omega = FastMath.sqrt(c2 / c3);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 63.04,
+        "atd": 1132.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-53",
+    "buggy_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        if (last == 0 || last != ESC) {\n            if (c.equals(open)) {\n                depth++;\n                if (start == -1)\n                    start = pos;\n            }\n            else if (c.equals(close))\n                depth--;\n        }\n\n        if (depth > 0 && last != 0)\n            end = pos; // don't include the outer match pair in the return\n        last = c;\n    } while (depth > 0);\n    return (end >= 0) ? queue.substring(start, end) : \"\";\n}",
+    "patches": [
+      {
+        "patch_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        if (last == 0 || last != ESC) {\n            if (c.equals(open)) {\n                depth++;\n                if (start == -1)\n                    start = pos;\n            }\n            else if (c.equals(close))\n                depth--;\n        }\n\n        if (depth > 0 && last != 0)\n            end = pos; // don't include the outer match pair in the return\n        \n        // Update last character, handling escape sequences\n        if (c == ESC && last == ESC) {\n            last = 0; // escaped backslash, reset last\n        } else {\n            last = c;\n        }\n    } while (depth > 0);\n    return (end >= 0) ? queue.substring(start, end) : \"\";\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 77.42,
+        "atd": 194.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String chompBalanced(char open, char close) {\n    int start = -1;\n    int end = -1;\n    int depth = 0;\n    char last = 0;\n    boolean inEscape = false;\n\n    do {\n        if (isEmpty()) break;\n        Character c = consume();\n        \n        if (!inEscape && c == ESC) {\n            inEscape = true;\n        } else {\n            if (!inEscape) {\n                if (c.equals(open)) {\n                    depth++;\n                    if (start == -1)\n                        start = pos - 1; // -1 because we already consumed this char\n                }\n                else if (c.equals(close)) {\n                    depth--;\n                }\n            }\n            inEscape = false;\n        }\n\n        if (depth > 0 && start != -1)\n            end = pos; // don't include the outer match pair in the return\n        last = c;\n    } while (depth > 0);\n    \n    return (start >= 0 && end >= 0) ? queue.substring(start, end) : \"\";\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 47.06,
+        "atd": 287.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Compress-37",
+    "buggy_code": "Map<String, String> parsePaxHeaders(final InputStream i)\n    throws IOException {\n    final Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);\n    // Format is \"length keyword=value\\n\";\n    while(true){ // get length\n        int ch;\n        int len = 0;\n        int read = 0;\n        while((ch = i.read()) != -1) {\n            read++;\n            if (ch == ' '){\n                // Get keyword\n                final ByteArrayOutputStream coll = new ByteArrayOutputStream();\n                while((ch = i.read()) != -1) {\n                    read++;\n                    if (ch == '='){ // end of keyword\n                        final String keyword = coll.toString(CharsetNames.UTF_8);\n                        // Get rest of entry\n                        final int restLen = len - read;\n                        if (restLen == 1) { // only NL\n                            headers.remove(keyword);\n                        } else {\n                            final byte[] rest = new byte[restLen];\n                            final int got = IOUtils.readFully(i, rest);\n                            if (got != restLen) {\n                                throw new IOException(\"Failed to read \"\n                                                      + \"Paxheader. Expected \"\n                                                      + restLen\n                                                      + \" bytes, read \"\n                                                      + got);\n                            }\n                            // Drop trailing NL\n                            final String value = new String(rest, 0,\n                                                      restLen - 1, CharsetNames.UTF_8);\n                            headers.put(keyword, value);\n                        }\n                        break;\n                    }\n                    coll.write((byte) ch);\n                }\n                break; // Processed single header\n            }\n            len *= 10;\n            len += ch - '0';\n        }\n        if (ch == -1){ // EOF\n            break;\n        }\n    }\n    return headers;\n}",
+    "patches": [
+      {
+        "patch_code": "Map<String, String> parsePaxHeaders(final InputStream i)\n    throws IOException {\n    final Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);\n    // Format is \"length keyword=value\\n\";\n    while(true){ // get length\n        int ch;\n        int len = 0;\n        int read = 0;\n        while((ch = i.read()) != -1) {\n            read++;\n            if (ch < '0' || ch > '9') {\n                break;\n            }\n            len *= 10;\n            len += ch - '0';\n        }\n        if (ch == -1){ // EOF\n            break;\n        }\n        if (ch == ' '){\n            // Get keyword\n            final ByteArrayOutputStream coll = new ByteArrayOutputStream();\n            while((ch = i.read()) != -1) {\n                read++;\n                if (ch == '='){ // end of keyword\n                    final String keyword = coll.toString(CharsetNames.UTF_8);\n                    // Get rest of entry\n                    final int restLen = len - read;\n                    if (restLen == 1) { // only NL\n                        headers.remove(keyword);\n                    } else {\n                        final byte[] rest = new byte[restLen];\n                        final int got = IOUtils.readFully(i, rest);\n                        if (got != restLen) {\n                            throw new IOException(\"Failed to read \"\n                                                  + \"Paxheader. Expected \"\n                                                  + restLen\n                                                  + \" bytes, read \"\n                                                  + got);\n                        }\n                        // Drop trailing NL\n                        final String value = new String(rest, 0,\n                                                  restLen - 1, CharsetNames.UTF_8);\n                        headers.put(keyword, value);\n                    }\n                    break;\n                }\n                coll.write((byte) ch);\n            }\n        } else {\n            // Skip the rest of the entry if we didn't get a space\n            final int restLen = len - read;\n            if (restLen > 0) {\n                IOUtils.skip(i, restLen);\n            }\n        }\n    }\n    return headers;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 33.9,
+        "atd": 423.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "Map<String, String> parsePaxHeaders(final InputStream i)\n    throws IOException {\n    final Map<String, String> headers = new HashMap<String, String>(globalPaxHeaders);\n    // Format is \"length keyword=value\\n\";\n    while(true){ // get length\n        int ch;\n        int len = 0;\n        int read = 0;\n        while((ch = i.read()) != -1) {\n            read++;\n            if (ch == ' '){\n                // Get keyword\n                final ByteArrayOutputStream coll = new ByteArrayOutputStream();\n                while((ch = i.read()) != -1) {\n                    read++;\n                    if (ch == '='){ // end of keyword\n                        final String keyword = coll.toString(CharsetNames.UTF_8);\n                        // Get rest of entry\n                        final int restLen = len - read;\n                        if (restLen == 1) { // only NL\n                            headers.remove(keyword);\n                        } else {\n                            final byte[] rest = new byte[restLen];\n                            final int got = IOUtils.readFully(i, rest);\n                            if (got != restLen) {\n                                throw new IOException(\"Failed to read \"\n                                                      + \"Paxheader. Expected \"\n                                                      + restLen\n                                                      + \"bytes, read \"\n                                                      + got);\n                            }\n                            // Drop trailing NL\n                            final String value = new String(rest, 0,\n                                                      restLen - 1, CharsetNames.UTF_8);\n                            headers.put(keyword, value);\n                        }\n                        break;\n                    }\n                    coll.write((byte) ch);\n                }\n                break; // Processed single header\n            }\n            if (ch < '0' || ch > '9') {\n                // Invalid character in length field, skip this entry\n                break;\n            }\n            len *= 10;\n            len += ch - '0';\n        }\n        if (ch == -1){ // EOF\n            break;\n        }\n    }\n    return headers;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 90.91,
+        "atd": 148.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-39",
+    "buggy_code": "String toStringHelper(boolean forAnnotations) {\n  if (hasReferenceName()) {\n    return getReferenceName();\n  } else if (prettyPrint) {\n    // Don't pretty print recursively.\n    prettyPrint = false;\n\n    // Use a tree set so that the properties are sorted.\n    Set<String> propertyNames = Sets.newTreeSet();\n    for (ObjectType current = this;\n         current != null && !current.isNativeObjectType() &&\n             propertyNames.size() <= MAX_PRETTY_PRINTED_PROPERTIES;\n         current = current.getImplicitPrototype()) {\n      propertyNames.addAll(current.getOwnPropertyNames());\n    }\n\n    StringBuilder sb = new StringBuilder();\n    sb.append(\"{\");\n\n    int i = 0;\n    for (String property : propertyNames) {\n      if (i > 0) {\n        sb.append(\", \");\n      }\n\n      sb.append(property);\n      sb.append(\": \");\n      sb.append(getPropertyType(property).toString());\n\n      ++i;\n      if (i == MAX_PRETTY_PRINTED_PROPERTIES) {\n        sb.append(\", ...\");\n        break;\n      }\n    }\n\n    sb.append(\"}\");\n\n    prettyPrint = true;\n    return sb.toString();\n  } else {\n    return \"{...}\";\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "String toStringHelper(boolean forAnnotations) {\n  if (hasReferenceName()) {\n    return getReferenceName();\n  } else if (prettyPrint) {\n    // Don't pretty print recursively.\n    prettyPrint = false;\n\n    // Use a tree set so that the properties are sorted.\n    Set<String> propertyNames = Sets.newTreeSet();\n    for (ObjectType current = this;\n         current != null && !current.isNativeObjectType();\n         current = current.getImplicitPrototype()) {\n      propertyNames.addAll(current.getOwnPropertyNames());\n    }\n\n    StringBuilder sb = new StringBuilder();\n    sb.append(\"{\");\n\n    int i = 0;\n    for (String property : propertyNames) {\n      if (i > 0) {\n        sb.append(\", \");\n      }\n\n      sb.append(property);\n      sb.append(\": \");\n      sb.append(getPropertyType(property).toString());\n\n      ++i;\n    }\n\n    sb.append(\"}\");\n\n    prettyPrint = true;\n    return sb.toString();\n  } else {\n    return \"{...}\";\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 97.44,
+        "atd": 169.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "String toStringHelper(boolean forAnnotations) {\n  if (hasReferenceName()) {\n    return getReferenceName();\n  } else if (prettyPrint) {\n    // Don't pretty print recursively.\n    prettyPrint = false;\n\n    // Use a tree set so that the properties are sorted.\n    Set<String> propertyNames = Sets.newTreeSet();\n    for (ObjectType current = this;\n         current != null && !current.isNativeObjectType() &&\n             propertyNames.size() <= MAX_PRETTY_PRINTED_PROPERTIES;\n         current = current.getImplicitPrototype()) {\n      propertyNames.addAll(current.getOwnPropertyNames());\n    }\n\n    StringBuilder sb = new StringBuilder();\n    sb.append(\"{\");\n\n    int i = 0;\n    boolean truncated = false;\n    for (String property : propertyNames) {\n      if (i > 0) {\n        sb.append(\", \");\n      }\n\n      sb.append(property);\n      sb.append(\": \");\n      \n      // For extern generation, we need complete type information without truncation\n      JSType propertyType = getPropertyType(property);\n      if (forAnnotations) {\n        // When generating externs/annotations, ensure we get the complete type\n        sb.append(propertyType.toString());\n      } else {\n        // For regular pretty printing, use the helper to avoid recursion\n        sb.append(propertyType.toStringHelper(forAnnotations));\n      }\n\n      ++i;\n      if (i >= MAX_PRETTY_PRINTED_PROPERTIES && propertyNames.size() > MAX_PRETTY_PRINTED_PROPERTIES) {\n        truncated = true;\n        break;\n      }\n    }\n\n    if (truncated) {\n      sb.append(\", ...\");\n    }\n\n    sb.append(\"}\");\n\n    prettyPrint = true;\n    return sb.toString();\n  } else {\n    return \"{...}\";\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 70.69,
+        "atd": 568.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Closure-118",
+    "buggy_code": "private void handleObjectLit(NodeTraversal t, Node n) {\n  for (Node child = n.getFirstChild();\n      child != null;\n      child = child.getNext()) {\n    // Maybe STRING, GET, SET\n\n    // We should never see a mix of numbers and strings.\n    String name = child.getString();\n    T type = typeSystem.getType(getScope(), n, name);\n\n    Property prop = getProperty(name);\n    if (!prop.scheduleRenaming(child,\n                               processProperty(t, prop, type, null))) {\n      // TODO(user): It doesn't look like the user can do much in this\n      // case right now.\n      if (propertiesToErrorFor.containsKey(name)) {\n        compiler.report(JSError.make(\n            t.getSourceName(), child, propertiesToErrorFor.get(name),\n            Warnings.INVALIDATION, name,\n            (type == null ? \"null\" : type.toString()), n.toString(), \"\"));\n      }\n    }\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "private void handleObjectLit(NodeTraversal t, Node n) {\n  for (Node child = n.getFirstChild();\n      child != null;\n      child = child.getNext()) {\n    // Maybe STRING, GET, SET\n\n    // We should never see a mix of numbers and strings.\n    String name = null;\n    if (child.isString()) {\n      name = child.getString();\n    } else if (child.isGetterDef() || child.isSetterDef()) {\n      // For getter/setter definitions, the property name is in the first child\n      name = child.getFirstChild().getString();\n    } else {\n      // Skip unsupported node types\n      continue;\n    }\n    \n    T type = typeSystem.getType(getScope(), n, name);\n\n    Property prop = getProperty(name);\n    if (!prop.scheduleRenaming(child,\n                               processProperty(t, prop, type, null))) {\n      // TODO(user): It doesn't look like the user can do much in this\n      // case right now.\n      if (propertiesToErrorFor.containsKey(name)) {\n        compiler.report(JSError.make(\n            t.getSourceName(), child, propertiesToErrorFor.get(name),\n            Warnings.INVALIDATION, name,\n            (type == null ? \"null\" : type.toString()), n.toString(), \"\"));\n      }\n    }\n  }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 67.65,
+        "atd": 313.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void handleObjectLit(NodeTraversal t, Node n) {\n  for (Node child = n.getFirstChild();\n      child != null;\n      child = child.getNext()) {\n    // Maybe STRING, GET, SET\n\n    // We should never see a mix of numbers and strings.\n    if (child.isString() || child.isNumber()) {\n      String name = child.getString();\n      T type = typeSystem.getType(getScope(), n, name);\n\n      Property prop = getProperty(name);\n      if (!prop.scheduleRenaming(child,\n                                 processProperty(t, prop, type, null))) {\n        // TODO(user): It doesn't look like the user can do much in this\n        // case right now.\n        if (propertiesToErrorFor.containsKey(name)) {\n          compiler.report(JSError.make(\n              t.getSourceName(), child, propertiesToErrorFor.get(name),\n              Warnings.INVALIDATION, name,\n              (type == null ? \"null\" : type.toString()), n.toString(), \"\"));\n        }\n      }\n    }\n    // Skip non-string/number keys (computed properties, get/set)\n  }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 44.44,
+        "atd": 148.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "JacksonCore-5",
+    "buggy_code": "private final static int _parseIndex(String str) {\n    final int len = str.length();\n    // [Issue#133]: beware of super long indexes; assume we never\n    // have arrays over 2 billion entries so ints are fine.\n    if (len == 0 || len > 10) {\n        return -1;\n    }\n    for (int i = 0; i < len; ++i) {\n        char c = str.charAt(i++);\n        if (c > '9' || c < '0') {\n            return -1;\n        }\n    }\n    if (len == 10) {\n        long l = NumberInput.parseLong(str);\n        if (l > Integer.MAX_VALUE) {\n            return -1;\n        }\n    }\n    return NumberInput.parseInt(str);\n}",
+    "patches": [
+      {
+        "patch_code": "private final static int _parseIndex(String str) {\n    final int len = str.length();\n    // [Issue#133]: beware of super long indexes; assume we never\n    // have arrays over 2 billion entries so ints are fine.\n    if (len == 0 || len > 10) {\n        return -1;\n    }\n    for (int i = 0; i < len; ++i) {\n        char c = str.charAt(i);\n        if (c > '9' || c < '0') {\n            return -1;\n        }\n    }\n    if (len == 10) {\n        long l = NumberInput.parseLong(str);\n        if (l > Integer.MAX_VALUE) {\n            return -1;\n        }\n    }\n    return NumberInput.parseInt(str);\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 95.24,
+        "atd": 2.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private final static int _parseIndex(String str) {\n    final int len = str.length();\n    // [Issue#133]: beware of super long indexes; assume we never\n    // have arrays over 2 billion entries so ints are fine.\n    if (len == 0 || len > 10) {\n        return -1;\n    }\n    // Check for leading zero (except for single \"0\")\n    char c = str.charAt(0);\n    if (c <= '0') {\n        // Leading zero not allowed for multi-digit numbers\n        if (c == '0' && len > 1) {\n            return -1;\n        }\n        // Single \"0\" is valid, but if it's not '0' then it's below '0' (invalid)\n        if (c < '0') {\n            return -1;\n        }\n    } else if (c > '9') {\n        return -1;\n    }\n    // Check remaining characters\n    for (int i = 1; i < len; ++i) {\n        c = str.charAt(i);\n        if (c > '9' || c < '0') {\n            return -1;\n        }\n    }\n    if (len == 10) {\n        long l = NumberInput.parseLong(str);\n        if (l > Integer.MAX_VALUE) {\n            return -1;\n        }\n    }\n    return NumberInput.parseInt(str);\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 52.78,
+        "atd": 453.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-39",
+    "buggy_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patches": [
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset = null;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n            }\n            if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                try {\n                    if (Charset.isSupported(meta.attr(\"charset\"))) {\n                        foundCharset = meta.attr(\"charset\");\n                    }\n                } catch (IllegalCharsetNameException e) {\n                    foundCharset = null;\n                }\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                \n                // Instead of setting doc to null and re-parsing, update the existing document\n                // This preserves the original parsing structure\n                doc = null;\n                doc = parser.parseInput(docData, baseUri);\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n        doc = null;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n    }\n    if (charsetName != null) {\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 72.73,
+        "atd": 430.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = parser.parseInput(docData, baseUri);\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n        doc = null;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 96.08,
+        "atd": 53.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-85",
+    "buggy_code": "    public JsonSerializer<?> createContextual(SerializerProvider serializers,\n            BeanProperty property) throws JsonMappingException\n    {\n        if (property == null) {\n            return this;\n        }\n        JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n        if (format == null) {\n            return this;\n        }\n        // Simple case first: serialize as numeric timestamp?\n        JsonFormat.Shape shape = format.getShape();\n        if (shape.isNumeric()) {\n            return withFormat(Boolean.TRUE, null);\n        }\n\n        // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n        // First: custom pattern will override things\n                if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n                                || format.hasLocale() || format.hasTimeZone()) {\n                    TimeZone tz = format.getTimeZone();\n                    final String pattern = format.hasPattern()\n                                    ? format.getPattern()\n                                    : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n            final Locale loc = format.hasLocale()\n                            ? format.getLocale()\n                            : serializers.getLocale();\n                    SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                    if (tz == null) {\n                        tz = serializers.getTimeZone();\n                    }\n            df.setTimeZone(tz);\n            return withFormat(Boolean.FALSE, df);\n        }\n\n        // Otherwise, need one of these changes:\n\n\n        // Jackson's own `StdDateFormat` is quite easy to deal with...\n\n        // 08-Jun-2017, tatu: Unfortunately there's no generally usable\n        //    mechanism for changing `DateFormat` instances (or even clone()ing)\n        //    So: require it be `SimpleDateFormat`; can't config other types\n//            serializers.reportBadDefinition(handledType(), String.format(\n            // Ugh. No way to change `Locale`, create copy; must re-crete completely:\n        return this;\n    }",
+    "patches": [
+      {
+        "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property == null) {\n        return this;\n    }\n    JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n    if (format == null) {\n        return this;\n    }\n    // Simple case first: serialize as numeric timestamp?\n    JsonFormat.Shape shape = format.getShape();\n    if (shape.isNumeric()) {\n        return withFormat(Boolean.TRUE, null);\n    }\n\n    // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n    // First: custom pattern will override things\n    if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n            || format.hasLocale() || format.hasTimeZone()) {\n        TimeZone tz = format.getTimeZone();\n        DateFormat df = serializers.getConfig().getDateFormat();\n        \n        // If we have a pattern, create a new SimpleDateFormat with that pattern\n        if (format.hasPattern()) {\n            final Locale loc = format.hasLocale() \n                    ? format.getLocale() \n                    : serializers.getLocale();\n            SimpleDateFormat sdf = new SimpleDateFormat(format.getPattern(), loc);\n            if (tz == null) {\n                tz = serializers.getTimeZone();\n            }\n            sdf.setTimeZone(tz);\n            return withFormat(Boolean.FALSE, sdf);\n        }\n        \n        // Otherwise, clone and configure the existing date format\n        if (tz == null) {\n            tz = serializers.getTimeZone();\n        }\n        df = (DateFormat) df.clone();\n        df.setTimeZone(tz);\n        if (format.hasLocale()) {\n            // For StdDateFormat, we can use withLocale, otherwise we can't change locale\n            if (df instanceof StdDateFormat) {\n                df = ((StdDateFormat) df).withLocale(format.getLocale());\n            }\n            // For other DateFormat types, we can't change locale after creation\n        }\n        return withFormat(Boolean.FALSE, df);\n    }\n\n    return this;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 5.56,
+        "atd": 752.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n            BeanProperty property) throws JsonMappingException\n    {\n        if (property == null) {\n            return this;\n        }\n        JsonFormat.Value format = findFormatOverrides(serializers, property, handledType());\n        if (format == null) {\n            return this;\n        }\n        // Simple case first: serialize as numeric timestamp?\n        JsonFormat.Shape shape = format.getShape();\n        if (shape.isNumeric()) {\n            return withFormat(Boolean.TRUE, null);\n        }\n\n        // 08-Jun-2017, tatu: With [databind#1648], this gets bit tricky..\n        // First: custom pattern will override things\n                if ((shape == JsonFormat.Shape.STRING) || format.hasPattern()\n                                || format.hasLocale() || format.hasTimeZone()) {\n                    TimeZone tz = format.getTimeZone();\n                    DateFormat df = serializers.getConfig().getDateFormat();\n                    if (format.hasPattern() || format.hasLocale() || format.hasTimeZone()) {\n                        final String pattern = format.hasPattern()\n                                        ? format.getPattern()\n                                        : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                        final Locale loc = format.hasLocale()\n                                        ? format.getLocale()\n                                        : serializers.getLocale();\n                        df = new SimpleDateFormat(pattern, loc);\n                    } else {\n                        // otherwise need to clone, re-set timezone:\n                        df = (DateFormat) df.clone();\n                    }\n                    if (tz == null) {\n                        tz = serializers.getTimeZone();\n                    }\n                    df.setTimeZone(tz);\n                    return withFormat(Boolean.FALSE, df);\n                }\n\n        // Otherwise, need one of these changes:\n\n\n        // Jackson's own `StdDateFormat` is quite easy to deal with...\n\n        // 08-Jun-2017, tatu: Unfortunately there's no generally usable\n        //    mechanism for changing `DateFormat` instances (or even clone()ing)\n        //    So: require it be `SimpleDateFormat`; can't config other types\n//            serializers.reportBadDefinition(handledType(), String.format(\n            // Ugh. No way to change `Locale`, create copy; must re-crete completely:\n        return this;\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 69.81,
+        "atd": 423.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Lang-6",
+    "buggy_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            char[] c = Character.toChars(Character.codePointAt(input, pos));\n            out.write(c);\n            pos+= c.length;\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            pos += Character.charCount(Character.codePointAt(input, pos));\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            // Ensure we don't go beyond the string length when getting code point\n            int cp = Character.codePointAt(input, pos);\n            char[] c = Character.toChars(cp);\n            out.write(c);\n            pos += Character.charCount(cp);\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            // Ensure we don't go beyond the string length\n            if (pos >= len) {\n                break;\n            }\n            int cp = Character.codePointAt(input, pos);\n            pos += Character.charCount(cp);\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 67.74,
+        "atd": 316.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public final void translate(CharSequence input, Writer out) throws IOException {\n    if (out == null) {\n        throw new IllegalArgumentException(\"The Writer must not be null\");\n    }\n    if (input == null) {\n        return;\n    }\n    int pos = 0;\n    int len = input.length();\n    while (pos < len) {\n        int consumed = translate(input, pos, out);\n        if (consumed == 0) {\n            int cp = Character.codePointAt(input, pos);\n            char[] c = Character.toChars(cp);\n            out.write(c);\n            pos += Character.charCount(cp);\n            continue;\n        }\n        // contract with translators is that they have to understand codepoints \n        // and they just took care of a surrogate pair\n        for (int pt = 0; pt < consumed; pt++) {\n            pos += Character.charCount(Character.codePointAt(input, pos));\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 88.0,
+        "atd": 90.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-112",
+    "buggy_code": "private boolean inferTemplatedTypesForCall(\n    Node n, FunctionType fnType) {\n  final ImmutableList<TemplateType> keys = fnType.getTemplateTypeMap()\n      .getTemplateKeys();\n  if (keys.isEmpty()) {\n    return false;\n  }\n\n  // Try to infer the template types\n  Map<TemplateType, JSType> inferred = \n      inferTemplateTypesFromParameters(fnType, n);\n\n\n  // Replace all template types. If we couldn't find a replacement, we\n  // replace it with UNKNOWN.\n  TemplateTypeReplacer replacer = new TemplateTypeReplacer(\n      registry, inferred);\n  Node callTarget = n.getFirstChild();\n\n  FunctionType replacementFnType = fnType.visit(replacer)\n      .toMaybeFunctionType();\n  Preconditions.checkNotNull(replacementFnType);\n\n  callTarget.setJSType(replacementFnType);\n  n.setJSType(replacementFnType.getReturnType());\n\n  return replacer.madeChanges;\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean inferTemplatedTypesForCall(\n    Node n, FunctionType fnType) {\n  // Only infer template types that are defined on the function itself,\n  // not on parent classes or interfaces.\n  final ImmutableList<TemplateType> keys = fnType.getTemplateTypeMap()\n      .getTemplateKeys();\n  if (keys.isEmpty()) {\n    return false;\n  }\n\n  // Try to infer the template types\n  Map<TemplateType, JSType> inferred = \n      inferTemplateTypesFromParameters(fnType, n);\n\n  // Replace all template types. If we couldn't find a replacement, we\n  // replace it with UNKNOWN.\n  TemplateTypeReplacer replacer = new TemplateTypeReplacer(\n      registry, inferred);\n  Node callTarget = n.getFirstChild();\n\n  FunctionType replacementFnType = fnType.visit(replacer)\n      .toMaybeFunctionType();\n  Preconditions.checkNotNull(replacementFnType);\n\n  callTarget.setJSType(replacementFnType);\n  n.setJSType(replacementFnType.getReturnType());\n\n  return replacer.madeChanges;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 93.1,
+        "atd": 115.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean inferTemplatedTypesForCall(\n    Node n, FunctionType fnType) {\n  final ImmutableList<TemplateType> keys = fnType.getTemplateTypeMap()\n      .getTemplateKeys();\n  if (keys.isEmpty()) {\n    return false;\n  }\n\n  // Try to infer the template types\n  Map<TemplateType, JSType> inferred = \n      inferTemplateTypesFromParameters(fnType, n);\n\n  // Only infer templates that are actually in this function's type map\n  // Don't try to infer class-level templates from method calls\n  TemplateTypeMap fnTypeMap = fnType.getTemplateTypeMap();\n  Map<TemplateType, JSType> filteredInferred = Maps.newHashMap();\n  for (Map.Entry<TemplateType, JSType> entry : inferred.entrySet()) {\n    if (fnTypeMap.hasTemplateKey(entry.getKey())) {\n      filteredInferred.put(entry.getKey(), entry.getValue());\n    }\n  }\n\n  // Replace all template types. If we couldn't find a replacement, we\n  // replace it with UNKNOWN.\n  TemplateTypeReplacer replacer = new TemplateTypeReplacer(\n      registry, filteredInferred);\n  Node callTarget = n.getFirstChild();\n\n  FunctionType replacementFnType = fnType.visit(replacer)\n      .toMaybeFunctionType();\n  Preconditions.checkNotNull(replacementFnType);\n\n  callTarget.setJSType(replacementFnType);\n  n.setJSType(replacementFnType.getReturnType());\n\n  return replacer.madeChanges;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 72.97,
+        "atd": 463.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "JacksonDatabind-78",
+    "buggy_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive() && !type.isEnumType()) {\n            // Let's make it possible to materialize abstract types.\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(type.getRawClass())) {\n            return null;\n        }\n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }",
+    "patches": [
+      {
+        "patch_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive() && !type.isEnumType()) {\n            // Let's make it possible to materialize abstract types.\n            // Security fix for CVE-2017-7525: Only allow materialization if it's safe\n            if (!ctxt.isEnabled(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)) {\n                return null;\n            }\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(type.getRawClass())) {\n            return null;\n        }\n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 92.45,
+        "atd": 211.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "@Override\n    public JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n            JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n    {\n        final DeserializationConfig config = ctxt.getConfig();\n        // We may also have custom overrides:\n        JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n        if (custom != null) {\n            return custom;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub-classes)? If so, need slightly\n         * different handling.\n         */\n        if (type.isThrowable()) {\n            return buildThrowableDeserializer(ctxt, type, beanDesc);\n        }\n        /* Or, for abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n        //    not something we could materialize anything for\n        if (type.isAbstract() && !type.isPrimitive() && !type.isEnumType()) {\n            // Let's make it possible to materialize abstract types.\n            JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n            if (concreteType != null) {\n                // Security fix: Check for blocked types before proceeding\n                _checkIfValidType(ctxt, concreteType);\n                /* important: introspect actual implementation (abstract class or\n                 * interface doesn't have constructors, for one)\n                 */\n                beanDesc = config.introspect(concreteType);\n                return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n            }\n        }\n        // Otherwise, may want to check handlers for standard types, from superclass:\n        @SuppressWarnings(\"unchecked\")\n        JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n        if (deser != null) {\n            return deser;\n        }\n\n        // Otherwise: could the class be a Bean class? If not, bail out\n        if (!isPotentialBeanType(type.getRawClass())) {\n            return null;\n        }\n        \n        // Security fix: Check for blocked types before proceeding\n        _checkIfValidType(ctxt, type);\n        \n        // For checks like [databind#1599]\n        // Use generic bean introspection to build deserializer\n        return buildBeanDeserializer(ctxt, type, beanDesc);\n    }\n\n    /**\n     * Security fix: Check if the type is allowed for deserialization\n     * Blocks known dangerous types that could lead to remote code execution\n     */\n    protected void _checkIfValidType(DeserializationContext ctxt, JavaType type) \n        throws JsonMappingException \n    {\n        Class<?> rawClass = type.getRawClass();\n        String className = rawClass.getName();\n        \n        // Block known dangerous types\n        if (_isBlockedClass(rawClass)) {\n            String msg = String.format(\"Blocked deserialization of type %s for security reasons\", \n                className);\n            throw ctxt.mappingException(msg);\n        }\n    }\n\n    /**\n     * Security fix: Check if a class is in the blocked list\n     */\n    protected boolean _isBlockedClass(Class<?> clazz) {\n        String className = clazz.getName();\n        \n        // Block java.lang.Class and related types that could enable code execution\n        if (className.startsWith(\"java.lang.Class\") ||\n            className.startsWith(\"javax.management.\") ||\n            className.startsWith(\"java.rmi.\") ||\n            className.startsWith(\"org.springframework.\") ||\n            className.startsWith(\"org.apache.commons.collections.\") ||\n            className.startsWith(\"com.sun.\") ||\n            className.equals(\"java.lang.ProcessBuilder\") ||\n            className.equals(\"java.lang.Runtime\") ||\n            className.equals(\"java.lang.System\") ||\n            className.equals(\"java.lang.Thread\") ||\n            className.equals(\"java.sql.DriverManager\") ||\n            className.equals(\"java.util.logging.\") ||\n            className.equals(\"org.slf4j.\") ||\n            className.equals(\"ch.qos.logback.\")) {\n            return true;\n        }\n        \n        // Additional checks for arrays of blocked types\n        if (clazz.isArray()) {\n            return _isBlockedClass(clazz.getComponentType());\n        }\n        \n        return false;\n    }",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 46.67,
+        "atd": 2194.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Closure-7",
+    "buggy_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.equals(\"function\")) {\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n      // Objects are restricted to \"Function\", subtypes are left\n      // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") ? type : null;\n}",
+    "patches": [
+      {
+        "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.equals(\"function\")) {\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n  } else if (matchesExpectation(\"object\")) {\n    return type;\n  } else {\n    return null;\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 60.0,
+        "atd": 125.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.equals(\"function\")) {\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && type.isSubtype(ctorType) ? ctorType : null;\n      // Objects are restricted to \"Function\", subtypes are left\n      // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") ? type : null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 88.89,
+        "atd": 8.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "JacksonCore-4",
+    "buggy_code": "public char[] expandCurrentSegment()\n{\n    final char[] curr = _currentSegment;\n    // Let's grow by 50% by default\n    final int len = curr.length;\n    // but above intended maximum, slow to increase by 25%\n    int newLen = (len == MAX_SEGMENT_LEN) ? (MAX_SEGMENT_LEN+1) : Math.min(MAX_SEGMENT_LEN, len + (len >> 1));\n    return (_currentSegment = Arrays.copyOf(curr, newLen));\n}",
+    "patches": [
+      {
+        "patch_code": "public char[] expandCurrentSegment()\n{\n    final char[] curr = _currentSegment;\n    final int len = curr.length;\n    \n    // Double the size until we reach MAX_SEGMENT_LEN, then add fixed amounts\n    int newLen;\n    if (len < MAX_SEGMENT_LEN) {\n        // Grow by 50% up to MAX_SEGMENT_LEN\n        newLen = Math.min(MAX_SEGMENT_LEN, len + (len >> 1));\n        // But ensure we grow by at least 1 character\n        if (newLen == len) {\n            newLen = len + 1;\n        }\n    } else {\n        // Once at maximum segment size, grow by smaller increments\n        newLen = len + (MAX_SEGMENT_LEN >> 2); // Grow by 25% of MAX_SEGMENT_LEN\n        // Ensure we don't exceed array size limits\n        if (newLen < 0) { // Handle integer overflow\n            newLen = Integer.MAX_VALUE;\n        }\n    }\n    return (_currentSegment = Arrays.copyOf(curr, newLen));\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 25.0,
+        "atd": 573.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public char[] expandCurrentSegment()\n{\n    final char[] curr = _currentSegment;\n    final int len = curr.length;\n    \n    // Double the size until we reach MAX_SEGMENT_LEN, then add fixed amounts\n    int newLen = (len < MAX_SEGMENT_LEN) ? Math.min(MAX_SEGMENT_LEN, len * 2) : len + 1024;\n    \n    return (_currentSegment = Arrays.copyOf(curr, newLen));\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 60.0,
+        "atd": 137.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-39",
+    "buggy_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // 29-Jan-2016, tatu: Simple skipping for all other tokens, but FIELD_NAME bit\n    //    special unfortunately\n        p.skipChildren();\n    return null;\n}",
+    "patches": [
+      {
+        "patch_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // For structured values (START_OBJECT, START_ARRAY), skip children\n    if (p.isExpectedStartObjectToken() || p.isExpectedStartArrayToken()) {\n        p.skipChildren();\n    } else {\n        // For other token types (like FIELD_NAME, VALUE_STRING, etc.), \n        // we need to consume the current token by advancing the parser\n        p.nextToken();\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 41.67,
+        "atd": 273.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n{\n    // Skip the current token and all its children\n    p.skipChildren();\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 66.67,
+        "atd": 88.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Cli-24",
+    "buggy_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    if (nextLineTabStop >= width)\n    {\n        // stops infinite loop happening\n        throw new IllegalStateException(\"Total width is less than the width of the argument and indent \" + \n                                        \"- no room for the description\");\n    }\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n        \n        if ( (text.length() > width) && (pos == nextLineTabStop - 1) ) \n        {\n            pos = width;\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    if (nextLineTabStop >= width)\n    {\n        // stops infinite loop happening\n        throw new IllegalStateException(\"Total width is less than the width of the argument and indent \" + \n                                        \"- no room for the description\");\n    }\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n        \n        if ( (text.length() > width) && (pos == nextLineTabStop - 1) ) \n        {\n            pos = width;\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n        \n        // Prevent infinite loop: if we're not making progress, throw an exception\n        if (pos >= text.length()) {\n            throw new IllegalStateException(\"Text cannot be formatted with the given width: \" + width);\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 89.8,
+        "atd": 242.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    if (nextLineTabStop >= width)\n    {\n        // stops infinite loop happening\n        throw new IllegalStateException(\"Total width is less than the width of the argument and indent \" + \n                                        \"- no room for the description\");\n    }\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        }\n        \n        if ( (text.length() > width) && (pos == nextLineTabStop - 1) ) \n        {\n            pos = width;\n        }\n\n        // Check if we're stuck in an infinite loop by verifying that we're making progress\n        if (pos <= nextLineTabStop) \n        {\n            // Force a break by taking what fits on the current line\n            sb.append(rtrim(text.substring(0, width))).append(defaultNewLine);\n            text = padding + text.substring(width).trim();\n            \n            // If after trimming, the text is empty or just padding, we're done\n            if (text.length() <= padding.length()) \n            {\n                if (text.length() > padding.length()) \n                {\n                    sb.append(text);\n                }\n                return sb;\n            }\n            pos = findWrapPos(text, width, 0);\n            if (pos == -1) \n            {\n                sb.append(text);\n                return sb;\n            }\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 64.71,
+        "atd": 848.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Compress-40",
+    "buggy_code": "public long readBits(final int count) throws IOException {\n    if (count < 0 || count > MAXIMUM_CACHE_SIZE) {\n        throw new IllegalArgumentException(\"count must not be negative or greater than \" + MAXIMUM_CACHE_SIZE);\n    }\n    while (bitsCachedSize < count) {\n        final long nextByte = in.read();\n        if (nextByte < 0) {\n            return nextByte;\n        }\n        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n            bitsCached |= (nextByte << bitsCachedSize);\n        } else {\n            bitsCached <<= 8;\n            bitsCached |= nextByte;\n        }\n        bitsCachedSize += 8;\n    }\n        // bitsCachedSize >= 57 and left-shifting it 8 bits would cause an overflow\n    \n    final long bitsOut;\n        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n            bitsOut = (bitsCached & MASKS[count]);\n            bitsCached >>>= count;\n        } else {\n            bitsOut = (bitsCached >> (bitsCachedSize - count)) & MASKS[count];\n        }\n        bitsCachedSize -= count;\n    return bitsOut;\n}",
+    "patches": [
+      {
+        "patch_code": "public long readBits(final int count) throws IOException {\n    if (count < 0 || count > MAXIMUM_CACHE_SIZE) {\n        throw new IllegalArgumentException(\"count must not be negative or greater than \" + MAXIMUM_CACHE_SIZE);\n    }\n    while (bitsCachedSize < count) {\n        final long nextByte = in.read();\n        if (nextByte < 0) {\n            return nextByte;\n        }\n        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n            bitsCached |= (nextByte << bitsCachedSize);\n        } else {\n            bitsCached <<= 8;\n            bitsCached |= nextByte;\n        }\n        bitsCachedSize += 8;\n        // Check for overflow - if we've exceeded the maximum cache size, break out\n        if (bitsCachedSize >= MAXIMUM_CACHE_SIZE) {\n            break;\n        }\n    }\n    \n    final long bitsOut;\n    if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n        bitsOut = (bitsCached & MASKS[count]);\n        bitsCached >>>= count;\n    } else {\n        bitsOut = (bitsCached >> (bitsCachedSize - count)) & MASKS[count];\n    }\n    bitsCachedSize -= count;\n    return bitsOut;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 65.62,
+        "atd": 160.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public long readBits(final int count) throws IOException {\n    if (count < 0 || count > MAXIMUM_CACHE_SIZE) {\n        throw new IllegalArgumentException(\"count must not be negative or greater than \" + MAXIMUM_CACHE_SIZE);\n    }\n    while (bitsCachedSize < count) {\n        final long nextByte = in.read();\n        if (nextByte < 0) {\n            return nextByte;\n        }\n        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n            bitsCached |= (nextByte << bitsCachedSize);\n        } else {\n            bitsCached <<= 8;\n            bitsCached |= nextByte;\n        }\n        bitsCachedSize += 8;\n        // Check for overflow - if we've accumulated more than 57 bits, we need to be careful\n        // because shifting by 8 more bits would exceed 64 bits\n        if (bitsCachedSize >= 57) {\n            // We have enough bits for the current request or we're at risk of overflow\n            // Break early to avoid shifting beyond 64 bits\n            if (bitsCachedSize >= count) {\n                break;\n            }\n            // If we still don't have enough bits but can't read more without overflow,\n            // we need to handle this case\n            if (bitsCachedSize == 64) {\n                break;\n            }\n        }\n    }\n    \n    // If we don't have enough bits even after trying to read (due to EOF), return -1\n    if (bitsCachedSize < count) {\n        return -1;\n    }\n    \n    final long bitsOut;\n    if (byteOrder == ByteOrder.LITTLE_ENDIAN) {\n        bitsOut = (bitsCached & MASKS[count]);\n        bitsCached >>>= count;\n    } else {\n        bitsOut = (bitsCached >> (bitsCachedSize - count)) & MASKS[count];\n    }\n    bitsCachedSize -= count;\n    return bitsOut;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 44.68,
+        "atd": 737.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Closure-40",
+    "buggy_code": "public void visit(NodeTraversal t, Node n, Node parent) {\n\n  // Record global variable and function declarations\n  if (t.inGlobalScope()) {\n    if (NodeUtil.isVarDeclaration(n)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      Preconditions.checkNotNull(ns);\n      recordSet(ns.name, n);\n    } else if (NodeUtil.isFunctionDeclaration(n)) {\n      Node nameNode = n.getFirstChild();\n      NameInformation ns = createNameInformation(t, nameNode, n);\n      if (ns != null) {\n        JsName nameInfo = getName(nameNode.getString(), true);\n        recordSet(nameInfo.name, nameNode);\n      }\n    } else if (NodeUtil.isObjectLitKey(n, parent)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      if (ns != null) {\n        recordSet(ns.name, n);\n      }\n    }\n  }\n\n  // Record assignments and call sites\n  if (n.isAssign()) {\n    Node nameNode = n.getFirstChild();\n\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null) {\n      if (ns.isPrototype) {\n        recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);\n      } else {\n        recordSet(ns.name, nameNode);\n      }\n    }\n  } else if (n.isCall()) {\n    Node nameNode = n.getFirstChild();\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null && ns.onlyAffectsClassDef) {\n      JsName name = getName(ns.name, false);\n      if (name != null) {\n      refNodes.add(new ClassDefiningFunctionNode(\n          name, n, parent, parent.getParent()));\n      }\n    }\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "public void visit(NodeTraversal t, Node n, Node parent) {\n\n  // Record global variable and function declarations\n  if (t.inGlobalScope()) {\n    if (NodeUtil.isVarDeclaration(n)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      Preconditions.checkNotNull(ns);\n      recordSet(ns.name, n);\n    } else if (NodeUtil.isFunctionDeclaration(n)) {\n      Node nameNode = n.getFirstChild();\n      NameInformation ns = createNameInformation(t, nameNode, n);\n      if (ns != null) {\n        JsName nameInfo = getName(nameNode.getString(), true);\n        recordSet(nameInfo.name, nameNode);\n      }\n    } else if (NodeUtil.isObjectLitKey(n, parent)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      if (ns != null) {\n        recordSet(ns.name, n);\n      }\n    }\n  }\n\n  // Record assignments and call sites\n  if (n.isAssign()) {\n    Node nameNode = n.getFirstChild();\n\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null) {\n      if (ns.isPrototype) {\n        recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);\n      } else {\n        recordSet(ns.name, nameNode);\n      }\n    }\n  } else if (n.isCall()) {\n    Node nameNode = n.getFirstChild();\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null && ns.onlyAffectsClassDef) {\n      JsName name = getName(ns.name, false);\n      if (name != null) {\n        refNodes.add(new ClassDefiningFunctionNode(\n            name, n, parent, parent.getParent()));\n      }\n      \n      // Also record references to the class names in the inheritance call\n      Node args = nameNode.getNext();\n      if (args != null) {\n        // First argument - the child class\n        Node childClass = args;\n        if (childClass != null) {\n          NameInformation childNs = createNameInformation(t, childClass, n);\n          if (childNs != null) {\n            getName(childNs.name, true);\n          }\n        }\n        \n        // Second argument - the parent class  \n        Node parentClass = childClass.getNext();\n        if (parentClass != null) {\n          NameInformation parentNs = createNameInformation(t, parentClass, n);\n          if (parentNs != null) {\n            getName(parentNs.name, true);\n          }\n        }\n      }\n    }\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 65.22,
+        "atd": 759.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void visit(NodeTraversal t, Node n, Node parent) {\n\n  // Record global variable and function declarations\n  if (t.inGlobalScope()) {\n    if (NodeUtil.isVarDeclaration(n)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      Preconditions.checkNotNull(ns);\n      recordSet(ns.name, n);\n    } else if (NodeUtil.isFunctionDeclaration(n)) {\n      Node nameNode = n.getFirstChild();\n      NameInformation ns = createNameInformation(t, nameNode, n);\n      if (ns != null) {\n        JsName nameInfo = getName(nameNode.getString(), true);\n        recordSet(nameInfo.name, nameNode);\n      }\n    } else if (NodeUtil.isObjectLitKey(n, parent)) {\n      NameInformation ns = createNameInformation(t, n, parent);\n      if (ns != null) {\n        recordSet(ns.name, n);\n      }\n    }\n  }\n\n  // Record assignments and call sites\n  if (n.isAssign()) {\n    Node nameNode = n.getFirstChild();\n\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null) {\n      if (ns.isPrototype) {\n        recordPrototypeSet(ns.prototypeClass, ns.prototypeProperty, n);\n      } else {\n        recordSet(ns.name, nameNode);\n      }\n    }\n  } else if (n.isCall()) {\n    Node nameNode = n.getFirstChild();\n    NameInformation ns = createNameInformation(t, nameNode, n);\n    if (ns != null && ns.onlyAffectsClassDef) {\n      JsName name = getName(ns.name, true);\n      if (name != null) {\n      refNodes.add(new ClassDefiningFunctionNode(\n          name, n, parent, parent.getParent()));\n      }\n    }\n  }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 97.87,
+        "atd": 4.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Lang-54",
+    "buggy_code": "public static Locale toLocale(String str) {\n    if (str == null) {\n        return null;\n    }\n    int len = str.length();\n    if (len != 2 && len != 5 && len < 7) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    char ch0 = str.charAt(0);\n    char ch1 = str.charAt(1);\n    if (ch0 < 'a' || ch0 > 'z' || ch1 < 'a' || ch1 > 'z') {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    if (len == 2) {\n        return new Locale(str, \"\");\n    } else {\n        if (str.charAt(2) != '_') {\n            throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n        }\n        char ch3 = str.charAt(3);\n        char ch4 = str.charAt(4);\n        if (ch3 < 'A' || ch3 > 'Z' || ch4 < 'A' || ch4 > 'Z') {\n            throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n        }\n        if (len == 5) {\n            return new Locale(str.substring(0, 2), str.substring(3, 5));\n        } else {\n            if (str.charAt(5) != '_') {\n                throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n            }\n            return new Locale(str.substring(0, 2), str.substring(3, 5), str.substring(6));\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public static Locale toLocale(String str) {\n    if (str == null) {\n        return null;\n    }\n    if (str.isEmpty()) {\n        return new Locale(\"\", \"\");\n    }\n    if (str.length() < 2) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    char ch0 = str.charAt(0);\n    char ch1 = str.charAt(1);\n    if (ch0 < 'a' || ch0 > 'z' || ch1 < 'a' || ch1 > 'z') {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    if (str.length() == 2) {\n        return new Locale(str, \"\");\n    } else {\n        if (str.charAt(2) != '_') {\n            throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n        }\n        if (str.length() == 3) {\n            throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n        }\n        // Check if we have at least language + variant (e.g., \"fr__POSIX\")\n        if (str.length() >= 5 && str.charAt(3) == '_') {\n            // Language + variant only (e.g., \"fr__POSIX\")\n            String language = str.substring(0, 2);\n            String variant = str.substring(4);\n            return new Locale(language, \"\", variant);\n        } else {\n            // Standard case: language + country + optional variant\n            if (str.length() < 5) {\n                throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n            }\n            char ch3 = str.charAt(3);\n            char ch4 = str.charAt(4);\n            if (ch3 < 'A' || ch3 > 'Z' || ch4 < 'A' || ch4 > 'Z') {\n                throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n            }\n            if (str.length() == 5) {\n                return new Locale(str.substring(0, 2), str.substring(3, 5));\n            } else {\n                if (str.charAt(5) != '_') {\n                    throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n                }\n                return new Locale(str.substring(0, 2), str.substring(3, 5), str.substring(6));\n            }\n        }\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 47.06,
+        "atd": 830.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static Locale toLocale(String str) {\n    if (str == null) {\n        return null;\n    }\n    if (str.isEmpty()) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    if (str.startsWith(\"_\")) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    \n    String[] parts = str.split(\"_\", -1);\n    int len = parts.length;\n    \n    if (len > 3) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    \n    // Language is mandatory\n    String language = parts[0];\n    if (language.isEmpty() || !isAllLowerCaseAlpha(language)) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    \n    if (len == 1) {\n        return new Locale(language);\n    }\n    \n    String country = parts[1];\n    if (len == 2) {\n        if (country.isEmpty()) {\n            throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n        }\n        if (country.length() == 2 && isAllUpperCaseAlpha(country)) {\n            return new Locale(language, country);\n        } else {\n            // Variant only (no country)\n            return new Locale(language, \"\", country);\n        }\n    }\n    \n    // len == 3\n    if (!country.isEmpty() && (country.length() != 2 || !isAllUpperCaseAlpha(country))) {\n        throw new IllegalArgumentException(\"Invalid locale format: \" + str);\n    }\n    String variant = parts[2];\n    return new Locale(language, country, variant);\n}\n\nprivate static boolean isAllLowerCaseAlpha(String str) {\n    for (int i = 0; i < str.length(); i++) {\n        char ch = str.charAt(i);\n        if (ch < 'a' || ch > 'z') {\n            return false;\n        }\n    }\n    return true;\n}\n\nprivate static boolean isAllUpperCaseAlpha(String str) {\n    for (int i = 0; i < str.length(); i++) {\n        char ch = str.charAt(i);\n        if (ch < 'A' || ch > 'Z') {\n            return false;\n        }\n    }\n    return true;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 22.06,
+        "atd": 1105.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Compress-24",
+    "buggy_code": "public static long parseOctal(final byte[] buffer, final int offset, final int length) {\n    long    result = 0;\n    int     end = offset + length;\n    int     start = offset;\n\n    if (length < 2){\n        throw new IllegalArgumentException(\"Length \"+length+\" must be at least 2\");\n    }\n\n    if (buffer[start] == 0) {\n        return 0L;\n    }\n\n    // Skip leading spaces\n    while (start < end){\n        if (buffer[start] == ' '){\n            start++;\n        } else {\n            break;\n        }\n    }\n\n    // Trim all trailing NULs and spaces.\n    // The ustar and POSIX tar specs require a trailing NUL or\n    // space but some implementations use the extra digit for big\n    // sizes/uids/gids ...\n    byte trailer = buffer[end - 1];\n    if (trailer == 0 || trailer == ' '){\n        end--;\n    } else {\n        throw new IllegalArgumentException(\n                exceptionMessage(buffer, offset, length, end-1, trailer));\n    }\n    trailer = buffer[end - 1];\n    while (start < end - 1 && (trailer == 0 || trailer == ' ')) {\n        end--;\n        trailer = buffer[end - 1];\n    }\n\n    for ( ;start < end; start++) {\n        final byte currentByte = buffer[start];\n        // CheckStyle:MagicNumber OFF\n        if (currentByte < '0' || currentByte > '7'){\n            throw new IllegalArgumentException(\n                    exceptionMessage(buffer, offset, length, start, currentByte));\n        }\n        result = (result << 3) + (currentByte - '0'); // convert from ASCII\n        // CheckStyle:MagicNumber ON\n    }\n\n    return result;\n}",
+    "patches": [
+      {
+        "patch_code": "/**\n * Parse an octal string from a header buffer. This is used for the\n * file permission mode value.\n *\n * @param buffer The header buffer from which to parse.\n * @param offset The offset into the buffer from which to parse.\n * @param length The number of header bytes to parse.\n * @return The long value of the octal string.\n * @throws IllegalArgumentException if the trailing space/NUL is missing or if a invalid byte is detected.\n */\npublic static long parseOctal(final byte[] buffer, final int offset, final int length) {\n    long    result = 0;\n    int     end = offset + length;\n    int     start = offset;\n\n    if (length < 2){\n        throw new IllegalArgumentException(\"Length \"+length+\" must be at least 2\");\n    }\n\n    if (buffer[start] == 0) {\n        return 0L;\n    }\n\n    // Skip leading spaces\n    while (start < end){\n        if (buffer[start] == ' '){\n            start++;\n        } else {\n            break;\n        }\n    }\n\n    // Skip trailing NULs and spaces.\n    // The ustar and POSIX tar specs require a trailing NUL or\n    // space but some implementations use the extra digit for big\n    // sizes/uids/gids ...\n    byte trailer = buffer[end - 1];\n    while (start < end && (trailer == 0 || trailer == ' ')) {\n        end--;\n        if (start < end) {\n            trailer = buffer[end - 1];\n        }\n    }\n\n    for ( ;start < end; start++) {\n        final byte currentByte = buffer[start];\n        // CheckStyle:MagicNumber OFF\n        if (currentByte < '0' || currentByte > '7'){\n            throw new IllegalArgumentException(\n                    exceptionMessage(buffer, offset, length, start, currentByte));\n        }\n        result = (result << 3) + (currentByte - '0'); // convert from ASCII\n        // CheckStyle:MagicNumber ON\n    }\n\n    return result;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 73.68,
+        "atd": 686.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static long parseOctal(final byte[] buffer, final int offset, final int length) {\n    long    result = 0;\n    int     end = offset + length;\n    int     start = offset;\n\n    if (length < 2){\n        throw new IllegalArgumentException(\"Length \"+length+\" must be at least 2\");\n    }\n\n    if (buffer[start] == 0) {\n        return 0L;\n    }\n\n    // Skip leading spaces\n    while (start < end){\n        if (buffer[start] == ' '){\n            start++;\n        } else {\n            break;\n        }\n    }\n\n    // Trim all trailing NULs and spaces.\n    // The ustar and POSIX tar specs require a trailing NUL or\n    // space but some implementations use the extra digit for big\n    // sizes/uids/gids ...\n    byte trailer = buffer[end - 1];\n    if (trailer == 0 || trailer == ' '){\n        end--;\n    } else {\n        // Allow non-space, non-null trailer for large values\n        // This handles the case where implementations use the extra digit\n    }\n    trailer = buffer[end - 1];\n    while (start < end - 1 && (trailer == 0 || trailer == ' ')) {\n        end--;\n        trailer = buffer[end - 1];\n    }\n\n    for ( ;start < end; start++) {\n        final byte currentByte = buffer[start];\n        // CheckStyle:MagicNumber OFF\n        if (currentByte < '0' || currentByte > '7'){\n            throw new IllegalArgumentException(\n                    exceptionMessage(buffer, offset, length, start, currentByte));\n        }\n        result = (result << 3) + (currentByte - '0'); // convert from ASCII\n        // CheckStyle:MagicNumber ON\n    }\n\n    return result;\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 96.15,
+        "atd": 96.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Chart-10",
+    "buggy_code": "public String generateToolTipFragment(String toolTipText) {\n    return \" title=\\\"\" + toolTipText\n        + \"\\\" alt=\\\"\\\"\";\n}",
+    "patches": [
+      {
+        "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    if (toolTipText == null) {\n        return \" title=\\\"\\\" alt=\\\"\\\"\";\n    }\n    return \" title=\\\"\" + toolTipText.replace(\"\\\"\", \"&quot;\") \n        + \"\\\" alt=\\\"\\\"\";\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 42.86,
+        "atd": 101.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    if (toolTipText == null) {\n        return \" alt=\\\"\\\"\";\n    }\n    return \" title=\\\"\" + escapeHtml(toolTipText) + \"\\\" alt=\\\"\\\"\";\n}\n\nprivate String escapeHtml(String text) {\n    if (text == null) {\n        return null;\n    }\n    return text.replace(\"&\", \"&amp;\")\n               .replace(\"\\\"\", \"&quot;\")\n               .replace(\"<\", \"&lt;\")\n               .replace(\">\", \"&gt;\");\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 12.5,
+        "atd": 321.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "JxPath-21",
+    "buggy_code": "public int getLength() {\n    return ValueUtils.getLength(getBaseValue());\n}",
+    "patches": [
+      {
+        "patch_code": "public static boolean equal(Object l, Object r) {\n    if (l == r) {\n        return true;\n    }\n    if (l == null || r == null) {\n        return false;\n    }\n    if (l instanceof Number && r instanceof Number) {\n        return ((Number) l).doubleValue() == ((Number) r).doubleValue();\n    }\n    return l.equals(r);\n}\n\npublic static boolean notEqual(Object l, Object r) {\n    if (l == r) {\n        return false;\n    }\n    if (l == null || r == null) {\n        return true;\n    }\n    if (l instanceof Number && r instanceof Number) {\n        return ((Number) l).doubleValue() != ((Number) r).doubleValue();\n    }\n    return !l.equals(r);\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 4.0,
+        "atd": 575.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public int getLength() {\n    Object value = getBaseValue();\n    if (value == null) {\n        return 1; // null should be treated as a single value\n    }\n    return ValueUtils.getLength(value);\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 28.57,
+        "atd": 135.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-33",
+    "buggy_code": "public void matchConstraint(ObjectType constraintObj) {\n  // We only want to match contraints on anonymous types.\n\n  // Handle the case where the constraint object is a record type.\n  //\n  // param constraintObj {{prop: (number|undefined)}}\n  // function f(constraintObj) {}\n  // f({});\n  //\n  // We want to modify the object literal to match the constraint, by\n  // taking any each property on the record and trying to match\n  // properties on this object.\n  if (constraintObj.isRecordType()) {\n    for (String prop : constraintObj.getOwnPropertyNames()) {\n      JSType propType = constraintObj.getPropertyType(prop);\n      if (!isPropertyTypeDeclared(prop)) {\n        JSType typeToInfer = propType;\n        if (!hasProperty(prop)) {\n          typeToInfer = getNativeType(JSTypeNative.VOID_TYPE)\n              .getLeastSupertype(propType);\n        }\n        defineInferredProperty(prop, typeToInfer, null);\n      }\n    }\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "public void matchConstraint(ObjectType constraintObj) {\n  // We only want to match contraints on anonymous types.\n\n  // Handle the case where the constraint object is a record type.\n  //\n  // param constraintObj {{prop: (number|undefined)}}\n  // function f(constraintObj) {}\n  // f({});\n  //\n  // We want to modify the object literal to match the constraint, by\n  // taking any each property on the record and trying to match\n  // properties on this object.\n  if (constraintObj.isRecordType()) {\n    for (String prop : constraintObj.getOwnPropertyNames()) {\n      JSType propType = constraintObj.getPropertyType(prop);\n      if (!isPropertyTypeDeclared(prop)) {\n        if (!hasProperty(prop)) {\n          // If this object doesn't have the property, we should not\n          // infer that it might be undefined. Instead, we should only\n          // match the constraint for properties that actually exist\n          // on this object, or define the property with the exact\n          // type from the constraint (not a union with undefined).\n          defineInferredProperty(prop, propType, null);\n        } else {\n          // If the property already exists, ensure its type is compatible\n          JSType existingType = getPropertyType(prop);\n          if (!existingType.isSubtype(propType)) {\n            defineInferredProperty(prop, propType, null);\n          }\n        }\n      }\n    }\n  }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 64.71,
+        "atd": 537.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void matchConstraint(ObjectType constraintObj) {\n  // We only want to match contraints on anonymous types.\n\n  // Handle the case where the constraint object is a record type.\n  //\n  // param constraintObj {{prop: (number|undefined)}}\n  // function f(constraintObj) {}\n  // f({});\n  //\n  // We want to modify the object literal to match the constraint, by\n  // taking any each property on the record and trying to match\n  // properties on this object.\n  if (constraintObj.isRecordType()) {\n    for (String prop : constraintObj.getOwnPropertyNames()) {\n      JSType propType = constraintObj.getPropertyType(prop);\n      if (!isPropertyTypeDeclared(prop)) {\n        if (!hasProperty(prop)) {\n          defineInferredProperty(prop, propType, null);\n        } else {\n          defineInferredProperty(prop, propType, null);\n        }\n      }\n    }\n  }\n}",
+        "patch_status": "RELEVANT_ERROR",
+        "ccr": 88.0,
+        "atd": 139.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-124",
+    "buggy_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n    node = node.getFirstChild();\n  if (node.isName()\n      && isNameAssignedTo(node.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  Node firstChild = node.getFirstChild();\n  if (firstChild.isName()\n      && isNameAssignedTo(firstChild.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 80.0,
+        "atd": 34.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  // Check all children in the property access chain\n  Node current = node.getFirstChild();\n  while (current != null && current.isGetProp()) {\n    if (current.isName() && isNameAssignedTo(current.getString(), replacement)) {\n      return false;\n    }\n    current = current.getFirstChild();\n  }\n  \n  // Check the final base name\n  if (current != null && current.isName() && isNameAssignedTo(current.getString(), replacement)) {\n    return false;\n  }\n\n  return true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 52.17,
+        "atd": 319.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-27",
+    "buggy_code": "static String getCharsetFromContentType(String contentType) {\n    if (contentType == null) return null;\n    Matcher m = charsetPattern.matcher(contentType);\n    if (m.find()) {\n        String charset = m.group(1).trim();\n        charset = charset.toUpperCase(Locale.ENGLISH);\n        return charset;\n    }\n    return null;\n}",
+    "patches": [
+      {
+        "patch_code": "static String getCharsetFromContentType(String contentType) {\n    if (contentType == null) return null;\n    Matcher m = charsetPattern.matcher(contentType);\n    if (m.find()) {\n        String charset = m.group(1).trim();\n        if (charset.isEmpty()) return null;\n        charset = charset.toUpperCase(Locale.ENGLISH);\n        // Normalize common charset name variations\n        if (charset.startsWith(\"UFT8\") || \"UFT8\".equals(charset)) {\n            charset = \"UTF-8\";\n        } else if (charset.startsWith(\"UFT-8\")) {\n            charset = \"UTF-8\";\n        }\n        return charset;\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 58.82,
+        "atd": 286.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "static String getCharsetFromContentType(String contentType) {\n    if (contentType == null) return null;\n    Matcher m = charsetPattern.matcher(contentType);\n    if (m.find()) {\n        String charset = m.group(1).trim();\n        charset = charset.replace(\"UFT8\", \"UTF-8\"); // Fix common typo\n        charset = charset.toUpperCase(Locale.ENGLISH);\n        return charset;\n    }\n    return null;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 90.91,
+        "atd": 71.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-87",
+    "buggy_code": "private boolean isFoldableExpressBlock(Node n) {\n  if (n.getType() == Token.BLOCK) {\n    if (n.hasOneChild()) {\n      Node maybeExpr = n.getFirstChild();\n        // IE has a bug where event handlers behave differently when\n        // their return value is used vs. when their return value is in\n        // an EXPR_RESULT. It's pretty freaking weird. See:\n        // http://code.google.com/p/closure-compiler/issues/detail?id=291\n        // We try to detect this case, and not fold EXPR_RESULTs\n        // into other expressions.\n\n          // We only have to worry about methods with an implicit 'this'\n          // param, or this doesn't happen.\n\n        return NodeUtil.isExpressionNode(maybeExpr);\n    }\n  }\n\n  return false;\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean isFoldableExpressBlock(Node n) {\n  if (n.getType() == Token.BLOCK) {\n    if (n.hasOneChild()) {\n      Node maybeExpr = n.getFirstChild();\n      // IE has a bug where event handlers behave differently when\n      // their return value is used vs. when their return value is in\n      // an EXPR_RESULT. It's pretty freaking weird. See:\n      // http://code.google.com/p/closure-compiler/issues/detail?id=291\n      // We try to detect this case, and not fold EXPR_RESULTs\n      // into other expressions.\n\n      // We only have to worry about methods with an implicit 'this'\n      // param, or this doesn't happen.\n      if (NodeUtil.isExpressionNode(maybeExpr)) {\n        Node expr = maybeExpr.getFirstChild();\n        // Don't fold if this is a call that might be an event handler\n        // with an implicit 'this' parameter\n        if (expr.getType() == Token.CALL) {\n          Node function = expr.getFirstChild();\n          // Check if this might be an event handler call\n          if (function.getType() == Token.GETPROP) {\n            String propName = function.getLastChild().getString();\n            // Common event handler property names\n            if (\"onchange\".equals(propName) || \"onclick\".equals(propName) ||\n                \"onsubmit\".equals(propName) || \"onload\".equals(propName) ||\n                \"onunload\".equals(propName) || \"onblur\".equals(propName) ||\n                \"onfocus\".equals(propName) || \"onerror\".equals(propName)) {\n              return false;\n            }\n          }\n        }\n        return true;\n      }\n    }\n  }\n  return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 24.32,
+        "atd": 904.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean isFoldableExpressBlock(Node n) {\n  if (n.getType() == Token.BLOCK) {\n    if (n.hasOneChild()) {\n      Node maybeExpr = n.getFirstChild();\n      // IE has a bug where event handlers behave differently when\n      // their return value is used vs. when their return value is in\n      // an EXPR_RESULT. It's pretty freaking weird. See:\n      // http://code.google.com/p/closure-compiler/issues/detail?id=291\n      // We try to detect this case, and not fold EXPR_RESULTs\n      // into other expressions.\n\n      // We only have to worry about methods with an implicit 'this'\n      // param, or this doesn't happen.\n\n      return maybeExpr.getType() == Token.EXPR_RESULT;\n    }\n  }\n\n  return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 55.0,
+        "atd": 56.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-2",
+    "buggy_code": "private void parseStartTag() {\n    tq.consume(\"<\");\n    String tagName = tq.consumeWord();\n\n    if (tagName.length() == 0) { // doesn't look like a start tag after all; put < back on stack and handle as text\n        tq.addFirst(\"&lt;\");\n        parseTextNode();\n        return;\n    }\n\n    Attributes attributes = new Attributes();\n    while (!tq.matchesAny(\"<\", \"/>\", \">\") && !tq.isEmpty()) {\n        Attribute attribute = parseAttribute();\n        if (attribute != null)\n            attributes.put(attribute);\n    }\n\n    Tag tag = Tag.valueOf(tagName);\n    Element child = new Element(tag, baseUri, attributes);\n\n    boolean isEmptyElement = tag.isEmpty(); // empty element if empty tag (e.g. img) or self-closed el (<div/>\n    if (tq.matchChomp(\"/>\")) { // close empty element or tag\n        isEmptyElement = true;\n    } else {\n        tq.matchChomp(\">\");\n    }\n    addChildToParent(child, isEmptyElement);\n\n    // pc data only tags (textarea, script): chomp to end tag, add content as text node\n    if (tag.isData()) {\n        String data = tq.chompTo(\"</\" + tagName);\n        tq.chompTo(\">\");\n        \n        Node dataNode;\n        if (tag.equals(titleTag) || tag.equals(textareaTag)) // want to show as text, but not contain inside tags (so not a data tag?)\n            dataNode = TextNode.createFromEncoded(data, baseUri);\n        else\n            dataNode = new DataNode(data, baseUri); // data not encoded but raw (for \" in script)\n        child.appendChild(dataNode);   \n    }\n\n    // <base href>: update the base uri\n    if (child.tagName().equals(\"base\")) {\n        String href = child.absUrl(\"href\");\n        if (href.length() != 0) { // ignore <base target> etc\n            baseUri = href;\n            doc.setBaseUri(href); // set on the doc so doc.createElement(Tag) will get updated base\n        }\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "private void parseStartTag() {\n    tq.consume(\"<\");\n    String tagName = tq.consumeWord();\n\n    if (tagName.length() == 0) { // doesn't look like a start tag after all; put < back on stack and handle as text\n        tq.addFirst(\"&lt;\");\n        parseTextNode();\n        return;\n    }\n\n    Attributes attributes = new Attributes();\n    while (!tq.matchesAny(\"<\", \"/>\", \">\") && !tq.isEmpty()) {\n        Attribute attribute = parseAttribute();\n        if (attribute != null)\n            attributes.put(attribute);\n    }\n\n    Tag tag = Tag.valueOf(tagName);\n    Element child = new Element(tag, baseUri, attributes);\n\n    boolean isEmptyElement = tag.isEmpty(); // empty element if empty tag (e.g. img) or self-closed el (<div/>\n    if (tq.matchChomp(\"/>\")) { // close empty element or tag\n        isEmptyElement = true;\n    } else {\n        tq.matchChomp(\">\");\n    }\n    addChildToParent(child, isEmptyElement);\n\n    // pc data only tags (textarea, script): chomp to end tag, add content as text node\n    if (tag.isData()) {\n        // Only consume the content that is actually between the start tag and end tag\n        // Use a more precise method to find the actual end tag\n        String data = tq.chompTo(\"</\" + tagName);\n        \n        // Remove the content after the closing tag from the data\n        int closingTagPos = data.indexOf(\"</\" + tagName);\n        if (closingTagPos != -1) {\n            // Extract only the content before the closing tag\n            String scriptContent = data.substring(0, closingTagPos);\n            \n            Node dataNode;\n            if (tag.equals(titleTag) || tag.equals(textareaTag)) // want to show as text, but not contain inside tags (so not a data tag?)\n                dataNode = TextNode.createFromEncoded(scriptContent, baseUri);\n            else\n                dataNode = new DataNode(scriptContent, baseUri); // data not encoded but raw (for \" in script)\n            child.appendChild(dataNode);\n            \n            // Put back the content after the closing tag (if any) to be parsed normally\n            String afterScript = data.substring(closingTagPos);\n            if (afterScript.length() > 0) {\n                tq.addFirst(afterScript);\n            }\n        }\n        \n        tq.chompTo(\">\");\n    }\n\n    // <base href>: update the base uri\n    if (child.tagName().equals(\"base\")) {\n        String href = child.absUrl(\"href\");\n        if (href.length() != 0) { // ignore <base target> etc\n            baseUri = href;\n            doc.setBaseUri(href); // set on the doc so doc.createElement(Tag) will get updated base\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 65.15,
+        "atd": 789.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void parseStartTag() {\n    tq.consume(\"<\");\n    String tagName = tq.consumeWord();\n\n    if (tagName.length() == 0) { // doesn't look like a start tag after all; put < back on stack and handle as text\n        tq.addFirst(\"&lt;\");\n        parseTextNode();\n        return;\n    }\n\n    Attributes attributes = new Attributes();\n    while (!tq.matchesAny(\"<\", \"/>\", \">\") && !tq.isEmpty()) {\n        Attribute attribute = parseAttribute();\n        if (attribute != null)\n            attributes.put(attribute);\n    }\n\n    Tag tag = Tag.valueOf(tagName);\n    Element child = new Element(tag, baseUri, attributes);\n\n    boolean isEmptyElement = tag.isEmpty(); // empty element if empty tag (e.g. img) or self-closed el (<div/>\n    if (tq.matchChomp(\"/>\")) { // close empty element or tag\n        isEmptyElement = true;\n    } else {\n        tq.matchChomp(\">\");\n    }\n    addChildToParent(child, isEmptyElement);\n\n    // pc data only tags (textarea, script): chomp to end tag, add content as text node\n    if (tag.isData()) {\n        String data = tq.chompTo(\"</\" + tagName);\n        \n        Node dataNode;\n        if (tag.equals(titleTag) || tag.equals(textareaTag)) // want to show as text, but not contain inside tags (so not a data tag?)\n            dataNode = TextNode.createFromEncoded(data, baseUri);\n        else\n            dataNode = new DataNode(data, baseUri); // data not encoded but raw (for \" in script)\n        child.appendChild(dataNode);   \n        \n        // Match the closing tag to advance the parser past it\n        if (tq.matchChomp(\"</\" + tagName)) {\n            tq.matchChomp(\">\");\n        }\n    }\n\n    // <base href>: update the base uri\n    if (child.tagName().equals(\"base\")) {\n        String href = child.absUrl(\"href\");\n        if (href.length() != 0) { // ignore <base target> etc\n            baseUri = href;\n            doc.setBaseUri(href); // set on the doc so doc.createElement(Tag) will get updated base\n        }\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 90.74,
+        "atd": 184.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Lang-10",
+    "buggy_code": "private static StringBuilder escapeRegex(StringBuilder regex, String value, boolean unquote) {\n    boolean wasWhite= false;\n    for(int i= 0; i<value.length(); ++i) {\n        char c= value.charAt(i);\n        if(Character.isWhitespace(c)) {\n            if(!wasWhite) {\n                wasWhite= true;\n                regex.append(\"\\\\s*+\");\n            }\n            continue;\n        }\n        wasWhite= false;\n        switch(c) {\n        case '\\'':\n            if(unquote) {\n                if(++i==value.length()) {\n                    return regex;\n                }\n                c= value.charAt(i);\n            }\n            break;\n        case '?':\n        case '[':\n        case ']':\n        case '(':\n        case ')':\n        case '{':\n        case '}':\n        case '\\\\':\n        case '|':\n        case '*':\n        case '+':\n        case '^':\n        case '$':\n        case '.':\n            regex.append('\\\\');\n        }\n        regex.append(c);\n    }\n    return regex;\n}",
+    "patches": [
+      {
+        "patch_code": "private static StringBuilder escapeRegex(StringBuilder regex, String value, boolean unquote) {\n    boolean wasWhite = false;\n    for (int i = 0; i < value.length(); ++i) {\n        char c = value.charAt(i);\n        if (Character.isWhitespace(c)) {\n            if (!wasWhite) {\n                wasWhite = true;\n                regex.append(\"\\\\s+\");\n            }\n            continue;\n        }\n        wasWhite = false;\n        switch (c) {\n        case '\\'':\n            if (unquote) {\n                if (++i == value.length()) {\n                    return regex;\n                }\n                c = value.charAt(i);\n            }\n            break;\n        case '?':\n        case '[':\n        case ']':\n        case '(':\n        case ')':\n        case '{':\n        case '}':\n        case '\\\\':\n        case '|':\n        case '*':\n        case '+':\n        case '^':\n        case '$':\n        case '.':\n            regex.append('\\\\');\n        }\n        regex.append(c);\n    }\n    return regex;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 70.73,
+        "atd": 17.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private static StringBuilder escapeRegex(StringBuilder regex, String value, boolean unquote) {\n    for(int i= 0; i<value.length(); ++i) {\n        char c= value.charAt(i);\n        if(Character.isWhitespace(c)) {\n            regex.append(\"\\\\s+\");\n            continue;\n        }\n        switch(c) {\n        case '\\'':\n            if(unquote) {\n                if(++i==value.length()) {\n                    return regex;\n                }\n                c= value.charAt(i);\n            }\n            break;\n        case '?':\n        case '[':\n        case ']':\n        case '(':\n        case ')':\n        case '{':\n        case '}':\n        case '\\\\':\n        case '|':\n        case '*':\n        case '+':\n        case '^':\n        case '$':\n        case '.':\n            regex.append('\\\\');\n        }\n        regex.append(c);\n    }\n    return regex;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 97.22,
+        "atd": 133.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-19",
+    "buggy_code": "private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n    // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.\n    // rels without a baseuri get removed\n    String value = el.absUrl(attr.getKey());\n    if (!preserveRelativeLinks)\n        attr.setValue(value);\n    \n    for (Protocol protocol : protocols) {\n        String prot = protocol.toString() + \":\";\n        if (value.toLowerCase().startsWith(prot)) {\n            return true;\n        }\n    }\n    return false;\n}",
+    "patches": [
+      {
+        "patch_code": "private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n    // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.\n    // rels without a baseuri get removed\n    String value = el.absUrl(attr.getKey());\n    if (!preserveRelativeLinks)\n        attr.setValue(value);\n    \n    // Special handling for cid: protocol which may not resolve properly with absUrl\n    String originalValue = attr.getValue();\n    if (originalValue.toLowerCase().startsWith(\"cid:\")) {\n        return true;\n    }\n    \n    for (Protocol protocol : protocols) {\n        String prot = protocol.toString() + \":\";\n        if (value.toLowerCase().startsWith(prot)) {\n            return true;\n        }\n    }\n    return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 71.43,
+        "atd": 219.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {\n    // For attributes containing URI values, we need to handle cid: scheme specially\n    // since it's a valid URI scheme but el.absUrl() may not handle it correctly\n    String attrValue = attr.getValue();\n    \n    // Check if this is a cid: URI - if so, handle it separately\n    if (attrValue != null && attrValue.toLowerCase().startsWith(\"cid:\")) {\n        // For cid: URIs, we should preserve them as-is without attempting to resolve\n        if (!preserveRelativeLinks) {\n            // Even if not preserving relative links, cid: should remain unchanged\n            // as it's an absolute URI scheme\n            attr.setValue(attrValue);\n        }\n        \n        // Check if cid protocol is allowed\n        for (Protocol protocol : protocols) {\n            if (\"cid\".equalsIgnoreCase(protocol.toString())) {\n                return true;\n            }\n        }\n        return false;\n    }\n    \n    // For non-cid URIs, use the original logic\n    String value = el.absUrl(attr.getKey());\n    if (!preserveRelativeLinks && !attrValue.toLowerCase().startsWith(\"cid:\")) {\n        attr.setValue(value);\n    }\n    \n    for (Protocol protocol : protocols) {\n        String prot = protocol.toString() + \":\";\n        if (value.toLowerCase().startsWith(prot)) {\n            return true;\n        }\n    }\n    return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 32.43,
+        "atd": 891.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-55",
+    "buggy_code": "void read(Tokeniser t, CharacterReader r) {\n    char c = r.consume();\n    switch (c) {\n        case '>':\n            t.tagPending.selfClosing = true;\n            t.emitTagPending();\n            t.transition(Data);\n            break;\n        case eof:\n            t.eofError(this);\n            t.transition(Data);\n            break;\n        default:\n            t.error(this);\n            t.transition(BeforeAttributeName);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "void read(Tokeniser t, CharacterReader r) {\n    char c = r.consume();\n    switch (c) {\n        case '>':\n            t.tagPending.selfClosing = true;\n            t.emitTagPending();\n            t.transition(Data);\n            break;\n        case '/':\n            t.error(this);\n            if (r.matchesLetter()) {\n                t.createTagPending(false);\n                t.tagPending.appendTagName('/');\n                t.transition(TagName);\n            } else {\n                t.transition(BeforeAttributeName);\n            }\n            break;\n        case eof:\n            t.eofError(this);\n            t.transition(Data);\n            break;\n        default:\n            t.error(this);\n            t.transition(BeforeAttributeName);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 62.96,
+        "atd": 318.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "void read(Tokeniser t, CharacterReader r) {\n    char c = r.consume();\n    switch (c) {\n        case '>':\n            t.tagPending.selfClosing = true;\n            t.emitTagPending();\n            t.transition(Data);\n            break;\n        case eof:\n            t.eofError(this);\n            t.transition(Data);\n            break;\n        default:\n            t.error(this);\n            r.unconsume(); // Return the consumed character to the reader\n            t.transition(BeforeAttributeName);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 94.44,
+        "atd": 74.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Cli-33",
+    "buggy_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n    {\n        StringBuffer sb = new StringBuffer(text.length());\n\n        renderWrappedText(sb, width, nextLineTabStop, text);\n        pw.println(sb.toString());\n    }",
+    "patches": [
+      {
+        "patch_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n{\n    StringBuffer sb = new StringBuffer(text.length());\n\n    renderWrappedTextBlock(sb, width, nextLineTabStop, text);\n    pw.println(sb.toString());\n}\n\n/**\n * Render the specified text as a wrapped block with preserved whitespace.\n */\nprotected void renderWrappedTextBlock(StringBuffer sb, int width, \n                                     int nextLineTabStop, String text)\n{\n    if (text == null) {\n        return;\n    }\n    \n    // Split the text into lines while preserving original line breaks and whitespace\n    String[] lines = text.split(\"\\n\", -1); // -1 to preserve trailing empty lines\n    \n    for (int i = 0; i < lines.length; i++) {\n        if (i > 0) {\n            sb.append(getNewLine());\n        }\n        renderWrappedText(sb, width, nextLineTabStop, lines[i]);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 10.71,
+        "atd": 639.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void printWrapped(PrintWriter pw, int width, int nextLineTabStop, String text)\n{\n    // If this is footer text with explicit formatting, preserve the formatting\n    if (text != null && text.contains(\"\\n\")) {\n        // For multi-line text, print it as-is to preserve formatting\n        pw.println(text);\n    } else {\n        StringBuffer sb = new StringBuffer(text.length());\n        renderWrappedText(sb, width, nextLineTabStop, text);\n        pw.println(sb.toString());\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 41.67,
+        "atd": 235.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-99",
+    "buggy_code": "public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {\n\n  if (n.getType() == Token.FUNCTION) {\n    // Don't traverse functions that are constructors or have the @this\n    // or @override annotation.\n    JSDocInfo jsDoc = getFunctionJsDocInfo(n);\n    if (jsDoc != null &&\n        (jsDoc.isConstructor() ||\n         jsDoc.hasThisType() ||\n         jsDoc.isOverride())) {\n      return false;\n    }\n\n    // Don't traverse functions unless they would normally\n    // be able to have a @this annotation associated with them. e.g.,\n    // var a = function() { }; // or\n    // function a() {} // or\n    // a.x = function() {};\n    int pType = parent.getType();\n    if (!(pType == Token.BLOCK ||\n          pType == Token.SCRIPT ||\n          pType == Token.NAME ||\n          pType == Token.ASSIGN)) {\n      return false;\n    }\n  }\n\n  if (parent != null && parent.getType() == Token.ASSIGN) {\n    Node lhs = parent.getFirstChild();\n    Node rhs = lhs.getNext();\n    \n    if (n == lhs) {\n      // Always traverse the left side of the assignment. To handle\n      // nested assignments properly (e.g., (a = this).property = c;),\n      // assignLhsChild should not be overridden.\n      if (assignLhsChild == null) {\n        assignLhsChild = lhs;\n      }\n    } else {\n      // Only traverse the right side if it's not an assignment to a prototype\n      // property or subproperty.\n        if (lhs.getType() == Token.GETPROP &&\n            lhs.getLastChild().getString().equals(\"prototype\")) {\n          return false;\n        }\n        if (lhs.getQualifiedName() != null && lhs.getQualifiedName().contains(\".prototype.\")) {\n          return false;\n        }\n    }\n  }\n\n  return true;\n}",
+    "patches": [
+      {
+        "patch_code": "public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {\n\n  if (n.getType() == Token.FUNCTION) {\n    // Don't traverse functions that are constructors or have the @this\n    // or @override annotation.\n    JSDocInfo jsDoc = getFunctionJsDocInfo(n);\n    if (jsDoc != null &&\n        (jsDoc.isConstructor() ||\n         jsDoc.hasThisType() ||\n         jsDoc.isOverride())) {\n      return false;\n    }\n\n    // Don't traverse functions unless they would normally\n    // be able to have a @this annotation associated with them. e.g.,\n    // var a = function() { }; // or\n    // function a() {} // or\n    // a.x = function() {};\n    int pType = parent.getType();\n    if (!(pType == Token.BLOCK ||\n          pType == Token.SCRIPT ||\n          pType == Token.NAME ||\n          pType == Token.ASSIGN)) {\n      return false;\n    }\n  }\n\n  if (parent != null && parent.getType() == Token.ASSIGN) {\n    Node lhs = parent.getFirstChild();\n    Node rhs = lhs.getNext();\n    \n    if (n == lhs) {\n      // Always traverse the left side of the assignment. To handle\n      // nested assignments properly (e.g., (a = this).property = c;),\n      // assignLhsChild should not be overridden.\n      if (assignLhsChild == null) {\n        assignLhsChild = lhs;\n      }\n    } else {\n      // Only traverse the right side if it's not an assignment to a prototype\n      // property or subproperty.\n      if (lhs.getType() == Token.GETPROP &&\n          lhs.getLastChild().getString().equals(\"prototype\")) {\n        return false;\n      }\n      // Also check for bracket notation: prototype[\"methodName\"]\n      if (lhs.getType() == Token.GETELEM &&\n          lhs.getFirstChild().getType() == Token.GETPROP &&\n          lhs.getFirstChild().getLastChild().getString().equals(\"prototype\") &&\n          lhs.getLastChild().getType() == Token.STRING) {\n        return false;\n      }\n      if (lhs.getQualifiedName() != null && lhs.getQualifiedName().contains(\".prototype.\")) {\n        return false;\n      }\n    }\n  }\n\n  return true;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 76.67,
+        "atd": 344.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {\n\n  if (n.getType() == Token.FUNCTION) {\n    // Don't traverse functions that are constructors or have the @this\n    // or @override annotation.\n    JSDocInfo jsDoc = getFunctionJsDocInfo(n);\n    if (jsDoc != null &&\n        (jsDoc.isConstructor() ||\n         jsDoc.hasThisType() ||\n         jsDoc.isOverride())) {\n      return false;\n    }\n\n    // Don't traverse functions unless they would normally\n    // be able to have a @this annotation associated with them. e.g.,\n    // var a = function() { }; // or\n    // function a() {} // or\n    // a.x = function() {};\n    int pType = parent.getType();\n    if (!(pType == Token.BLOCK ||\n          pType == Token.SCRIPT ||\n          pType == Token.NAME ||\n          pType == Token.ASSIGN)) {\n      return false;\n    }\n  }\n\n  if (parent != null && parent.getType() == Token.ASSIGN) {\n    Node lhs = parent.getFirstChild();\n    Node rhs = lhs.getNext();\n    \n    if (n == lhs) {\n      // Always traverse the left side of the assignment. To handle\n      // nested assignments properly (e.g., (a = this).property = c;),\n      // assignLhsChild should not be overridden.\n      if (assignLhsChild == null) {\n        assignLhsChild = lhs;\n      }\n    } else {\n      // Only traverse the right side if it's not an assignment to a prototype\n      // property or subproperty.\n        if ((lhs.getType() == Token.GETPROP || lhs.getType() == Token.GETELEM) &&\n            lhs.getLastChild().getString().equals(\"prototype\")) {\n          return false;\n        }\n        if (lhs.getQualifiedName() != null && lhs.getQualifiedName().contains(\".prototype.\")) {\n          return false;\n        }\n    }\n  }\n\n  return true;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 98.11,
+        "atd": 36.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Cli-23",
+    "buggy_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        int lastPos = pos;\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n\n            return sb;\n        } else\n        if (pos == lastPos)\n        {\n            throw new RuntimeException(\"Text too long for line - throwing exception to avoid infinite loop [CLI-162]: \" + text);\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n            return sb;\n        }\n        \n        // Check if we're making progress - if the wrap position is at or before\n        // the padding length, we can't wrap properly\n        if (pos <= nextLineTabStop)\n        {\n            throw new RuntimeException(\"Text too long for line - throwing exception to avoid infinite loop [CLI-162]: \" + text);\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 86.84,
+        "atd": 182.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected StringBuffer renderWrappedText(StringBuffer sb, int width, \n                                         int nextLineTabStop, String text)\n{\n    int pos = findWrapPos(text, width, 0);\n\n    if (pos == -1)\n    {\n        sb.append(rtrim(text));\n\n        return sb;\n    }\n    sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n\n    // all following lines must be padded with nextLineTabStop space \n    // characters\n    final String padding = createPadding(nextLineTabStop);\n\n    while (true)\n    {\n        text = padding + text.substring(pos).trim();\n        pos = findWrapPos(text, width, 0);\n\n        if (pos == -1)\n        {\n            sb.append(text);\n            return sb;\n        }\n        \n        // Check if we can't wrap the text (pos is at the beginning after padding)\n        if (pos <= nextLineTabStop)\n        {\n            // If the remaining text (after padding) is still longer than width\n            // and we can't find a wrap position, we need to break the word\n            if (text.length() > width)\n            {\n                // Force break at width position\n                sb.append(rtrim(text.substring(0, width))).append(defaultNewLine);\n                text = padding + text.substring(width).trim();\n                pos = 0; // Reset pos to continue processing\n                continue;\n            }\n            else\n            {\n                sb.append(text);\n                return sb;\n            }\n        }\n\n        sb.append(rtrim(text.substring(0, pos))).append(defaultNewLine);\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 62.75,
+        "atd": 657.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Math-84",
+    "buggy_code": "protected void iterateSimplex(final Comparator<RealPointValuePair> comparator)\n    throws FunctionEvaluationException, OptimizationException, IllegalArgumentException {\n\n    while (true) {\n\n        incrementIterationsCounter();\n\n        // save the original vertex\n        final RealPointValuePair[] original = simplex;\n        final RealPointValuePair best = original[0];\n\n        // perform a reflection step\n        final RealPointValuePair reflected = evaluateNewSimplex(original, 1.0, comparator);\n        if (comparator.compare(reflected, best) < 0) {\n\n            // compute the expanded simplex\n            final RealPointValuePair[] reflectedSimplex = simplex;\n            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);\n            if (comparator.compare(reflected, expanded) <= 0) {\n                // accept the reflected simplex\n                simplex = reflectedSimplex;\n            }\n\n            return;\n\n        }\n\n        // compute the contracted simplex\n        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);\n        if (comparator.compare(contracted, best) < 0) {\n            // accept the contracted simplex\n\n        // check convergence\n            return;\n        }\n\n    }\n\n}",
+    "patches": [
+      {
+        "patch_code": "protected void iterateSimplex(final Comparator<RealPointValuePair> comparator)\n    throws FunctionEvaluationException, OptimizationException, IllegalArgumentException {\n\n    while (true) {\n\n        incrementIterationsCounter();\n\n        // save the original vertex\n        final RealPointValuePair[] original = simplex;\n        final RealPointValuePair best = original[0];\n\n        // perform a reflection step\n        final RealPointValuePair reflected = evaluateNewSimplex(original, 1.0, comparator);\n        if (comparator.compare(reflected, best) < 0) {\n\n            // compute the expanded simplex\n            final RealPointValuePair[] reflectedSimplex = simplex;\n            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);\n            if (comparator.compare(reflected, expanded) <= 0) {\n                // accept the reflected simplex\n                simplex = reflectedSimplex;\n            }\n\n            // Check if we should continue or return\n            if (comparator.compare(simplex[0], best) < 0) {\n                // Improved solution found, continue iterating\n                continue;\n            } else {\n                // No improvement, return\n                return;\n            }\n\n        }\n\n        // compute the contracted simplex\n        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);\n        if (comparator.compare(contracted, best) < 0) {\n            // accept the contracted simplex\n            // Check if we should continue or return\n            if (comparator.compare(simplex[0], best) < 0) {\n                // Improved solution found, continue iterating\n                continue;\n            } else {\n                // No improvement, return\n                return;\n            }\n        } else {\n            // No improvement in contraction either, return\n            return;\n        }\n\n    }\n\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 66.67,
+        "atd": 635.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "protected void iterateSimplex(final Comparator<RealPointValuePair> comparator)\n    throws FunctionEvaluationException, OptimizationException, IllegalArgumentException {\n\n    while (true) {\n\n        incrementIterationsCounter();\n\n        // save the original vertex\n        final RealPointValuePair[] original = simplex;\n        final RealPointValuePair best = original[0];\n\n        // perform a reflection step\n        final RealPointValuePair reflected = evaluateNewSimplex(original, 1.0, comparator);\n        if (comparator.compare(reflected, best) < 0) {\n\n            // compute the expanded simplex\n            final RealPointValuePair[] reflectedSimplex = simplex;\n            final RealPointValuePair expanded = evaluateNewSimplex(original, khi, comparator);\n            if (comparator.compare(reflected, expanded) <= 0) {\n                // accept the reflected simplex\n                simplex = reflectedSimplex;\n            }\n\n            // check convergence\n            return;\n\n        }\n\n        // compute the contracted simplex\n        final RealPointValuePair contracted = evaluateNewSimplex(original, gamma, comparator);\n        if (comparator.compare(contracted, best) < 0) {\n            // accept the contracted simplex\n            // check convergence\n            return;\n        }\n\n        // If neither reflection nor contraction improved the solution, return to avoid infinite loop\n        return;\n\n    }\n\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 88.1,
+        "atd": 156.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Closure-44",
+    "buggy_code": "void add(String newcode) {\n  maybeEndStatement();\n\n  if (newcode.length() == 0) {\n    return;\n  }\n\n  char c = newcode.charAt(0);\n  if ((isWordChar(c) || c == '\\\\') &&\n      isWordChar(getLastChar())) {\n    // need space to separate. This is not pretty printing.\n    // For example: \"return foo;\"\n    append(\" \");\n    // Do not allow a forward slash to appear after a DIV.\n    // For example,\n    // REGEXP DIV REGEXP\n    // is valid and should print like\n    // / // / /\n  }\n\n  append(newcode);\n}",
+    "patches": [
+      {
+        "patch_code": "void add(String newcode) {\n  maybeEndStatement();\n\n  if (newcode.length() == 0) {\n    return;\n  }\n\n  char c = newcode.charAt(0);\n  char lastChar = getLastChar();\n  \n  if ((isWordChar(c) || c == '\\\\') && isWordChar(lastChar)) {\n    // need space to separate. This is not pretty printing.\n    // For example: \"return foo;\"\n    append(\" \");\n  } else if (c == '/' && lastChar == '/') {\n    // Need space to separate two regex literals.\n    // For example: / // / /\n    append(\" \");\n  }\n\n  append(newcode);\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 68.18,
+        "atd": 167.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "void add(String newcode) {\n  maybeEndStatement();\n\n  if (newcode.length() == 0) {\n    return;\n  }\n\n  char c = newcode.charAt(0);\n  if ((isWordChar(c) || c == '\\\\') &&\n      isWordChar(getLastChar()) &&\n      !(c == '/' && getLastChar() == '/')) {\n    // need space to separate. This is not pretty printing.\n    // For example: \"return foo;\"\n    append(\" \");\n    // Do not allow a forward slash to appear after a DIV.\n    // For example,\n    // REGEXP DIV REGEXP\n    // is valid and should print like\n    // / // / /\n  }\n\n  append(newcode);\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 91.3,
+        "atd": 45.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-57",
+    "buggy_code": "public void removeIgnoreCase(String key) {\n    Validate.notEmpty(key);\n    if (attributes == null)\n        return;\n    for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext(); ) {\n        String attrKey = it.next();\n        if (attrKey.equalsIgnoreCase(key))\n            attributes.remove(attrKey);\n    }\n}",
+    "patches": [
+      {
+        "patch_code": "public void removeIgnoreCase(String key) {\n    Validate.notEmpty(key);\n    if (attributes == null)\n        return;\n    for (Iterator<String> it = attributes.keySet().iterator(); it.hasNext(); ) {\n        String attrKey = it.next();\n        if (attrKey.equalsIgnoreCase(key))\n            it.remove();\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 90.0,
+        "atd": 15.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void removeIgnoreCase(String key) {\n    Validate.notEmpty(key);\n    if (attributes == null)\n        return;\n    for (Iterator<Map.Entry<String, Attribute>> it = attributes.entrySet().iterator(); it.hasNext(); ) {\n        Map.Entry<String, Attribute> entry = it.next();\n        if (entry.getKey().equalsIgnoreCase(key))\n            it.remove();\n    }\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 60.0,
+        "atd": 72.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Math-2",
+    "buggy_code": "public double getNumericalMean() {\n    return (double) (getSampleSize() * getNumberOfSuccesses()) / (double) getPopulationSize();\n}",
+    "patches": [
+      {
+        "patch_code": "public double getNumericalMean() {\n    return getSampleSize() * ((double) getNumberOfSuccesses() / (double) getPopulationSize());\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 66.67,
+        "atd": 22.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "/**\n * {@inheritDoc}\n */\npublic double getNumericalMean() {\n    return getSampleSize() * (getNumberOfSuccesses() / (double) getPopulationSize());\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 33.33,
+        "atd": 38.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Jsoup-34",
+    "buggy_code": "int nextIndexOf(CharSequence seq) {\n    // doesn't handle scanning for surrogates\n    char startChar = seq.charAt(0);\n    for (int offset = pos; offset < length; offset++) {\n        // scan to first instance of startchar:\n        if (startChar != input[offset])\n            while(++offset < length && startChar != input[offset]);\n        int i = offset + 1;\n        int last = i + seq.length()-1;\n        if (offset < length) {\n            for (int j = 1; i < last && seq.charAt(j) == input[i]; i++, j++);\n            if (i == last) // found full sequence\n                return offset - pos;\n        }\n    }\n    return -1;\n}",
+    "patches": [
+      {
+        "patch_code": "int nextIndexOf(CharSequence seq) {\n    // doesn't handle scanning for surrogates\n    char startChar = seq.charAt(0);\n    int seqLength = seq.length();\n    for (int offset = pos; offset < length; offset++) {\n        // scan to first instance of startchar:\n        if (startChar != input[offset])\n            while(++offset < length && startChar != input[offset]);\n        // Check if there's enough room for the entire sequence\n        if (offset + seqLength > length) {\n            return -1; // not enough characters left for the sequence\n        }\n        int i = offset + 1;\n        int last = i + seqLength - 1;\n        if (offset < length) {\n            for (int j = 1; i < last && seq.charAt(j) == input[i]; i++, j++);\n            if (i == last) // found full sequence\n                return offset - pos;\n        }\n    }\n    return -1;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 72.73,
+        "atd": 226.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "int nextIndexOf(CharSequence seq) {\n    // doesn't handle scanning for surrogates\n    char startChar = seq.charAt(0);\n    int seqLength = seq.length();\n    \n    for (int offset = pos; offset < length; offset++) {\n        // scan to first instance of startchar:\n        if (startChar != input[offset])\n            while(++offset < length && startChar != input[offset]);\n        \n        // Check if we found the start character and have enough remaining characters\n        if (offset < length && (offset + seqLength - 1) < length) {\n            int i = offset + 1;\n            int last = i + seqLength - 1;\n            boolean found = true;\n            \n            for (int j = 1; i < last; i++, j++) {\n                if (seq.charAt(j) != input[i]) {\n                    found = false;\n                    break;\n                }\n            }\n            \n            if (found) {\n                return offset - pos;\n            }\n        }\n    }\n    return -1;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 40.0,
+        "atd": 403.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Closure-122",
+    "buggy_code": "private void handleBlockComment(Comment comment) {\n  if (comment.getValue().indexOf(\"/* @\") != -1 || comment.getValue().indexOf(\"\\n * @\") != -1) {\n    errorReporter.warning(\n        SUSPICIOUS_COMMENT_WARNING,\n        sourceName,\n        comment.getLineno(), \"\", 0);\n  }\n}",
+    "patches": [
+      {
+        "patch_code": "private void handleBlockComment(Comment comment) {\n  String commentValue = comment.getValue();\n  // Only check for annotations in comments that start with /* (not /** or /*!)\n  if (!commentValue.startsWith(\"/**\") && !commentValue.startsWith(\"/*!\")) {\n    if (commentValue.indexOf(\"/* @\") != -1 || commentValue.indexOf(\"\\n * @\") != -1) {\n      errorReporter.warning(\n          SUSPICIOUS_COMMENT_WARNING,\n          sourceName,\n          comment.getLineno(), \"\", 0);\n    }\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 25.0,
+        "atd": 217.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "private void handleBlockComment(Comment comment) {\n  String commentValue = comment.getValue();\n  // Only check for suspicious annotations in non-JSDoc comments\n  if (!commentValue.startsWith(\"*\") && (commentValue.indexOf(\"/* @\") != -1 || commentValue.indexOf(\"\\n * @\") != -1)) {\n    errorReporter.warning(\n        SUSPICIOUS_COMMENT_WARNING,\n        sourceName,\n        comment.getLineno(), \"\", 0);\n  }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 70.0,
+        "atd": 146.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "JacksonDatabind-70",
+    "buggy_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm);\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            found = key.equals(prop.getName());\n            if (found) {\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        throw new NoSuchElementException(\"No entry '\"+propToRm.getName()+\"' found, can't remove\");\n    }\n    init(props);\n}",
+    "patches": [
+      {
+        "patch_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm);\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            found = key.equals(prop.getName());\n            if (found) {\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        // Check if the property exists in a different case when using case-insensitive matching\n        // This can happen with @JsonUnwrapped and ACCEPT_CASE_INSENSITIVE_PROPERTIES\n        SettableBeanProperty actualProp = find(key);\n        if (actualProp != null && actualProp.getName().equalsIgnoreCase(key)) {\n            // Property exists but with different case, remove it\n            // Re-run the removal logic with the correct case key\n            remove(actualProp);\n            return;\n        }\n        throw new NoSuchElementException(\"No entry '\"+propToRm.getName()+\"' found, can't remove\");\n    }\n    init(props);\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 75.68,
+        "atd": 510.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm);\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            found = key.equals(prop.getName());\n            if (found) {\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        // Check if we're dealing with case-insensitive properties by comparing with the case-insensitive key\n        String caseInsensitiveKey = key.toLowerCase();\n        for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n            SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n            if (prop != null && caseInsensitiveKey.equals(prop.getName().toLowerCase())) {\n                found = true;\n                break;\n            }\n        }\n        if (!found) {\n            throw new NoSuchElementException(\"No entry '\"+propToRm.getName()+\"' found, can't remove\");\n        }\n        // Rebuild the property list without the found property\n        props.clear();\n        for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n            SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n            if (prop == null) {\n                continue;\n            }\n            if (!caseInsensitiveKey.equals(prop.getName().toLowerCase())) {\n                props.add(prop);\n            } else {\n                // Remove from ordered properties\n                int orderedIndex = _findFromOrdered(prop);\n                if (orderedIndex >= 0) {\n                    _propsInOrder[orderedIndex] = null;\n                }\n            }\n        }\n    }\n    init(props);\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 48.21,
+        "atd": 1194.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "Csv-5",
+    "buggy_code": "public void println() throws IOException {\n    final String recordSeparator = format.getRecordSeparator();\n        out.append(recordSeparator);\n    newRecord = true;\n}",
+    "patches": [
+      {
+        "patch_code": "public void println() throws IOException {\n    if (!newRecord) {\n        final String recordSeparator = format.getRecordSeparator();\n        out.append(recordSeparator);\n        newRecord = true;\n    }\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 42.86,
+        "atd": 36.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public void println() throws IOException {\n    final String recordSeparator = format.getRecordSeparator();\n    if (recordSeparator != null) {\n        out.append(recordSeparator);\n    }\n    newRecord = true;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 71.43,
+        "atd": 41.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "b"
+  },
+  {
+    "bug_name": "Jsoup-70",
+    "buggy_code": "static boolean preserveWhitespace(Node node) {\n    // looks only at this element and five levels up, to prevent recursion & needless stack searches\n    if (node != null && node instanceof Element) {\n        Element el = (Element) node;\n            if (el.tag.preserveWhitespace())\n                return true;\n            else\n                return el.parent() != null && el.parent().tag.preserveWhitespace();\n    }\n    return false;\n}",
+    "patches": [
+      {
+        "patch_code": "static boolean preserveWhitespace(Node node) {\n    // looks only at this element and five levels up, to prevent recursion & needless stack searches\n    if (node != null && node instanceof Element) {\n        Element el = (Element) node;\n        int depth = 0;\n        while (el != null && depth <= 5) {\n            if (el.tag.preserveWhitespace())\n                return true;\n            el = el.parent();\n            depth++;\n        }\n    }\n    return false;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 64.29,
+        "atd": 126.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "static boolean preserveWhitespace(Node node) {\n    // looks only at this element and five levels up, to prevent recursion & needless stack searches\n    if (node != null && node instanceof Element) {\n        Element el = (Element) node;\n        if (el.tag.preserveWhitespace())\n            return true;\n        else {\n            Element parent = el.parent();\n            int i = 0;\n            while (parent != null && i++ < 5) {\n                if (parent.tag.preserveWhitespace())\n                    return true;\n                parent = parent.parent();\n            }\n        }\n    }\n    return false;\n}",
+        "patch_status": "PLAUSIBLE",
+        "ccr": 38.89,
+        "atd": 207.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  },
+  {
+    "bug_name": "JxPath-12",
+    "buggy_code": "public static boolean testNode(Node node, NodeTest test) {\n    if (test == null) {\n        return true;\n    }\n    if (test instanceof NodeNameTest) {\n        if (node.getNodeType() != Node.ELEMENT_NODE) {\n            return false;\n        }\n\n        NodeNameTest nodeNameTest = (NodeNameTest) test;\n        QName testName = nodeNameTest.getNodeName();\n        String namespaceURI = nodeNameTest.getNamespaceURI();\n        boolean wildcard = nodeNameTest.isWildcard();\n        String testPrefix = testName.getPrefix();\n        if (wildcard && testPrefix == null) {\n            return true;\n        }\n        if (wildcard\n            || testName.getName()\n                    .equals(DOMNodePointer.getLocalName(node))) {\n            String nodeNS = DOMNodePointer.getNamespaceURI(node);\n            return equalStrings(namespaceURI, nodeNS);\n        }\n        return false;\n    }\n    if (test instanceof NodeTypeTest) {\n        int nodeType = node.getNodeType();\n        switch (((NodeTypeTest) test).getNodeType()) {\n            case Compiler.NODE_TYPE_NODE :\n                return nodeType == Node.ELEMENT_NODE\n                        || nodeType == Node.DOCUMENT_NODE;\n            case Compiler.NODE_TYPE_TEXT :\n                return nodeType == Node.CDATA_SECTION_NODE\n                    || nodeType == Node.TEXT_NODE;\n            case Compiler.NODE_TYPE_COMMENT :\n                return nodeType == Node.COMMENT_NODE;\n            case Compiler.NODE_TYPE_PI :\n                return nodeType == Node.PROCESSING_INSTRUCTION_NODE;\n        }\n        return false;\n    }\n    if (test instanceof ProcessingInstructionTest) {\n        if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {\n            String testPI = ((ProcessingInstructionTest) test).getTarget();\n            String nodePI = ((ProcessingInstruction) node).getTarget();\n            return testPI.equals(nodePI);\n        }\n    }\n    return false;\n}",
+    "patches": [
+      {
+        "patch_code": "public static boolean testNode(Node node, NodeTest test) {\n    if (test == null) {\n        return true;\n    }\n    if (test instanceof NodeNameTest) {\n        if (node.getNodeType() != Node.ELEMENT_NODE && node.getNodeType() != Node.ATTRIBUTE_NODE) {\n            return false;\n        }\n\n        NodeNameTest nodeNameTest = (NodeNameTest) test;\n        QName testName = nodeNameTest.getNodeName();\n        String namespaceURI = nodeNameTest.getNamespaceURI();\n        boolean wildcard = nodeNameTest.isWildcard();\n        String testPrefix = testName.getPrefix();\n        if (wildcard && testPrefix == null) {\n            return true;\n        }\n        if (wildcard\n            || testName.getName()\n                    .equals(DOMNodePointer.getLocalName(node))) {\n            String nodeNS = DOMNodePointer.getNamespaceURI(node);\n            return equalStrings(namespaceURI, nodeNS);\n        }\n        return false;\n    }\n    if (test instanceof NodeTypeTest) {\n        int nodeType = node.getNodeType();\n        switch (((NodeTypeTest) test).getNodeType()) {\n            case Compiler.NODE_TYPE_NODE :\n                return nodeType == Node.ELEMENT_NODE\n                        || nodeType == Node.DOCUMENT_NODE;\n            case Compiler.NODE_TYPE_TEXT :\n                return nodeType == Node.CDATA_SECTION_NODE\n                    || nodeType == Node.TEXT_NODE;\n            case Compiler.NODE_TYPE_COMMENT :\n                return nodeType == Node.COMMENT_NODE;\n            case Compiler.NODE_TYPE_PI :\n                return nodeType == Node.PROCESSING_INSTRUCTION_NODE;\n        }\n        return false;\n    }\n    if (test instanceof ProcessingInstructionTest) {\n        if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {\n            String testPI = ((ProcessingInstructionTest) test).getTarget();\n            String nodePI = ((ProcessingInstruction) node).getTarget();\n            return testPI.equals(nodePI);\n        }\n    }\n    return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 98.0,
+        "atd": 45.0,
+        "label": "a"
+      },
+      {
+        "patch_code": "public static boolean testNode(Node node, NodeTest test) {\n    if (test == null) {\n        return true;\n    }\n    if (test instanceof NodeNameTest) {\n        // Handle attribute nodes differently from element nodes\n        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {\n            NodeNameTest nodeNameTest = (NodeNameTest) test;\n            QName testName = nodeNameTest.getNodeName();\n            String namespaceURI = nodeNameTest.getNamespaceURI();\n            boolean wildcard = nodeNameTest.isWildcard();\n            String testPrefix = testName.getPrefix();\n            \n            if (wildcard && testPrefix == null) {\n                return true;\n            }\n            \n            // For attributes, we need to handle namespace resolution differently\n            String nodeName = node.getNodeName();\n            String nodeLocalName = node.getLocalName();\n            String nodeNS = node.getNamespaceURI();\n            \n            // If the node has a prefix but no namespace URI, we need to resolve it\n            if (nodeNS == null && nodeName.contains(\":\")) {\n                // This is where we need better namespace resolution for attributes\n                // The actual resolution should happen in the calling context\n                return wildcard || testName.getName().equals(nodeLocalName);\n            }\n            \n            if (wildcard || testName.getName().equals(nodeLocalName)) {\n                return equalStrings(namespaceURI, nodeNS);\n            }\n            return false;\n        }\n        else if (node.getNodeType() == Node.ELEMENT_NODE) {\n            NodeNameTest nodeNameTest = (NodeNameTest) test;\n            QName testName = nodeNameTest.getNodeName();\n            String namespaceURI = nodeNameTest.getNamespaceURI();\n            boolean wildcard = nodeNameTest.isWildcard();\n            String testPrefix = testName.getPrefix();\n            if (wildcard && testPrefix == null) {\n                return true;\n            }\n            if (wildcard\n                || testName.getName()\n                        .equals(DOMNodePointer.getLocalName(node))) {\n                String nodeNS = DOMNodePointer.getNamespaceURI(node);\n                return equalStrings(namespaceURI, nodeNS);\n            }\n            return false;\n        }\n        return false;\n    }\n    if (test instanceof NodeTypeTest) {\n        int nodeType = node.getNodeType();\n        switch (((NodeTypeTest) test).getNodeType()) {\n            case Compiler.NODE_TYPE_NODE :\n                return nodeType == Node.ELEMENT_NODE\n                        || nodeType == Node.DOCUMENT_NODE;\n            case Compiler.NODE_TYPE_TEXT :\n                return nodeType == Node.CDATA_SECTION_NODE\n                    || nodeType == Node.TEXT_NODE;\n            case Compiler.NODE_TYPE_COMMENT :\n                return nodeType == Node.COMMENT_NODE;\n            case Compiler.NODE_TYPE_PI :\n                return nodeType == Node.PROCESSING_INSTRUCTION_NODE;\n        }\n        return false;\n    }\n    if (test instanceof ProcessingInstructionTest) {\n        if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE) {\n            String testPI = ((ProcessingInstructionTest) test).getTarget();\n            String nodePI = ((ProcessingInstruction) node).getTarget();\n            return testPI.equals(nodePI);\n        }\n    }\n    return false;\n}",
+        "patch_status": "TRIGGER_ERROR",
+        "ccr": 44.87,
+        "atd": 1448.0,
+        "label": "b"
+      }
+    ],
+    "ccr_label": "a"
+  }
+]
