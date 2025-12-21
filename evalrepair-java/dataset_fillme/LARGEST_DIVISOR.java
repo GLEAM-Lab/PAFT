@@ -1,0 +1,13 @@
+package humaneval.buggy;
+
+public class LARGEST_DIVISOR {
+    public static int largest_divisor(int n) {
+// buggy code
+//         for (int i = n; i >= 0; i -= 1){
+                <FILL_ME>
+            if (n % i == 0)
+                return i;
+        }
+        return 1;
+    }
+}

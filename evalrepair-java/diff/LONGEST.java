@@ -1,0 +1,22 @@
+package humaneval.buggy;
+
+import java.util.List;
+
+public class LONGEST {
+    public static String longest(List<String> strings){
+        int maxlen = 0;
+        for (String string : strings){
+// buggy code
+//             if (strings.size() > string.length()){
+//                 maxlen = strings.size();
+                <FILL_ME>
+            }
+        }
+        for (String string : strings){
+            if (string.length() == maxlen){
+                return string;
+            }
+        }
+        return null;
+    }
+}

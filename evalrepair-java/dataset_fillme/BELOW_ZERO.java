@@ -1,0 +1,18 @@
+package humaneval.buggy;
+
+import java.util.List;
+
+public class BELOW_ZERO {
+    public static boolean below_zero(List<Integer> operations) {
+        int balance = 0;
+        for (Integer op : operations){
+            balance += op;
+// buggy code
+//             if (balance > 0){
+//                 return false;
+//             } 
+//         } 
+//         return true;
+                <FILL_ME>
+    }
+}

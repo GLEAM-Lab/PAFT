@@ -1,0 +1,9 @@
+package humaneval.buggy;
+
+public class TRUNCATE_NUMBER {
+    public static double truncate_number(double number) {
+// buggy code
+//         return number / 1.0;
+                <FILL_ME>
+    }
+}

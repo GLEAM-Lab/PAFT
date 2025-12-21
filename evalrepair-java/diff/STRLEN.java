@@ -1,0 +1,9 @@
+package humaneval.buggy;
+
+public class STRLEN {
+    public static int strlen(String string){
+// buggy code
+//         return string.length() - 1;
+                <FILL_ME>
+    }
+}

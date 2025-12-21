@@ -1,0 +1,15 @@
+package humaneval.buggy;
+
+public class HOW_MANY_TIMES {
+    public static int how_many_times(String string, String substring) {
+        int times = 0;
+// buggy code
+//         for (int i = 0; i < string.length() - substring.length(); i += 1) {
+                <FILL_ME>
+            if (string.substring(i, i + substring.length()).equals(substring)){
+                times += 1;
+            }
+        }
+        return times;
+    }
+}
