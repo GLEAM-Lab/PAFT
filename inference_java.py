@@ -271,19 +271,12 @@ MODEL_CONFIGS = {
     'qwen3-8b': {
         'model_path': 'model/qwen3-8b',
     },
-    'qwen3-4b-nothink': {
-        # 示例：已修改为从 Hugging Face Hub 加载
-        'model_path': 'model/qwen3-4b',
-    },
 
     'qwen3-8b-nopro': {
         'model_path': 'merged_models/qwen3-8b-trained-noprompt',
     },
     'qwen3-8b-parepair': {
         'model_path': 'merged_models/qwen3-8b-prarepair',
-    },
-    'qwen3-4b-parepair': {
-        'model_path': 'merged_models/qwen3-4b-parepair',
     },
     'llama3.1-8b': {
         'model_path': 'model/Llama-3-8B-Instruct',
@@ -548,11 +541,11 @@ if __name__ == '__main__':
     
     if len(sys.argv) >= 3:
         if sys.argv[1] == '--reextract':
-            # 格式1: python inference_java.py --reextract qwen3-4b
+            # 格式1: python inference_java.py --reextract <result_tag>
             reextract_mode = True
             result_tag = sys.argv[2]
         elif sys.argv[2] == '--reextract':
-            # 格式2: python inference_java.py qwen3-4b --reextract
+            # 格式2: python inference_java.py <result_tag> --reextract
             reextract_mode = True
             result_tag = sys.argv[1]
     
@@ -561,8 +554,8 @@ if __name__ == '__main__':
         if not result_tag:
             print(f"使用方法: python {sys.argv[0]} --reextract <result_tag>")
             print(f"    或者: python {sys.argv[0]} <result_tag> --reextract")
-            print("示例: python inference_java.py --reextract qwen3-4b")
-            print("      python inference_java.py qwen3-4b --reextract")
+            print("示例: python inference_java.py --reextract qwen3-8b")
+            print("      python inference_java.py qwen3-8b --reextract")
             print("将从 EOF 之后找 package，然后往前定位 ```java 代码块")
             print("如果找不到 package，将删除对应的 .java 和 .log 文件")
             sys.exit(1)

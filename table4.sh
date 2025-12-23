@@ -12,11 +12,10 @@ echo ""
 
 # 1) Qwen3 series: base + PAFT + SFT
 echo "------------------------------------------"
-echo "Qwen3  (qwen3-8b, qwen3-8b-paft, qwen3-8b-sft, qwen3-4b, qwen3-4b-paft, qwen3-4b-sft)"
+echo "Qwen3  (qwen3-8b, qwen3-8b-paft, qwen3-8b-sft)"
 echo "------------------------------------------"
 for MODEL in \
-    "qwen3-8b" "qwen3-8b-paft" "qwen3-8b-sft" \
-    "qwen3-4b" "qwen3-4b-paft" "qwen3-4b-sft"; do
+    "qwen3-8b" "qwen3-8b-paft" "qwen3-8b-sft"; do
     echo ""
     echo ">>> Model: $MODEL"
     echo "--- calc_java.py results (Pass@k, CCR) ---"

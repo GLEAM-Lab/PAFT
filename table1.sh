@@ -6,7 +6,7 @@
 set -e
 
 # List of models to display
-MODELS=("qwen3-8b" "qwen3-4b" "deepseek-v3" "opencoder8b" "qwen3-max")
+MODELS=("qwen3-8b" "deepseek-v3" "opencoder8b" "qwen3-max")
 NUM_GENERATIONS=${1:-10}
 
 echo "=========================================="

@@ -574,19 +574,12 @@ if not training_completed:
 else:
     print("训练已完成，跳过训练步骤，直接进行模型合并")
 
-# 准备合并目录 - 使用 autodl-tmp 以获得更大存储空间
-# 如果在 AutoDL 平台，使用 /root/autodl-tmp；否则使用原目录
-if os.path.exists('/root/autodl-tmp'):
-    # AutoDL 平台：使用大容量临时目录
-    model_name_short = sys.argv[3]  # 使用命令行参数中的模型名称
-    codellama_merged_dir = os.path.join('/root/autodl-tmp', 'models', model_name_short, 'codellama_merged')
-    print(f"检测到 AutoDL 平台，合并模型将保存到: {codellama_merged_dir}")
-else:
-    # 本地或其他平台：使用原目录
-    codellama_merged_dir = os.path.join(output_dir, 'codellama_merged')
-    print(f"合并模型将保存到: {codellama_merged_dir}")
+# 准备合并目录 - 使用本地输出目录
+model_name_short = sys.argv[3]  # 使用命令行参数中的模型名称
+merged_dir = os.path.join(output_dir, f'{model_name_short}_merged')
+print(f"合并模型将保存到: {merged_dir}")
 
-os.makedirs(codellama_merged_dir, exist_ok=True)
+os.makedirs(merged_dir, exist_ok=True)
 
 print('training process finished ...')
 
@@ -618,14 +611,14 @@ else:
 model = PeftModel.from_pretrained(base_model, peft_model_path)
 model = model.merge_and_unload()
 print('merge model success ...')
-model.save_pretrained(codellama_merged_dir, safe_serialization=True)
+model.save_pretrained(merged_dir, safe_serialization=True)
 
 print('merge model saved success ...')
 
 tokenizer = AutoTokenizer.from_pretrained(original_model_name, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
-tokenizer.save_pretrained(codellama_merged_dir)
+tokenizer.save_pretrained(merged_dir)
 
 wandb.finish()
 

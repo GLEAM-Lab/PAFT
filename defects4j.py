@@ -347,83 +347,51 @@ MODEL_CONFIGS = {
     
     # Qwen3 模型
     'qwen3-8b': {
-        'base_model': 'Qwen/Qwen3-8b',
-        'adapter_path': None,
+        'model_path': 'Qwen/Qwen3-8b',
         'type': 'local'
     },
     'qwen2.5coder7b': {
-        'base_model': 'Qwen/Qwen2.5-Coder-7B-Instruct',
-        'adapter_path': None
+        'model_path': 'Qwen/Qwen2.5-Coder-7B-Instruct'
     },
     'qwen2.5coder7b-paft': {
-        'base_model': 'merged_models/qwen2.5coder7b-paft',
-        'adapter_path': None
+        'model_path': 'merged_models/qwen2.5coder7b-paft'
     },
     'qwen8b-paft': {
-        'base_model': 'merged_models/qwen8b-paft',
-        'adapter_path': None
+        'model_path': 'merged_models/qwen8b-paft'
     },
     'qwen8b-sft': {
-        'base_model': 'merged_models/qwen8b-sft',
-        'adapter_path': None
+        'model_path': 'merged_models/qwen8b-sft'
     },
     'opencoder8b': {
-        'base_model': 'infly/OpenCoder-8B-Instruct',
-        'adapter_path': None
+        'model_path': 'infly/OpenCoder-8B-Instruct'
     },
     'opencoder8b-paft': {
-        'base_model': 'merged_models/opencoder8b-paft',
-        'adapter_path': None
+        'model_path': 'merged_models/opencoder8b-paft'
     },
     'opencoder8b-sft': {
-        'base_model': 'merged_models/opencoder8b-sft',
-        'adapter_path': None
+        'model_path': 'merged_models/opencoder8b-sft'
     },
-    # CodeLlama 模型
-    'codellama-7b': {
-        'base_model': 'codellama/CodeLlama-7b-Instruct-hf',
-        'adapter_path': None
-    },
-    'codellama-7b-trained': {
-        'base_model': 'merged_models/sft_codellama7b/codellama_merged',
-        'adapter_path': None
-    },
-
-    'codellama-13b': {
-        'base_model': 'codellama/CodeLlama-7b-Instruct-hf',
-        'adapter_path': None
-    },
-    'codellama-13b-trained': {
-        'base_model': 'merged_models/sft_codellama13b',
-        'adapter_path': None
-    },
+   
     'deepseek-6.7b-prompting': {
-        'base_model': 'model/deepseek-coder-6.7b',
-        'adapter_path': None
+        'model_path': 'model/deepseek-coder-6.7b'
     },
     'deepseek-6.7b-trained': {
-        'base_model': 'merged_models/sft_deepseek7b/codellama_merged',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b/codellama_merged'
     },
     'deepseek-6.7b-trained-noprompt': {
-        'base_model': 'merged_models/sft_deepseek7b_noprompt/codellama_merged',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b_noprompt/codellama_merged'
     },
     'deepseek-6.7b-trained-difficulty': {
-        'base_model': 'merged_models/sft_deepseek7b_sortedbydifficultyfirst',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b_sortedbydifficultyfirst'
     },
     'deepseek-6.7b-trained-diff': {
-        'base_model': 'merged_models/sft_deepseek7b_sortedbydifffirst',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b_sortedbydifffirst'
     },
     'deepseek-6.7b-trained-diffonly': {
-        'base_model': 'merged_models/sft_deepseek7b_sortedbydiff',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b_sortedbydiff'
     },
     'deepseek-6.7b-trained-prorepair': {
-        'base_model': 'merged_models/sft_deepseek7b_prorepair',
-        'adapter_path': None
+        'model_path': 'merged_models/sft_deepseek7b_prorepair'
     },
    
    
@@ -533,39 +501,11 @@ def merge_lora_adapter(base_model_path: str, adapter_path: str, output_path: str
 def load_vllm_model(model_config):
     from vllm import LLM
     """使用 vLLM 加载模型"""
-    base_model_path = model_config['base_model']
-    adapter_path = model_config.get('adapter_path')
-    
-    # 如果有 LoRA 适配器，先合并
-    if adapter_path and os.path.exists(adapter_path):
-        # 检查是否是 LoRA 适配器（检查 adapter_config.json）
-        adapter_config_file = os.path.join(adapter_path, "adapter_config.json")
-        if os.path.exists(adapter_config_file):
-            print(f"🔍 检测到 LoRA 适配器: {adapter_path}")
-            
-            # 生成合并后模型的路径
-            adapter_name = os.path.basename(adapter_path.rstrip('/'))
-            merged_model_path = os.path.join(
-                os.path.dirname(adapter_path),
-                f"{adapter_name}_merged"
-            )
-            
-            # 合并 LoRA
-            actual_model_path = merge_lora_adapter(
-                base_model_path,
-                adapter_path,
-                merged_model_path
-            )
-            
-            # 使用合并后的模型
-            base_model_path = actual_model_path
-            print(f"\n🚀 使用合并后的模型: {base_model_path}\n")
-        else:
-            print(f"⚠️ 路径存在但不是 LoRA 适配器，尝试直接加载: {adapter_path}")
+    model_path = model_config['model_path']
     
     # vLLM 配置
     vllm_config = {
-        "model": base_model_path,
+        "model": model_path,
         "gpu_memory_utilization": 0.9,
         "trust_remote_code": True,
         "max_model_len": 4096,
@@ -576,12 +516,12 @@ def load_vllm_model(model_config):
         "tensor_parallel_size": 1,
     }
     
-    print(f"加载vLLM模型: {base_model_path}")
+    print(f"加载vLLM模型: {model_path}")
     llm = LLM(**vllm_config)
     
     # 加载对应的 tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
-        base_model_path, 
+        model_path, 
         trust_remote_code=True,
         local_files_only=True
     )
