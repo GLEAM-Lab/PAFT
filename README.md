@@ -2,8 +2,6 @@
 
 PAFT (Preservation-Aware Fine-Tuning) is an automated program repair (APR) system that leverages LCS-weighted fine-tuning to encourage models to preserve original code structure while generating patches. This repository contains the implementation and experimental scripts for reproducing the results presented in our paper.
 
-**Project Repository**: [https://github.com/GLEAM-Lab/PAFT](https://github.com/GLEAM-Lab/PAFT)
-
 ## Overview
 
 PAFT consists of three main phases:
@@ -15,14 +13,7 @@ PAFT consists of three main phases:
 
 
 ## Quick Start
-
-1. **Clone the repository and enter the project directory**:
-   ```bash
-   git clone https://github.com/GLEAM-Lab/PAFT.git
-   cd PAFT
-   ```
-
-2. **View results**:
+### View results
    ```bash
    # Table 1: Defects4J results
    ./table1.sh
@@ -42,8 +33,7 @@ PAFT consists of three main phases:
    # Table 6: DeepSeek-6.7B ablation study Defects4J results
    ./table6.sh
    ```
-
-3. **Run complete pipeline** (from training to evaluation):
+###  Run complete training and evaluation pipeline
    ```bash
    # Complete execution
    ./pipeline_deepseek-6.7b.sh
@@ -128,8 +118,8 @@ This table evaluates the performance of various off-the-shelf code models on the
 
 **Models evaluated:**
 - **qwen3-8b**: Qwen3 8B parameter model
-- **qwen3-4b**: Qwen3 4B parameter model
-- **deepseek-v3**: DeepSeek V3 commercial model
+- **deepseek-coder-6.7b**: DeepSeek 6.7B parameter model
+- **deepseek-v3**: DeepSeek-V3 commercial model
 - **opencoder8b**: OpenCoder 8B model
 - **qwen3-max**: Qwen3 Max commercial model
 
