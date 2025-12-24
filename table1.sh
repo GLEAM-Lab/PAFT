@@ -6,8 +6,7 @@
 set -e
 
 # List of models to display
-MODELS=("qwen3-8b" "deepseek-v3" "opencoder8b" "qwen3-max"，"deepseek-6.7b","deepseek-coder-6.7b")
-NUM_GENERATIONS=${1:-10}
+MODELS=("qwen3-8b" "deepseek-v3" "opencoder8b" "qwen3-max" "deepseek-6.7b")
 
 echo "=========================================="
 echo "Table 1: Performance of off-the-shelf code models on Defects4J benchmark"
@@ -17,7 +16,7 @@ echo ""
 # Call test_d4j.py for each model
 for MODEL in "${MODELS[@]}"; do
     echo "Viewing results for $MODEL..."
-    python test_d4j.py -m "$MODEL" -n "$NUM_GENERATIONS" 
+    python test_d4j.py -m "$MODEL" 
     echo ""
 done
 
