@@ -773,6 +773,58 @@ class ValidationStats:
         # pass@k = 1 - C(n-c, k) / C(n, k)
         return 1.0 - (self._comb(n - c, k) / self._comb(n, k))
     
+    def get_max_at_k(self):
+        """计算max@k指标：每个bug的所有plausible patches中的最大CCR和最小AED，最后取平均值
+        
+        返回:
+            (avg_max_ccr, avg_min_aed): 平均最大CCR和平均最小AED
+        """
+        if self.total_bugs == 0:
+            return 0.0, 0.0
+        
+        max_ccr_sum = 0.0
+        min_aed_sum = 0.0
+        valid_bugs = 0
+        
+        for bug_id, patches in self.bug_results.items():
+            if patches is None:
+                continue
+            
+            # 只计算有完整10个候选补丁的bug
+            n = len(patches)
+            if n != 10:
+                continue
+            
+            # 找到所有plausible patches
+            plausible_patches = [p for p in patches if p is not None and p.get('patch_status') == 'PLAUSIBLE']
+            
+            if not plausible_patches:
+                continue
+            
+            # 提取所有plausible patches的CCR和AED
+            ccr_values = []
+            aed_values = []
+            
+            for patch in plausible_patches:
+                if 'diff_stats' in patch and patch['diff_stats']:
+                    diff_stats = patch['diff_stats']
+                    if 'preserved_ratio' in diff_stats:
+                        ccr_values.append(diff_stats['preserved_ratio'])
+                    if 'edit_distance' in diff_stats:
+                        aed_values.append(diff_stats['edit_distance'])
+            
+            if ccr_values and aed_values:
+                max_ccr = max(ccr_values)
+                min_aed = min(aed_values)
+                max_ccr_sum += max_ccr
+                min_aed_sum += min_aed
+                valid_bugs += 1
+        
+        avg_max_ccr = (max_ccr_sum / valid_bugs) if valid_bugs > 0 else 0.0
+        avg_min_aed = (min_aed_sum / valid_bugs) if valid_bugs > 0 else 0.0
+        
+        return avg_max_ccr, avg_min_aed
+    
     def _comb(self, n, k):
         """计算组合数 C(n, k) = n! / (k! * (n-k)!)
         
@@ -883,10 +935,13 @@ def validate_defects4j(model_id, n_generations):
     for bug_id, results in previous_results.items():
         stats.update(bug_id, results)
     pass1, pass5, pass10 = stats.get_success_rate()
+    max_ccr, min_aed = stats.get_max_at_k()
     print("\n[FINAL SUCCESS RATE]")
     print(f"pass@1:  {pass1:.2f}%")
     print(f"pass@5:  {pass5:.2f}%")
     print(f"pass@10: {pass10:.2f}%")
+    print(f"max@k (avg max CCR): {max_ccr:.2f}%")
+    print(f"max@k (avg min AED): {min_aed:.2f}")
     
     # 打印 PLAUSIBLE 补丁的详细统计信息
     print_diff_statistics_summary(stats.diff_stats, "PLAUSIBLE Patches", stats.raw_values)
@@ -978,11 +1033,14 @@ def validate_defects4j(model_id, n_generations):
                 traceback.print_exc()
     
     pass1, pass5, pass10 = stats.get_success_rate()
+    max_ccr, min_aed = stats.get_max_at_k()
     print("\n[FINAL SUCCESS RATE - Pass@k]")
     print("=" * 80)
     print(f"pass@1:  {pass1:6.2f}%")
     print(f"pass@5:  {pass5:6.2f}%")
     print(f"pass@10: {pass10:6.2f}%")
+    print(f"max@k (avg max CCR): {max_ccr:6.2f}%")
+    print(f"max@k (avg min AED): {min_aed:6.2f}")
     print("=" * 80)
     
     # 打印 PLAUSIBLE 补丁的详细统计信息
@@ -1130,26 +1188,41 @@ def print_comparison_results(stats1, stats2, model_id1, model_id2):
     
     # 再打印 Pass@k 对比
     print("\n[COMPARISON RESULTS - Pass@k]")
-    print("=" * 80)
-    print(f"{'Metric':15} | {model_id1:>15} | {model_id2:>15} | {'Diff':>10}")
-    print("-" * 80)
+    print("=" * 100)
+    print(f"{'Metric':25} | {model_id1:>15} | {model_id2:>15} | {'Diff':>10}")
+    print("-" * 100)
     
     pass1_1, pass5_1, pass10_1 = stats1.get_success_rate()
     pass1_2, pass5_2, pass10_2 = stats2.get_success_rate()
+    max_ccr_1, min_aed_1 = stats1.get_max_at_k()
+    max_ccr_2, min_aed_2 = stats2.get_max_at_k()
     
     metrics = [
-        ("pass@1", pass1_1, pass1_2),
-        ("pass@5", pass5_1, pass5_2),
-        ("pass@10", pass10_1, pass10_2)
+        ("pass@1", pass1_1, pass1_2, True),
+        ("pass@5", pass5_1, pass5_2, True),
+        ("pass@10", pass10_1, pass10_2, True),
+        ("max@k (avg max CCR)", max_ccr_1, max_ccr_2, True),
+        ("max@k (avg min AED)", min_aed_1, min_aed_2, False)
     ]
     
-    for metric_name, val1, val2 in metrics:
+    for metric_name, val1, val2, is_percentage in metrics:
         diff = val2 - val1
-        diff_str = f"{diff:+.2f}%" if diff != 0 else "0.00%"
-        color = '\033[92m' if diff > 0 else '\033[91m' if diff < 0 else '\033[0m'
-        print(f"{metric_name:15} | {val1:>14.2f}% | {val2:>14.2f}% | {color}{diff_str:>10}\033[0m")
+        if is_percentage:
+            diff_str = f"{diff:+.2f}%" if diff != 0 else "0.00%"
+            val1_str = f"{val1:.2f}%"
+            val2_str = f"{val2:.2f}%"
+        else:
+            diff_str = f"{diff:+.2f}" if diff != 0 else "0.00"
+            val1_str = f"{val1:.2f}"
+            val2_str = f"{val2:.2f}"
+        # 对于百分比指标，越大越好；对于AED，越小越好
+        if is_percentage:
+            color = '\033[92m' if diff > 0 else '\033[91m' if diff < 0 else '\033[0m'
+        else:
+            color = '\033[92m' if diff < 0 else '\033[91m' if diff > 0 else '\033[0m'
+        print(f"{metric_name:25} | {val1_str:>14} | {val2_str:>14} | {color}{diff_str:>10}\033[0m")
     
-    print("=" * 80)
+    print("=" * 100)
     print(f"Total bugs compared: {stats1.total_bugs}")
 
 
@@ -1538,11 +1611,14 @@ if __name__ == '__main__':
             stats.update(bug_id, results)
         
         pass1, pass5, pass10 = stats.get_success_rate()
+        max_ccr, min_aed = stats.get_max_at_k()
         print("\n[RECALCULATED SUCCESS RATE - Pass@k]")
         print("=" * 80)
         print(f"pass@1:  {pass1:6.2f}%")
         print(f"pass@5:  {pass5:6.2f}%")
         print(f"pass@10: {pass10:6.2f}%")
+        print(f"max@k (avg max CCR): {max_ccr:6.2f}%")
+        print(f"max@k (avg min AED): {min_aed:6.2f}")
         print("=" * 80)
         
         # 打印 PLAUSIBLE 补丁的详细统计信息
