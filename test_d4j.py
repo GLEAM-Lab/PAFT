@@ -774,17 +774,17 @@ class ValidationStats:
         return 1.0 - (self._comb(n - c, k) / self._comb(n, k))
     
     def get_max_at_k(self):
-        """计算max@k指标：每个bug的所有plausible patches中的最大CCR和最小AED，最后取平均值
+        """计算max@k指标：每个bug的所有plausible patches中的最大CCR和最小AED，按该bug的plausible patch数量加权后取平均值
         
         返回:
-            (avg_max_ccr, avg_min_aed): 平均最大CCR和平均最小AED
+            (avg_max_ccr, avg_min_aed): 平均最大CCR和平均最小AED（分母为所有plausible补丁数量）
         """
         if self.total_bugs == 0:
             return 0.0, 0.0
         
         max_ccr_sum = 0.0
         min_aed_sum = 0.0
-        valid_bugs = 0
+        total_plausible_patches = 0
         
         for bug_id, patches in self.bug_results.items():
             if patches is None:
@@ -816,12 +816,16 @@ class ValidationStats:
             if ccr_values and aed_values:
                 max_ccr = max(ccr_values)
                 min_aed = min(aed_values)
-                max_ccr_sum += max_ccr
-                min_aed_sum += min_aed
-                valid_bugs += 1
+                # 乘以当前bug的plausible patch数量（加权）
+                plausible_count = len(plausible_patches)
+                max_ccr_sum += max_ccr * plausible_count
+                min_aed_sum += min_aed * plausible_count
+                total_plausible_patches += plausible_count
         
-        avg_max_ccr = (max_ccr_sum / valid_bugs) if valid_bugs > 0 else 0.0
-        avg_min_aed = (min_aed_sum / valid_bugs) if valid_bugs > 0 else 0.0
+        # 使用所有plausible补丁数量作为分母
+        patch_count = self.diff_stats.get('patch_count', total_plausible_patches)
+        avg_max_ccr = (max_ccr_sum / patch_count) if patch_count > 0 else 0.0
+        avg_min_aed = (min_aed_sum / patch_count) if patch_count > 0 else 0.0
         
         return avg_max_ccr, avg_min_aed
     

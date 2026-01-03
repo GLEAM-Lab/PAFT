@@ -337,8 +337,8 @@ def print_comparison_stats(model_id1, model_id2, stats1, stats2):
     
     for metric_name, key, show_diff, has_median, higher_is_better in metrics:
         if key == 'patch_count':
-        val1 = stats1[key]
-        val2 = stats2[key]
+            val1 = stats1[key]
+            val2 = stats2[key]
             print(f"{metric_name:<35} | {val1:>18.0f} | {'-':>18} | {val2:>18.0f} | {'-':>18} | {'-':>15} | {'-':>10}")
         else:
             avg1 = stats1[key]
@@ -364,22 +364,22 @@ def print_comparison_stats(model_id1, model_id2, stats1, stats2):
                     else:
                         med1_str = f"{med1:.2f}"
                         med2_str = f"{med2:.2f}"
-        
-        if show_diff:
+            
+            if show_diff:
                 diff = avg2 - avg1
                 pct_change = (diff / avg1 * 100) if avg1 != 0 else 0
-            
-            is_good = (diff > 0) if higher_is_better else (diff < 0)
-            color = '\033[92m' if is_good else '\033[91m' if diff != 0 else '\033[0m'
-            
-            if key == 'avg_norm_edit_distance':
+                
+                is_good = (diff > 0) if higher_is_better else (diff < 0)
+                color = '\033[92m' if is_good else '\033[91m' if diff != 0 else '\033[0m'
+                
+                if key == 'avg_norm_edit_distance':
                     print(f"{metric_name:<35} | {avg1:>18.4f} | {med1_str:>18} | {avg2:>18.4f} | {med2_str:>18} | {color}{diff:>+15.4f}\033[0m | {color}{pct_change:>+9.2f}%\033[0m")
                 else:
                     print(f"{metric_name:<35} | {avg1:>18.2f} | {med1_str:>18} | {avg2:>18.2f} | {med2_str:>18} | {color}{diff:>+15.2f}\033[0m | {color}{pct_change:>+9.2f}%\033[0m")
             else:
                 if key == 'avg_norm_edit_distance':
                     print(f"{metric_name:<35} | {avg1:>18.4f} | {med1_str:>18} | {avg2:>18.4f} | {med2_str:>18} | {'-':>15} | {'-':>10}")
-        else:
+                else:
                     print(f"{metric_name:<35} | {avg1:>18.2f} | {med1_str:>18} | {avg2:>18.2f} | {med2_str:>18} | {'-':>15} | {'-':>10}")
     
     print(f"{'='*140}")
