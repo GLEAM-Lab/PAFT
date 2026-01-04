@@ -65,7 +65,7 @@ echo ""
 echo "----------------------------------------"
 echo "Human Annotation Statistics"
 echo "----------------------------------------"
-python count_labels.py
+
 echo ""
 
 # Display evaluation results
