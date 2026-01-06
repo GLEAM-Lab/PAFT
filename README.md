@@ -131,6 +131,7 @@ This table evaluates the performance of various off-the-shelf code models on the
 - **qwen3-max**: Qwen3 Max commercial model
 
 
+
 Run the command:
 
 ```bash
@@ -274,5 +275,5 @@ python merge_adapter.py \
 
 **Note**: The training script saves adapters to `models/{output_name}` directory. The merged model can be used directly for inference without loading the adapter separately.
   
-
-
+## Notice
+This project is released under the MIT License and is intended for research use only. Please review the license before using the code or data in other contexts.

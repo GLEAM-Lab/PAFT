@@ -17,7 +17,9 @@ MODELS=(
     "deepseek-6.7b-promptloss"
     "deepseek-6.7b-trained-curriculum"
     "deepseek-6.7b-paft-w0"
+    "deepseek-6.7b-paft-w1"
     "deepseek-6.7b-sft"
+    "deepseek-6.7b-paft-w4"
 )
 
 # Defects4J results
