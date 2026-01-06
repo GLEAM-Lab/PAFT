@@ -121,7 +121,7 @@ def prompt_pair(item: Dict[str, Any], idx: int, total: int) -> str:
     print("-" * 245)
     print(format_side_by_side(buggy, patch_a, patch_b, 80))
     print("-" * 245)
-    choice = input("选择更好的补丁 (a/b/skip/quit): ").strip().lower()
+    choice = input("选择的补丁 (a/b/skip/quit): ").strip().lower()
     return choice
 
 
