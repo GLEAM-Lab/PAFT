@@ -1,0 +1,352 @@
+[
+  {
+    "index": 0,
+    "bug_name": "Closure-99",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 1,
+    "bug_name": "Cli-23",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 2,
+    "bug_name": "Lang-5",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 3,
+    "bug_name": "JacksonDatabind-70",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 4,
+    "bug_name": "Math-43",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 5,
+    "bug_name": "Jsoup-39",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 6,
+    "bug_name": "Cli-33",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 7,
+    "bug_name": "Closure-83",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 8,
+    "bug_name": "Compress-10",
+    "label": "a",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 9,
+    "bug_name": "Closure-40",
+    "label": "b",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 10,
+    "bug_name": "Cli-20",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 11,
+    "bug_name": "Closure-44",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 12,
+    "bug_name": "Math-102",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 13,
+    "bug_name": "Compress-15",
+    "label": "a",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "RELEVANT_ERROR"
+  },
+  {
+    "index": 14,
+    "bug_name": "Math-42",
+    "label": "a",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "RELEVANT_ERROR"
+  },
+  {
+    "index": 15,
+    "bug_name": "JacksonDatabind-7",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 16,
+    "bug_name": "Closure-15",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "RELEVANT_ERROR"
+  },
+  {
+    "index": 17,
+    "bug_name": "Math-25",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 18,
+    "bug_name": "Math-101",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 19,
+    "bug_name": "Chart-9",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 20,
+    "bug_name": "JacksonDatabind-85",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 21,
+    "bug_name": "Closure-11",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 22,
+    "bug_name": "Cli-29",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 23,
+    "bug_name": "Jsoup-34",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 24,
+    "bug_name": "Closure-87",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 25,
+    "bug_name": "Compress-26",
+    "label": "a",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "RELEVANT_ERROR"
+  },
+  {
+    "index": 26,
+    "bug_name": "Closure-39",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 27,
+    "bug_name": "Cli-15",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 28,
+    "bug_name": "Closure-145",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 29,
+    "bug_name": "Math-95",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 30,
+    "bug_name": "JacksonCore-26",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 31,
+    "bug_name": "Lang-54",
+    "label": "b",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "RELEVANT_ERROR"
+  },
+  {
+    "index": 32,
+    "bug_name": "Jsoup-10",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 33,
+    "bug_name": "Time-27",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 34,
+    "bug_name": "Cli-25",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 35,
+    "bug_name": "Jsoup-50",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 36,
+    "bug_name": "Lang-31",
+    "label": "a",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 37,
+    "bug_name": "Jsoup-70",
+    "label": "b",
+    "patch_a_status": "PLAUSIBLE",
+    "patch_b_status": "PLAUSIBLE"
+  },
+  {
+    "index": 38,
+    "bug_name": "Compress-23",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 39,
+    "bug_name": "Math-10",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 40,
+    "bug_name": "Compress-35",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 41,
+    "bug_name": "Closure-133",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 42,
+    "bug_name": "Compress-17",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 43,
+    "bug_name": "Closure-118",
+    "label": "b",
+    "patch_a_status": "RELEVANT_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 44,
+    "bug_name": "Closure-92",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 45,
+    "bug_name": "Cli-24",
+    "label": "b",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 46,
+    "bug_name": "Closure-4",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 47,
+    "bug_name": "JacksonDatabind-107",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 48,
+    "bug_name": "JxPath-22",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  },
+  {
+    "index": 49,
+    "bug_name": "Lang-19",
+    "label": "a",
+    "patch_a_status": "TRIGGER_ERROR",
+    "patch_b_status": "TRIGGER_ERROR"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "metric_field": "ccr_label",
+  "used": 50,
+  "skipped_gold": 0,
+  "missing_gold": 0,
+  "missing_pred": 0,
+  "tp": 17,
+  "tn": 23,
+  "fp": 4,
+  "fn": 6,
+  "accuracy": 0.8,
+  "precision": 0.8095,
+  "recall": 0.7391,
+  "f1": 0.7727
+}
