@@ -1,0 +1,164 @@
+[
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n    if (str == null)\n        throw new IllegalArgumentException();\n    \n    if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n    \n    if (str == null){\n        throw new IllegalArgumentException();\n    }else if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str) throws IllegalArgumentException\n{\n     if (str == null){\n         throw new IllegalArgumentException();\n     }\n     \n     if (str.startsWith(\"--\"))\n     {\n         return str.substring(2, str.length());\n     }\n     else if (str.startsWith(\"-\"))\n     {\n          return str.substring(1, str.length());\n     }\n\n     return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n   // check for null before trying to call methods on it (like startsWith())\n    if(str == null){\n         return null;\n     }\n      \n    if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 5,
+      "deleted_lines": 0,
+      "total_changed_lines": 5,
+      "added_tokens": 30,
+      "deleted_tokens": 0,
+      "total_changed_tokens": 30,
+      "edit_distance": 134,
+      "edit_similarity": 64.92,
+      "norm_edit_distance": 0.3508,
+      "norm_edit_distance_pct": 35.08,
+      "buggy_length": 248,
+      "fix_length": 382,
+      "preserved_ratio": 72.22
+    }
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n    if (str == null || \"\".equals(str))\n    {\n        throw new IllegalArgumentException();\n    }\n    \n    if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String stripedLeadingHypothesis(String str)\n{\n    if (str.startsWith(\" --\"))\n    {\n        return str.substring(1, str.length());\n    }\n    else if (str.startsWith(\" -\"))\n{return str.substring(1, str.length());}\n    else if (str.startsWith(\"--\", 1))\n{return str.substring(0, str.length());}\n    return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String strigify leadingHypothesis(String str)\n{\n    if (str.startsWith(\"-- \"))\n{return str.substring(2, str.length());}\n    else if (str.startsWith(\"--\"))\n{return str.substring(2, str.length());}\n    else if (str.startsWith(\" -\"))\n{return str.substring(1, str.length());}\n    else if (str.startsWith(\"--a\") || str.startsWith(\"--b\") || str.startsWith(\"--c\") )\n{return str.substring(2, str.length());}\n    else if (str.startsWith(\" -a\") || str.startsWith(\" -b\") or str.startsWith(\" -c\") )\n{return str.substring(1, str.length());}\n    else if (str.startsWith(\"--no-b\") or str.startsWith(\"--no-a\") or str.startsWith(\"--no-c\") )\n{return str.substring(2, str.length());}\n    else if (str.startsWith(\" -no-a\") or str.startsWith(\" -no-b\") or str.startsWith(\" -no-c\") )\n{return str.substring(1, str.length());}\n    return str;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String striped leadinghyphen(String str)\n{\n    if (str null)\n\t{return str};\n\tif (str.startsWith(\"--\") \n\t{return str.substring(2, str.length());}\n\tif (str.startsWith(\"-\") \n\t{return str.substring(1, str.length());}\n\treturn str;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n    if (str == null){\n        return null;\n    } else if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 1,
+      "total_changed_lines": 4,
+      "added_tokens": 25,
+      "deleted_tokens": 12,
+      "total_changed_tokens": 37,
+      "edit_distance": 50,
+      "edit_similarity": 83.22,
+      "norm_edit_distance": 0.1678,
+      "norm_edit_distance_pct": 16.78,
+      "buggy_length": 248,
+      "fix_length": 298,
+      "preserved_ratio": 80.0
+    }
+  },
+  {
+    "patch_code": "static String stripLeadingHyphens(String str)\n{\n    if(str == null){\n      return \"\";\n    }else if (str.startsWith(\"--\"))\n    {\n        return str.substring(2, str.length());\n    }\n    else if (str.startsWith(\"-\"))\n    {\n        return str.substring(1, str.length());\n    }\n\n    return str;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.UtilTest::testStripLeadingHyphens"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-5",
+    "diff_stats": null
+  }
+]

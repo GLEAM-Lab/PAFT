@@ -1,0 +1,182 @@
+[
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if (!super.equals(o)) return false;\n\n    Element element = (Element) o;\n\n    return this.outerHtml().equals(((Element)o).outerHtml());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 21,
+      "deleted_tokens": 6,
+      "total_changed_tokens": 27,
+      "edit_distance": 44,
+      "edit_similarity": 83.64,
+      "norm_edit_distance": 0.1636,
+      "norm_edit_distance_pct": 16.36,
+      "buggy_length": 229,
+      "fix_length": 269,
+      "preserved_ratio": 88.89
+    }
+  },
+  {
+    "patch_code": "@Override\npublic boolean equals(Object obj) {\n    if (this == obj) return true;\n    if (obj == null || getClass() != obj.getClass()) return false;\n    if (!super.equals(obj)) return false;\n    \n    Element element = (Element) obj;\n    \n    return Objects.equals(attributes(), element.attributes()) \n        && Objects.equals(ownText(), element.ownText()) \n        && Objects.equals(normalizedOwnText(), element.normalizedOwnText());\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int hashCode() {\n    int result = 0;\n    Sibling sibling = next;\n    while (sibling != null) {\n        sibling = sibling.next();\n        result++;\n    }\n    Node n = this;\n    while ((n = n.parent) != null) {\n        result++;\n    }\n    \n    Set<Attribute> attrsSet = attrs.asDynamicElement().attributes();\n    Attribute attribute;\n    Iterator iterator = attrsSet.iterator();\n    while (iterator.hasNext()) {\n        attribute = (Attribute) iterator.next();\n        result += attribute.getKey().length() + attribute.getValue().length();\n    }\n    \n    return result; \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if (!super.equals(o)) return false;\n\n    Element element = (Element) o;\n\n    return this.outerHtml().equals(((Element) o).outerHtml());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 21,
+      "deleted_tokens": 6,
+      "total_changed_tokens": 27,
+      "edit_distance": 44,
+      "edit_similarity": 83.7,
+      "norm_edit_distance": 0.163,
+      "norm_edit_distance_pct": 16.3,
+      "buggy_length": 229,
+      "fix_length": 270,
+      "preserved_ratio": 88.89
+    }
+  },
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if (!super.equals(o)) return false;\n\n    Element element = (Element) o;\n\n    return Objects.equals(this.wholeText(),element.wholeText()); \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if (! super.equals(o)) return false;\n\n    return super.equals(o);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 4,
+      "total_changed_lines": 6,
+      "added_tokens": 21,
+      "deleted_tokens": 27,
+      "total_changed_tokens": 48,
+      "edit_distance": 45,
+      "edit_similarity": 80.35,
+      "norm_edit_distance": 0.1965,
+      "norm_edit_distance_pct": 19.65,
+      "buggy_length": 229,
+      "fix_length": 200,
+      "preserved_ratio": 71.43
+    }
+  },
+  {
+    "patch_code": "public boolean equalsss(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    ifionic super. equalsss(o) return false;\n\n    Elastic element = (Elastic) o;\n\n    return this == o;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if ! super. equals(o) return false;\n\n    // Now we know that the object is an element, but it might be aElement or another class...\n    if o is org.jsoup.Node.li element {\n        return super. equals(o);\n    } else {\n        return false;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic int hashCode() {\n  int result = 1;\n  for (Attribute attribute : this.attributes.asList()) {\n    final String value = attribute.getValue();\n    if (value != null) {\n      result *= 31;\n      result += value.hashCode();\n    }\n  }\n  final Node node = this.childNodes().node(-1);\n  if (node instanceof TextNode && ((TextNode) node).isCData())\n     result *= 31;\n  else if (node instanceof Element) {\n    result *= 31;\n    result += ((Element) node).hashCode();\n  }\n  return result == 0 ? 31 : result;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean equals(Object o) {\n    if (this == o) return true;\n    if (o == null || getClass() != o.getClass()) return false;\n    if (!super.equals(o)) return false;\n\n    Element element = (Element) o;\n\n    return Objects.equals(this.text(), element.text());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-41",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 18,
+      "deleted_tokens": 6,
+      "total_changed_tokens": 24,
+      "edit_distance": 38,
+      "edit_similarity": 85.55,
+      "norm_edit_distance": 0.1445,
+      "norm_edit_distance_pct": 14.45,
+      "buggy_length": 229,
+      "fix_length": 263,
+      "preserved_ratio": 88.89
+    }
+  }
+]

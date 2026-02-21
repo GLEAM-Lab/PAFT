@@ -1,0 +1,214 @@
+[
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if (!key.equals(\"\")){\n        Validate.notEmpty(this.key); // correct from 'key' to 'this.key' because we need the attribute name after the object 'this', not before\n    }\n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 1,
+      "total_changed_lines": 4,
+      "added_tokens": 50,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 68,
+      "edit_distance": 119,
+      "edit_similarity": 64.9,
+      "norm_edit_distance": 0.351,
+      "norm_edit_distance_pct": 35.1,
+      "buggy_length": 250,
+      "fix_length": 339,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if (!key.equals(\"\")) {\n        Validate.notEmpty(this.key);\n    } else{\n        throw new IllegalArgumentException(\"Key cannot be null.\");\n    }\n    \n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 6,
+      "deleted_lines": 1,
+      "total_changed_lines": 7,
+      "added_tokens": 38,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 56,
+      "edit_distance": 110,
+      "edit_similarity": 65.3,
+      "norm_edit_distance": 0.347,
+      "norm_edit_distance_pct": 34.7,
+      "buggy_length": 250,
+      "fix_length": 317,
+      "preserved_ratio": 50.0
+    }
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if (!this.key.isEmpty()) Validate.notEmpty(this.key); // trimming could potentially make empty, so validate here\n    else throw new IllegalArgumentException(\"key can not be empty\"); \n    \n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 1,
+      "total_changed_lines": 4,
+      "added_tokens": 45,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 63,
+      "edit_distance": 105,
+      "edit_similarity": 70.42,
+      "norm_edit_distance": 0.2958,
+      "norm_edit_distance_pct": 29.58,
+      "buggy_length": 250,
+      "fix_length": 355,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if(!this.key.equals(\"\")){\n        Validate.notEmpty(this.key); \n    }else{\n         throw new IllegalArgumentException(\"Key cannot be null\");\n     }\n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 5,
+      "deleted_lines": 1,
+      "total_changed_lines": 6,
+      "added_tokens": 39,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 57,
+      "edit_distance": 109,
+      "edit_similarity": 65.51,
+      "norm_edit_distance": 0.3449,
+      "norm_edit_distance_pct": 34.49,
+      "buggy_length": 250,
+      "fix_length": 316,
+      "preserved_ratio": 54.55
+    }
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if (this.key.equals(\"\")){\n        throw new IllegalArgumentException(\"The key cannot be null\");\n    }\n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 1,
+      "total_changed_lines": 4,
+      "added_tokens": 27,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 45,
+      "edit_distance": 81,
+      "edit_similarity": 69.89,
+      "norm_edit_distance": 0.3011,
+      "norm_edit_distance_pct": 30.11,
+      "buggy_length": 250,
+      "fix_length": 269,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public class\u5c5e\u6027java org.jsoup.\u8282\u70b9.\u5c5e\u6027 {\n...\n public\u5c5e\u6027(String key, String val,\u5c5e\u6027parent) {\n    validate.notNull(key);\n    this.key = key.\u53bb\u9664();\n    validate.not\u7a7a(this.key);\n...\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class C {\n    public void f() {\n        String s=null;\n        validate(s);\n    }\n    \n    private void validate(String s){\n        validate.not empty(s);\n        validate.not null(s);\n        validate. not empty(s.isEmpty());\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class Tokenizer$1 {\n  public Tokenizer$1() {\n      validator = newValidator();\n      validator.addValidator(newValidator());\n      validator.addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      validator. addValidator(newValidator());\n      valid correct code here?\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if(!this.key.isEmpty()){\n        Validate.notEmpty(this.key);\n    } else{\n         throw new IllegalArgumentException(\"Argument cannot be null\");\n     }\n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 5,
+      "deleted_lines": 1,
+      "total_changed_lines": 6,
+      "added_tokens": 37,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 55,
+      "edit_distance": 113,
+      "edit_similarity": 64.69,
+      "norm_edit_distance": 0.3531,
+      "norm_edit_distance_pct": 35.31,
+      "buggy_length": 250,
+      "fix_length": 320,
+      "preserved_ratio": 54.55
+    }
+  },
+  {
+    "patch_code": "public Attribute(String key, String val, Attributes parent) {\n    Validate.notNull(key);\n    this.key = key.trim();\n    if (!this.key.isEmpty()) {\n        Validate.notEmpty(this.key);\n    }\n    this.val = val;\n    this.parent = parent;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.nodes.AttributeTest::validatesKeysNotEmpty"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-85",
+    "diff_stats": null
+  }
+]

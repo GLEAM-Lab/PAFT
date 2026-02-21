@@ -1,0 +1,143 @@
+[
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    sb = _referencedType.getGenericSignature(sb);\n    if (!_referencedType.isPrimitive()) {\n        sb.append(\";\");\n    } else {\n        sb.append('>'); \n    }\n    \n    return sb;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.type.TestJavaType::testGenericSignature1195"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    if (!_referencedType.isPrimitive()) {\n        sb.append('L');\n    } \n    sb = _referencedType.getGenericSignature(sb);\n    sb.append('>');\n    sb.append(';');\n    return sb;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.type.TestJavaType::testGenericSignature1195"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    if (_referencedType != null) {\n        sb = _referencedType.getGenericSignature(sb);\n    }\n    sb.append('>');\n    sb.append(';');\n    return sb;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 4,
+      "deleted_lines": 1,
+      "total_changed_lines": 5,
+      "added_tokens": 27,
+      "deleted_tokens": 9,
+      "total_changed_tokens": 36,
+      "edit_distance": 65,
+      "edit_similarity": 76.1,
+      "norm_edit_distance": 0.239,
+      "norm_edit_distance_pct": 23.9,
+      "buggy_length": 207,
+      "fix_length": 272,
+      "preserved_ratio": 63.64
+    }
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    if (_parameters != null && _parameters.length > 0) {\n        sb.append(\"<\");\n        for (int i = 0 ; i < _parameters.length ; i++) {\n            Class<?> parameter = _parameters[i];\n            if (parameter == Void.TYPE) {\n                break;\n            }\n            _classSignature(parameter, sb, true);\n            if (i+1 < _parameters.length) {\n                sb.append(\", \");\n            } else {\n               sb.append(\">\"); \n            }\n        }\n     }\n    return sb;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb) {\n    if (_referencedType == null) {\n        return sb;\n    }\n    \n    _classSignature(_class, sb, false);\n    sb.append('<');\n    \n    // Add closing '>' after referenced type.\n    sb = _referencedType.getGenericSignature(sb).append(\";\"); \n        \n    return sb;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.type.TestJavaType::testGenericSignature1195"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder get\u751f generator sb){\n    _class\u751f _class sb, false);\n    sb\u751f sb.append('<');\n    sb = _references\u751f sb.append(';');\n    return sb;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getFixedTightlyness() {\n    StringBuilder fixed = new StringBuilder();\n    int size = sb.length();\n    boolean found = false;\n    for (int i = 0; i < size; i++) {\n        char ch = sb.charAt(i);\n        if (ch == '>') {\n            fixed.append(';');\n            fixed.append('>');\n            found = true;\n        } else {\n            fixed.append(ch);\n        }\n    }\n    return fixed;\n}\n public StringBuilder getFixed() {\n    StringBuilder fixed = getFixedTightlyness();\n    int size = fixed.length();\n    boolean found = false;\n    for (int i = 0; i < size; i++) {\n        char ch = fixed.charAt(i);\n        if (! found && ch == '<') {\n            fixed.append('>');\n            found = true;\n        }\n    }\n    return fixed;\n}\npublic StringBuilder getFixed() {\n    StringBuilder fixed = getFixedTightlyness();\n    int size = fixed.length();\n    boolean found = false;\n    for (int i = 0; i < size; i++) {\n        char ch = fixed.charAt(i);\n        if (! found && ch == '<') {\n            fixed.append('>');\n            found = true;\n        }\n    }\n    return fixed;\n}\n public StringBuilder getFixedTightlyness() {\n    StringBuilder fixed = new StringBuilder();\n    int size = sb.length();\n    boolean found = false;\n    for (int i = 0; i < size; i++) {\n        char ch = sb.charAt(i);\n        if (ch == '>') {\n            fixed.append(';');\n            fixed.append('>');\n            found = true;\n        } else {\n            fixed.append(ch);\n        }\n    }\n    return fixed;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "/* MISSING PATCH */",
+    "patch_status": "MISSING_PATCH",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    if (_referencedType instanceof Class<?>){  // add this line\n        sb.append('#').append(((Class<?>)_referencedType).getName().replace('.', '/'));\n    } else {\n        sb = _referencedType.getGenericSignature(sb);\n    }\n    sb.append(';');\n    return sb;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder getGenericSignature(StringBuilder sb)\n{\n    _classSignature(_class, sb, false);\n    sb.append('<');\n    if (_referencedType instanceof GenericArrayType || _referencedType instanceof ReferenceType){\n        sb = _referencedType.getGenericSignature(sb);    \n    }else{\n       _referencedClassSignature((Class<?>)_referencedType, sb, true); \n    }\n    sb.append(';');\n    return sb;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-46",
+    "diff_stats": null
+  }
+]

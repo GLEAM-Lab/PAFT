@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "private FlowScope traverseNew(Node n, FlowScope scope) {\n\n  Node constructor = n.getFirstChild();\n  scope = traverse(constructor, scope);\n  JSType constructorType = constructor.getJSType();\n  JSType type = null;\n  if (constructorType != null) {\n    constructorType = constructorType.restrictByNotNullOrUndefined();\n    if (constructorType.isUnknownType()) {\n      type = getNativeType(UNKNOWN_TYPE);\n    } else {\n      FunctionType ct = constructorType.toMaybeFunctionType();\n      if (ct == null && constructorType instanceof FunctionType) {\n        ct = (FunctionType) constructorType;\n      }\n      if (ct != null && ct.isConstructor()) {\n        type = ct.getInstanceType().copyFlowInfoFrom(constructorType);\n      }\n    }\n  }\n  n.setJSType(type);\n  for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {\n    scope = traverse(arg, scope);\n  }\n  return scope;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private FlowScope traverseNew(Node n, FlowScope scope) {\n  Node constructor = n.getFirstChild();\n  scope = traverse(constructor, scope);\n  JSType constructorType = constructor.getJSType();\n  JSType type = null;\n  if (constructorType != null) {\n    constructorType = constructorType.restrictByNotNullOrUndefined();\n    if (constructorType.isUnknownType()) {\n      type = getNativeType(UNKNOWN_TYPE);\n    } else {\n      FunctionType ct = constructorType.toMaybeFunctionType();\n      if (ct == null && constructorType instanceof FunctionType) {\n        ct = (FunctionType) constructorType;\n      }\n      if (ct != null && ct.isConstructor()) {\n        type = ct.getInstanceType();\n      }\n    }\n  }\n  n.setJSType(type);\n  for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {\n    scope = traverse(arg, scope);\n  }\n  return scope;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.TypeInferenceTest::testBackwardsInferenceNew"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private FlowScope traverseNew(Node n, FlowScope scope) {\n  Node constructor = n.getFirstChild();\n  scope = traverse(constructor, scope);\n  JSType constructorType = constructor.getJSType();\n  JSType type = null;\n  if (constructorType != null) {\n    constructorType = constructorType.restrictByNotNullOrUndefined();\n    if (constructorType.isUnknownType()) {\n      type = getNativeType(UNKNOWN_TYPE);\n    } else {\n      FunctionType ct = constructorType.toMaybeFunctionType();\n      if (ct == null && constructorType instanceof FunctionType) {\n        ct = (FunctionType) constructorType;\n      }\n      if (ct != null && ct.isConstructor() && constructor.getNumberOfChildren() > 0) {\n        type = ct.getInstanceType();\n      }\n    }\n  }\n  n.setJSType(type);\n  for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {\n    scope = traverse(arg, scope);\n  }\n  return scope;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private FlowScope traverseNew(Node n, FlowScope scope) {\n\n  Node constructor = n.getFirstChild();\n  scope = traverse(constructor, scope);\n  JSType constructorType = constructor.getJSType();\n  JSType type = null;\n  boolean isCallExpression = false;\n  if (constructor instanceof CallNode) {\n    isCallExpression = true;\n    constructorType = ((CallNode)constructor).getTarget().getJSType();\n  }\n  if (constructorType != null) {\n    constructorType = constructorType.restrictByNotNullOrUndefined();\n    if (constructorType.isUnknownType()) {\n      type = getNativeType(UNKNOWN_TYPE);\n    } else {\n      FunctionType ct = constructorType.toMaybeFunctionType();\n      if (ct == null && constructorType instanceof FunctionType) {\n        // If constructorType is a NoObjectType, then toMaybeFunctionType will\n        // return null. But NoObjectType implements the FunctionType\n        // interface, precisely because it can validly construct objects.\n        ct = (FunctionType) constructorType;\n      }\n      if (!isCallExpression && ct != null && ct.isConstructor()) {\n        type = ct.getInstanceType();\n      }\n    }\n  }\n  n.setJSType(type);\n  for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {\n    scope = traverse(arg, scope);\n  }\n  return scope;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static void main(String[] args){\n    \n    \n    int [] arr1 = new int []{34,45};\n    System.out.println(arr1[0]);\n    System.out.println(arr1[1]);\n    \n    float [] arr2 = new float []{34f , 45f };\n    System.out.println(arr2[0]);\n    System.out.println(arr2[1]);\n    \n    String [] arr3  = new String[]{\"Hello\",\"World\"};\n    System.out.println(arr3[0]+ \" \" +arr3[1]);\n    \n    boolean [] arr4  = new boolean[]{true , false};\n    System.out.println(arr4[0]+\" \"+arr4[1]);\n    \n    long [] arr5 = new long []{9876L , 1234L};\n    System.out.println(arr5[0]);\n    System.out.println(arr5[1]);\n    \n    \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean check ConstructorCalled(Node n, flowState flow) {\n  if (!n.has children()) return false;\n  if !(n.get first child().get JSType() == null || !(n.get first child().get JSType().is maybe function type)) return false;\n  if !(n.get JSType().is maybe object type) return false;\n  JSType cnt = n.get JSType(). to maybe object type;\n  JSType etype = cnt. get instance type();\n  return !(etype. is unresolved or etype. is no object type or etype. is object type);\n}\n private flow state traverseNew(node n, flow state) {\n  if !(this. constructor called) return state;\n  JSType etype = n.get JSType(). to maybe object type;\n  JSType cnt = n.get first child(). get JSType(). to maybe function type;\n  if !(cnt == null or cnt. is unresolved or cnt. is maybe object type) {\n    if !(cnt. get instance type(). is unresolved or cnt. get instance type(). is no object type) {\n      return state. new flow state(null, cnt. get instance type(), null, null, null);\n    }\n  }\n  return state;\n}\nprivate flow state traverse(node n, flow state) {\n  if !(this. constructor called) {\n    if n. is node type. call expression) {\n      JSType cnt = n. get JSType(). to maybe function type;\n      if !(cnt == null or cnt. is unresolved or cnt. is maybe object type) {\n        JSType etype = cnt. get instance type();\n        if !(etype. is unresolved or etype. is no object type or etype. is object type) {\n          this. constructor called = true;\n          return traverse(n, state. new flow state(null, cnt. get instance type(), null, null, null));\n        }\n      }\n      return state;\n    }\n    if n. is node type. call expression, n. is node type. call expression with brackets) {\n      JSType cnt = n. get JSType(). to maybe function type;\n      if !(cnt == null or cnt. is unresolved or cnt. is maybe object type) {\n        JSType etype = cnt. get instance type();\n        if !(etype. is unresolved or etype. is no object type or etype. is object type) {\n          return traverse(n, state. new flow state(null, cnt. get instance type(), null, null, null));\n        }\n      }\n      return state;\n    }\n  }\n  if n. is node type. call expression) {\n    return traverse(n, traverseNew(n, state));\n  }\n  if n. is node type. call expression with brackets) {\n    return traverse(n, traverseNew(n, state));\n  }\n  return state;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean traverseNew(Node n, flow sc) {\n\n  // ...\n\n  JSType type = null;\n  if (ct == null && n.getJSType().is maybeObjectType()) {\n    type = maybeObjectType.getJSType();\n  }\n  if (ct != null && ct.isConstructor()) {\n    type = ct.getInstanceType();\n  }\n  n.setJSType(type);\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private flowjs.flowjs. flowjs.flowjs. flowjs.flowjs. flowjs.flowjs. flowjs.flowjs. flowjs.flowjs. flowjs.flowjs. flowjs.flowjs flowjs.flowjs. flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs.flowjs flowjs src/com/google/ javascript/jscomp/ Typeinference.java",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private FlowScope traverseNew(Node n, FlowScope scope) {\n\n  Node constructor = n.getFirstChild();\n  scope = traverse(constructor, scope);\n  JSType constructorType = constructor.getJSType();\n  JSType type = null;\n  if (constructorType != null) {\n    constructorType = constructorType.restrictByNotNullOrUndefined();\n    if (constructorType.isUnknownType()) {\n      type = getNativeType(UNKNOWN_TYPE);\n    } else {\n      FunctionType ct = constructorType.toMaybeFunctionType();\n      if (ct == null && constructorType instanceof FunctionType) {\n        // If constructorType is a NoObjectType, then toMaybeFunctionType will\n        // return null. But NoObjectType implements the FunctionType\n        // interface, precisely because it can validly construct objects.\n        ct = (FunctionType) constructorType;\n      }\n      if (ct != null && ct.isConstructor()) {\n        type = ct.getInstanceType();\n      }\n    }\n  }\n  n.setJSType(type);\n  for (Node arg = constructor.getNext(); arg != null; arg = arg.getNext()) {\n    scope = traverse(arg, scope);\n  }\n  return scope;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.TypeInferenceTest::testBackwardsInferenceNew"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class TypeInferenceTest extends TestCase {\n\n  public void testIssue394() throws Exception {\n    String source = \"var x;\\n\" +\n        \"try {\\n\" +\n        \"  var y = 7;\\n\" +\n        \"  eval('x = new Array(y).join(\\'\\')');\\n\" +\n        \"}\\n\" +\n        \"catch (e) {\\n\" +\n        \"}\\n\";\n    SourceFile sourceFile = new SourceFile(\"test.js\", source);\n    Compiler compiler = Compiler.createJavaScriptCompiler();\n    compiler.addSourceFile(sourceFile);\n    assertTrue(compiler.compile());\n    \n    AssertionError assertionError = ExpectUtil.expect(() -> {\n      compiler.getProgram().toString();\n    });\n    assertEquals(assertionError.getMessage(), \"Failed to compile.\");\n    \n    List<DiagnosticMessage> diagnosticMessages = compiler.getDiagnostics();\n    DiagnosticMessage diagnosticMessage = diagnosticMessages.get(diagnosticMessages.size() - 1);\n    int lineNumber = diagnosticMessage.lineNumber;\n    assertEquals(lineNumber, 6);\n  }\n\n  /**\n   * Tests that the inferred types for variables inside try blocks are updated correctly when their respective catch\n   * handlers are invoked.\n   */\n  public void testTryVariableScoping() throws Exception {\n    String source = \"function f(){\\n\" +\n            \"  try {\\n\" +\n            \"    var caught = 'not thrown';\\n\" +\n            \"    throw null;\\n\" +\n            \"  } catch (c) {\\n\" +\n            \"  }\\n\" +\n            \"\\n\" +\n            \"  console.log(caught);\\n\" +\n            \"}\\n\" +\n            \"f();\\n\";\n            \n    SourceFile sourceFile = new SourceFile(\"test.js\", source);\n    Compiler compiler = Compiler.createJavaScriptCompiler();\n    compiler.addSourceFile(sourceFile);\n    assertTrue(compiler.compile());\n    System.out.println(compiler.getProgram().toString());\n  }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-25",
+    "diff_stats": null
+  }
+]

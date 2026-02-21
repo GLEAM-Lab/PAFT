@@ -1,0 +1,199 @@
+[
+  {
+    "patch_code": "public double percentageValue() {\n    BigDecimal numerator = new BigDecimal(getNumerator());\n    BigDecimal denominator = new BigDecimal(getDenominator());\n    BigDecimal hundred = new BigDecimal(\"100\");\n    \n    BigDecimal multiplicationResult = numerator.multiply(hundred);\n    if(!multiplicationResult.stripTrailingZeros().scale() > denominator.stripTrailingZeros().scale()) {\n        throw new ArithmeticException(\"/ by zero\");\n    }\n    return multiplicationResult.divide(denominator).doubleValue();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public double percentageValue() {\n    if(numerator * 2 > Double.MAX_VALUE){\n        throw new ArithmeticException(\"Integer overflow\");\n      } else{\n         return (double) getNumerator() / getDenominator() * 100;\n     }\n }",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 6,
+      "deleted_lines": 2,
+      "total_changed_lines": 8,
+      "added_tokens": 40,
+      "deleted_tokens": 11,
+      "total_changed_tokens": 51,
+      "edit_distance": 162,
+      "edit_similarity": 27.68,
+      "norm_edit_distance": 0.7232,
+      "norm_edit_distance_pct": 72.32,
+      "buggy_length": 75,
+      "fix_length": 224,
+      "preserved_ratio": 14.29
+    }
+  },
+  {
+    "patch_code": "public double percentageValue() {\n    if(numerator > Double.MAX_VALUE / 100){\n        throw new ArithmeticException(\"Numerator too large\");\n      }else{\n          return ((double)this.getNumerator())*100/(double)this.getDenominator();\n    }\n    \n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 6,
+      "deleted_lines": 1,
+      "total_changed_lines": 7,
+      "added_tokens": 49,
+      "deleted_tokens": 10,
+      "total_changed_tokens": 59,
+      "edit_distance": 182,
+      "edit_similarity": 26.32,
+      "norm_edit_distance": 0.7368,
+      "norm_edit_distance_pct": 73.68,
+      "buggy_length": 75,
+      "fix_length": 247,
+      "preserved_ratio": 25.0
+    }
+  },
+  {
+    "patch_code": "public double percentageValue() {\n   //if numerator is larger than MAX_INT/100 ,overflow occurs, so we directly transform it into double and calculate\n   if(Math.abs(getNumerator()) > (Double.MAX_VALUE/(double)100)){\n       return (double) getNumerator() / getDenominator() * 100;\n   }else{\n       return multiply(100).doubleValue();\n   }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.fraction.FractionTest::testMath835"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public double percentageValue() {\n    return ((double)getNumerator() / getDenominator()) * 100;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 16,
+      "deleted_tokens": 10,
+      "total_changed_tokens": 26,
+      "edit_distance": 41,
+      "edit_similarity": 57.73,
+      "norm_edit_distance": 0.4227,
+      "norm_edit_distance_pct": 42.27,
+      "buggy_length": 75,
+      "fix_length": 97,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public double percentageValue() {\n\treturnmultiply(new org.apache. Commonsmath3fraction.fraction.fraction(100)). doubleValue();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public double\u767e\u5206ageValue() {\n    returnmultiply(new java.util.function.Supp< double>() {\n        @Override\n        public double supply() {\n            return 100;\n        }\n    });\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public double\u767e\u5206ageValue() {\n    returnmultiply(new java.util.concurrent.Callable< double>() {\n        @Override\n        public double call() {\n            return 100;\n        }\n    });\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public double percentageValue() {\n    return ((double)getNumerator()) * (100.0 / getDenominator());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 10,
+      "total_changed_tokens": 30,
+      "edit_distance": 42,
+      "edit_similarity": 58.42,
+      "norm_edit_distance": 0.4158,
+      "norm_edit_distance_pct": 41.58,
+      "buggy_length": 75,
+      "fix_length": 101,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public double percentageValue() {\n     return ((double) getNumerator() / getDenominator()) * 100;\n }",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-27",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 2,
+      "total_changed_lines": 4,
+      "added_tokens": 17,
+      "deleted_tokens": 11,
+      "total_changed_tokens": 28,
+      "edit_distance": 44,
+      "edit_similarity": 56.0,
+      "norm_edit_distance": 0.44,
+      "norm_edit_distance_pct": 44.0,
+      "buggy_length": 75,
+      "fix_length": 100,
+      "preserved_ratio": 33.33
+    }
+  }
+]

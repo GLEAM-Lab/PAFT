@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // When the node is null it means, we reached the implicit return\n  // where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // TODO(user): We only care about calls to functions that\n  // passes one of the dependent variable to a non-side-effect free\n  // function.\n  if ((n.isCall() || n.isPropertyGetter()) && NodeUtil.functionCallHasSideEffects(n)) {\n    return true;\n  }\n\n  if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {\n    return true;\n  }\n\n\n  for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {\n    if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // When the node is null it means, we reached the implicit return\n  // where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // TODO(user): We only care about calls to functions that\n  // passes one of the dependent variable to a non-side-effect free\n  // function.\n  if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {\n    return true;\n  }\n\n  if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {\n    return true;\n  }\n\n  for (int i = 0; i < n.getNumChildren(); i++) {\n    Node childNode = n.getChild(i);\n    if(!ControlFlowGraph.isEnteringNewCfgNode(childNode) && apply(childNode)){\n        return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // When the node is null it means, we reached the implicit return\n  // where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // TODO(user): We only care about calls to functions that\n  // passes one of the dependent variable to a non-side-effect free\n  // function.\n  if ((n.isCall() || n.isAwait()) && NodeUtil.functionCallHasSideEffects(n)) {\n    return true;\n  }\n\n  if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {\n    return true;\n  }\n\n\n  for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {\n    if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class ControlFlowGraph {\n  public static int count = 0;\n  \n  public void apply(Node n) {\n    count++;\n    // When the node is null it means, we reached the implicit return\n    // where the function returns (possibly without an return statement)\n    if (n == null) {\n      return ;\n    }\n    \n    if (count == 100) {\n      System.exit(-1);\n    }\n\n    // TODO(user): We only care about calls to functions that\n    // passes one of the dependent variable to a non-side-effect free\n    // function.\n    if ((n.isCall() || n.isNew()) && NodeUtil.callOrConstructHasSideEffects(n)) {\n      System.out.println(\"Line #: \" + Integer.toString(n.getLastLine()));\n      \n      return;\n    }\n    \n    \n    \n\n    for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {\n      if (ControlFlowGraph.isEnteringNewCfgNode(c)) {\n        continue;\n        \n          \n        \n      } else {\n          apply(c);\n      }\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import com.github.javaparser.ast.expr.*;\nimport com.github.javaparser.ast.visitor.VoidVisitorAdapter;\n\nclass FlowSensitiveInlineVariables extends VoidVisitorAdapter<Object> {\n    private VariableDeclarationExpr checkDependentVariable(VariableDeclaratorExpr expr){\n        String id = expr.getName().toString();\n        int lastDotIdx = id.lastIndexOf('.');\n        if(lastDotIdx >= 0){\n            id = id.substring(lastDotIdx+1);\n        }\n        for (Iterator<VariableDeclarationExpr> iterator = \n             ((StatementExpressionsContainer)_this).variableDeclarations.iterator(); iterator.hasNext();) {\n                VariableDeclarationExpr varDec = iterator.next();\n                \n                    if(!id.equalsIgnoreCase(((SimpleName)(varDec.getVariable(0)).getName()).getId())){continue;}\n                    else{\n                        return varDec;\n                    }\n            }\n        return null;\n    }\n    \n   @Override\n   public void visit(BinaryExpression binaryExpr, Object arg) {\n       super.visit(binaryExpr,arg);\n        \n       if(binaryExpr.getLeft() instanceof SimpleName &&\n           binaryExpr.getRight() instanceof FieldAccessExpr &&\n          ((FieldAccessExpr) binaryExpr.getRight()).getFullyQualifiedName().asString().equals(\"System.out.println\") \n              ==true){\n           \n          VariableDeclarationExpr depVar=checkDependentVariable((SimpleName)binaryExpr.getLeft());\n          if(depVar!=null){\n              ((StatementExpressionsContainer)_this).statements.addAll(depVar.getInitializer());\n              replaceWithChildNodes(depVar, new BinaryExpression(BinaryOperator.ADD_ASSIGN,depVar.getVariable(0),new IntegerLiteral(5)));\n          }\n       }\n   }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  //When the node is null it means we reached the Implicit return where the function returns (possibly without an return statement)\n  if(n==null){return false};\n\n  //TODOList(user): We only care about the cases where the call has side effect or not\n  if(n.isCall() && !NodeUtil.functionCall hasSide effects(n)){return true};\n\n  if(n.is New() && !NodeUtil.constructor call has side effects(n)){return true};\n\n  for(Node c= n.getFirst child(); c != null ; c = c.getNext()) {\n    if (!control flow graph.is enter new cfnode(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // when the node is null it means we reached the Implicit return where the function returns(possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // when the node is call to function that pass one of the dep variable to non-side effect function\n  if (n.isCall() && !NodeUtil.functionCall has side effect(n)) {\n    return true;\n  }\n  // when the node is new call to function that pass one of the dep variable to non-side effect function\n  if (n.isNew() && !NodeUtil.constructorCall has side effect(n)) {\n    return true;\n  }\n\n  for (Node c = n.getFirst child(); c != null; c = c.getNext()) {\n    if (!control flow graph.is entering new cfgt node(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  //When the node is null it means we reached the Implicit return where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n  if (n.isCall() && !NodeUtil.functionCall has side effect(n)) {\n    return true;\n  }\n  if (n.isNew() && !NodeUtil.constructorCall has side effect(n)) {\n    return true;\n  }\n  if (n.isCall() && n.getArguments().isEmpty()) {\n    return true;\n  }\n  for (Node c = n.getFirst child(); c != null; c = c.getNext()) {\n    if (! control flow graph.isentering new cfgt node(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // When the node is null it means, we reached the implicit return\n  // where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // TODO(user): We only care about calls to functions that\n  // passes one of the dependent variable to a non-side-effect free\n  // function.\n  if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {\n    return true;\n  }\n\n  if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {\n    return true;\n  }\n\n\n  for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {\n    if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testSimpleForIn"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean apply(Node n) {\n  // When the node is null it means, we reached the implicit return\n  // where the function returns (possibly without an return statement)\n  if (n == null) {\n    return false;\n  }\n\n  // TODO(user): We only care about calls to functions that\n  // passes one of the dependent variable to a non-side-effect free\n  // function.\n  if (n.isCall() && NodeUtil.functionCallHasSideEffects(n)) {\n    return true;\n  }\n\n  if (n.isNew() && NodeUtil.constructorCallHasSideEffects(n)) {\n    return true;\n  }\n\n\n  for (Node c = n.getFirstChild(); c != null; c = c.getNext()) {\n    if (!ControlFlowGraph.isEnteringNewCfgNode(c) && apply(c)) {\n      return true;\n    }\n  }\n  return false;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testSimpleForIn"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-15",
+    "diff_stats": null
+  }
+]

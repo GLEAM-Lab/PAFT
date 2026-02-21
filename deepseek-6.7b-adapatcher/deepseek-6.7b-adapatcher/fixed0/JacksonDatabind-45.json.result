@@ -1,0 +1,134 @@
+[
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null && format.getShape() != JsonFormat.Shape.NUMBER) {\n\n        \t// Simple case first: serialize as numeric timestamp?\n            JsonFormat.Shape shape = format.getShape();\n            if (shape.isNumeric()) {\n                return withFormat(Boolean.TRUE, null);\n            }\n\n            if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null && format.getShape() != JsonFormat.Shape.NUMBER) {   //if shape is NOT NUMBER\n            if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        } else if (format != null && format.getShape() == JsonFormat.Shape.NUMBER){   //if shape is NUMBER\n             return withFormat(Boolean.TRUE, null);\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null && format.getShape() != JsonFormat.Shape.NUMBER) { // Changed this line\n            if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        } else if (format != null && format.getShape() == JsonFormat.Shape.NUMBER) { // Added this line\n            return withFormat(Boolean.TRUE, null);\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null) {\n\n        \t// Simple case first: serialize as numeric timestamp?\n            if (format.getShape() == JsonFormat.Shape.NUMBER) {\n                return withFormat(Boolean.TRUE, null);\n            } else if (format.getShape() == JsonFormat.Shape.STRING && format.hasPattern()){\n                // If explicitely set as STRING, disable textual representation no matter what locale it is.\n                // Textual representation should take precedence over any specified locale in order to conform to user requirements.\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.getPattern();\n                SimpleDateFormat df = new SimpleDateFormat(pattern);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null && !JsonFormat.Shape.NUMBER.equals(format.getShape())) { // Changed line from == to equals\n            if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(Serializer\u623f\u5730\u4ea7Serializer\u63d0\u4f9b\u8005Serializer provideers, BeanProperty property) throw JsonmappingException {\n    if (property != null) {\n        Json\u683c\u5f0f annotation = provideers.get annotationIntrospector(). find format(( An annotated property. get member());\n        if ( annotation != null) {\n\n        \t// Simplify case first: seralize as numericTimestamp?\n            Json\u683c\u5f0f shape = annotation. get Shape();\n            if ( shape. isNumeric()) {\n                return withformat(\u5e03\u5c14. TRUE, null);\n            }\n\n            if ( annotation. get shape() == Json\u683c\u5f0f. Shape. STRING) {\n                timeZone tz = annotation. get timeZone();\n                final String pattern = annotation. has pattern() ? annotation. get pattern() : Stdateformat. date format strISO8601;\n                final locale loc = annotation. has locale() ? annotation. get locale() : provideers. get locale();\n                sim simdf = new sim simdf ( pattern, loc);\n                if ( tz == null) {\n                    tz = provideers. get timeZone();\n                }\n                simdf. setTimeZone(cz);\n                return withformat(\u5e03\u5c14. FALSE, simdf);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerAreaSerializer serialsizer,\n        BeanProperty property) throw JsonmappingException\n{\n    if (property != null) {\n        Json Format = serialsizer.get annotation Introspector(). find Format(( annotated property. get member());\n        if (format != null) {\n\n        \t// simple case first: serialsize as numericTimestamp?\n            Json Format. Shape shape = format.get shape();\n            if ( shape. is numeric()) {\n                return with format( boolean. TRUE, null);\n            }\n\n            if (format.get shape() == Json format. shape. STRING) {\n                time Zone tz = format. get time Zone();\n                final String pattern = format. has Pattern()\n                                ? format.get pattern()\n                                : std date format. date format str,ISO8601;\n                final locale loc = format. has locale()\n                                ? format. get locale()\n                                : serialsizer. get locale();\n                simple date format df = new simple date format( pattern, loc);\n                if ( walking off and tz == null) {\n                    tz = serialsizer. get walking off ();\n                }\n                df. set walking off (cz);\n                return with format( boolean. FALSE, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(Serializer pc, BeanProperty property)\n{\n    if (property != null) {\n        Jsonformat ann = _find annotationIntrospector().findAnnotation(property.get annotated(), Jsonformat.class);\n        if (ann != null) {\n            boolean numeric = ann.get shape().isNumeric();\n            if numeric){return new fixedSerializer(true);}\n\n            if (ann.get shape() == Json Format. shape. STRING) {\n                String pattern = ann.has pattern() ? ann.get pattern() : Stdateformat. DATEFORMAT_ strISO8601;\n                locale l = ann. has locale() ? ann. get locale() :pc. get locale();\n                simpl dateformat df = new simpl dateformat( pattern, l);\n                if ann.has time Zone()) {df. setTimeZone(ann. get time Zone());} else {df. setTimeZone(pc. get time Zone());}\n                return new fixedSerializer(false, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null) {\n\n            //Simple case first: serialize as numeric timestamp?\n            if(format.getShape() == JsonFormat.Shape.NUMBER){\n              DateTimeSerializerBase dateTimeSerializerBase = new DateTimeSerializerBase(){};\n              dateTimeSerializerBase.withFormat(Boolean.TRUE, null);\n              return dateTimeSerializerBase;\n            }else if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n               DateTimeSerializerBase dateTimeSerializerBase = new DateTimeSerializerBase(){};\n               dateTimeSerializerBase.withFormat(Boolean.FALSE, df);\n                return dateTimeSerializerBase;\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonSerializer<?> createContextual(SerializerProvider serializers,\n        BeanProperty property) throws JsonMappingException\n{\n    if (property != null) {\n        JsonFormat.Value format = serializers.getAnnotationIntrospector().findFormat((Annotated)property.getMember());\n        if (format != null && format.getShape() != JsonFormat.Shape.NUMBER) { // Change made here\n            if (format.getShape() == JsonFormat.Shape.STRING) {\n                TimeZone tz = format.getTimeZone();\n                final String pattern = format.hasPattern()\n                                ? format.getPattern()\n                                : StdDateFormat.DATE_FORMAT_STR_ISO8601;\n                final Locale loc = format.hasLocale()\n                                ? format.getLocale()\n                                : serializers.getLocale();\n                SimpleDateFormat df = new SimpleDateFormat(pattern, loc);\n                if (tz == null) {\n                    tz = serializers.getTimeZone();\n                }\n                df.setTimeZone(tz);\n                return withFormat(Boolean.FALSE, df);\n            }\n        }\n    }\n    return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.DateSerializationTest::testDateDefaultShape"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-45",
+    "diff_stats": null
+  }
+]

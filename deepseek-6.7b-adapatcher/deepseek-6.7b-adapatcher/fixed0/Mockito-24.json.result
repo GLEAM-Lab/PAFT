@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "public Object answer(InvocationOnMock invocation) {\n    if (methodsGuru.isToString(invocation.getMethod())) {\n        Object mock = invocation.getMock();\n        MockName name = mockUtil.getMockName(mock);\n        if (name.isDefault()) {\n            return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n        } else {\n            return name.toString();\n        }\n    } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {\n        //see issue 184.\n        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).\n        //Only for compareTo() method by the Comparable interface\n        return Integer.valueOf(1);\n    }\n    \n    Class<?> returnType = invocation.getMethod().getReturnType();\n    return returnValueFor(returnType);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValuesTest::should_return_zero_if_mock_is_compared_to_itself"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*;\nclass Main{\n public static void main(String[] args){\n  List<Object> list = new ArrayList<>();\n  Iterator itr = list.iterator();\n  while(itr.hasNext()){\n   System.out.println(itr.next());\n  }\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.lang.reflect.Type;\n\npublic Object answer(InvocationOnMock invocation) {\n    Type returnType = invocation.getMethod().getGenericReturnType();\n    if (returnType instanceof Class && ((Class<?>) returnType).equals(String.class)) {\n        if (methodsGuru.isToString(invocation.getMethod())) {\n            Object mock = invocation.getMock();\n            MockName name = mockUtil.getMockName(mock);\n            if (name.isDefault()) {\n                return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n            } else {\n                return name.toString();\n            }\n        } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {\n            return 1;\n        }\n    }\n    return returnValueFor(returnType);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Object answer(InvocationOnMock invocation) throws Throwable {\n    if (methodsGuru.isToString(invocation.getMethod())) {\n        Object mock = invocation.getMock();\n        MockName name = mockUtil.getMockName(mock);\n        if (name.isDefault()) {\n            return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n        } else {\n            return name.toString();\n        }\n    } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {\n        //see issue 184.\n        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).\n        //Only for compareTo() method by the Comparable interface\n        return 1;\n    }\n    \n    Class<?> returnType = invocation.getMethod().getReturnType();\n    if (\"void\".equals(returnType.getName())){\n        return null;\n    }else if(\"boolean\".equals(returnType.getName())){\n        return false;\n    }else{\n        throw new RuntimeException(\"Unhandled return type: \"+returnType);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Object answer(InvocationOnMock invocation) throws Throwable{\n    if (methodsGuru.isToString(invocation.getMethod())) {\n        Object mock = invocation.getMock();\n        MockName name = mockUtil.getMockName(mock);\n        if (name.isDefault()) {\n            return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n        } else {\n            return name.toString();\n        }\n    } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {\n        //see issue 184.\n        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).\n        //Only for compareTo() method by the Comparable interface\n        return Integer.valueOf(1);\n    }\n    \n    Class<?> returnType = invocation.getMethod().getReturnType();\n    return returnValueFor(returnType);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Object answer( Unless otherwise specified invocation) {\n    if ( methodsGuru .is toString( invocation . getMethod () ) ) {\n        Object _ on Mock = invocation . get\u4ee5\u4e3a Mock's get...\n        Mock\u540d\u79f0 name = util . get Mock\u540d\u79f0 ( _ on Mock);\n        if ( name.is default () ) {\n            return \" Mock for \" + util.get Mock settings ( _ on Mock) . get type to Mock() . get simple name () + \" , value : \" + _ on util . get object value ( _ on Mock);\n        } else {\n            return name.to String();\n        }\n    } else if ( methodsGuru .isCompareTo method( invocation . get\u65b9\u6cd5 () ) ) {\n        // see issue 184.\n        // mocks by default should return 0 if reference is same, otherwise some other value because they are not same. Therefore we return 1 ( anything else than 0 is good).\n        return 1;\n    }\n    \n    Class<?> returnType = invocation . get\u65b9\u6cd5 () . get Return type () ;\n    return util . get object value (return type);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public final Object answer( final  org. Mocked<T> invocation) {\n    final String methodName = invocation.getMethod().getMethodName();\n    if \"toString\" .endsWith methodName) {\n        final StringBuilder sb = new StringBuilder(\" Mocked \" + invocation.getClass().getClass().get simpleName());\n        final org. Mocked<T> parent = invocation.get parent();\n        while null != parent) {\n            sb.append(\" from \" + parent. get class(). get simpleName());\n            parent = parent. get parent();\n        }\n        return sb. toString();\n    }\n    if \"CompareTo\" .endsWith methodName) {\n        return 0;\n    }\n    return null;\n}\n gravitate. set answer(answer);",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Object answer(\u8bb0\u5fc6 on Mock) {\n    if ( methodsGuru.isCompareTo\u65b9\u6cd5(on .get\u65b9\u6cd5()) ) {\n        return 1;\n    }\n    if ( methodsGuru.is\u8f6c\u6362\u4e3aString(on .get\u65b9\u6cd5()) ) {\n        Object Mock = on .get Mock();\n        MockName name = (new MockUtil().get MockName( Mock));\n        if ( name.isDefault()) {\n            return \"\u6a21\u5757\" + new MockUtil().get Mock settings( Mock).get TypeTo Mock().get simpleName() + \" ,  h  code: \" + (int)( Object = 0xff & i / 3) + \" - \" + ( int)( i % 3) + \" - \" + ( int)( i / 3) + \" ,  h  code: \" + Mock.\n        }\n        return name.to String();\n    }\n    return answerFor(on .get Return type());\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.lang.reflect.Method;\n\npublic Object answer(InvocationOnMock invocation) throws Throwable {\n    Method method = invocation.getMethod();\n    if (methodsGuru.isToString(method)) {\n        Object mock = invocation.getMock();\n        MockName name = mockUtil.getMockName(mock);\n        if (name.isDefault()) {\n            return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n        } else {\n            return name.toString();\n        }\n    } else if (methodsGuru.isCompareToMethod(method)) {\n        //see issue 184.\n        //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).\n        //Only for compareTo() method by the Comparable interface\n        return 1;\n    }\n\n    Class<?> returnType = method.getReturnType();\n    return returnValueFor(returnType);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Object answer(InvocationOnMock invocation) {\n    try {\n        if (methodsGuru.isToString(invocation.getMethod())) {\n            Object mock = invocation.getMock();\n            MockName name = mockUtil.getMockName(mock);\n            if (name.isDefault()) {\n                return \"Mock for \" + mockUtil.getMockSettings(mock).getTypeToMock().getSimpleName() + \", hashCode: \" + mock.hashCode();\n            } else {\n                return name.toString();\n            }\n        } else if (methodsGuru.isCompareToMethod(invocation.getMethod())) {\n            //see issue 184.\n            //mocks by default should return 0 if references are the same, otherwise some other value because they are not the same. Hence we return 1 (anything but 0 is good).\n            //Only for compareTo() method by the Comparable interface\n            return Integer.valueOf(1);\n        }\n        Class<?> returnType = invocation.getMethod().getReturnType();\n        return returnValueFor(returnType);\n    } catch (Exception e){\n        e.printStackTrace();\n    }\n    return null;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValuesTest::should_return_zero_if_mock_is_compared_to_itself"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-24",
+    "diff_stats": null
+  }
+]

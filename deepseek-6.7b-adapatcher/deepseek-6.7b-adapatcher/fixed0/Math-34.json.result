@@ -1,0 +1,152 @@
+[
+  {
+    "patch_code": "import java.util.*; \n\npublic Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableCollection(chromosomes).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*; \n\npublic Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosomes).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosomes).iterator();\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 1,
+      "total_changed_lines": 3,
+      "added_tokens": 14,
+      "deleted_tokens": 7,
+      "total_changed_tokens": 21,
+      "edit_distance": 40,
+      "edit_similarity": 65.81,
+      "norm_edit_distance": 0.3419,
+      "norm_edit_distance_pct": 34.19,
+      "buggy_length": 77,
+      "fix_length": 117,
+      "preserved_ratio": 50.0
+    }
+  },
+  {
+    "patch_code": "import java.util.*; \n\n@Override\npublic Iterator<Chromosome> iterator() {\n   return Collections.unmodifiableList(chromosomes).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosomes).iterator();\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 12,
+      "deleted_tokens": 7,
+      "total_changed_tokens": 19,
+      "edit_distance": 30,
+      "edit_similarity": 71.96,
+      "norm_edit_distance": 0.2804,
+      "norm_edit_distance_pct": 28.04,
+      "buggy_length": 77,
+      "fix_length": 107,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosites). iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosites).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Iterator<chromosome> iterator() {\n    return Collections.unmodifiableList(chromosites).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*; \n\npublic class ListPopulation {\n\n     public Iterator<Chromosome> iterator() {\n         return Collections.unmodifiableList(chromosomes).iterator();\n     }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*; \npublic Iterator<Chromosome> iterator() {\n    return Collections.unmodifiableList(chromosomes).iterator();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-34",
+    "diff_stats": null
+  }
+]

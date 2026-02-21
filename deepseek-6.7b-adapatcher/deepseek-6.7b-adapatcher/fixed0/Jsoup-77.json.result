@@ -1,0 +1,203 @@
+[
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name().toLowerCase();\n    Element firstFound = null;\n\n    for (int pos = stack.size() - 1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equalsIgnoreCase(elName)) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size()- 1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equalsIgnoreCase(elName)) {\n            stack.remove(pos);\n        } else {\n            break;\n        }\n    }\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.jsoup.parser.XmlTreeBuilderTest::testPopToClose",
+        "org.jsoup.parser.XmlTreeBuilderTest::testSupplyParserToJsoupClass",
+        "org.jsoup.parser.XmlTreeBuilderTest::testSupplyParserToDataStream"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name().toLowerCase();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equalsIgnoreCase(elName)) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        stack.remove(pos);\n        if (next == firstFound)\n            break;\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 2,
+      "total_changed_lines": 4,
+      "added_tokens": 27,
+      "deleted_tokens": 23,
+      "total_changed_tokens": 50,
+      "edit_distance": 24,
+      "edit_similarity": 95.95,
+      "norm_edit_distance": 0.0405,
+      "norm_edit_distance_pct": 4.05,
+      "buggy_length": 568,
+      "fix_length": 592,
+      "preserved_ratio": 90.48
+    }
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().toLowerCase().equals(elName.toLowerCase())) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        stack.remove(pos);\n        if (next == firstFound)\n            break;\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 22,
+      "deleted_tokens": 14,
+      "total_changed_tokens": 36,
+      "edit_distance": 28,
+      "edit_similarity": 95.3,
+      "norm_edit_distance": 0.047,
+      "norm_edit_distance_pct": 4.7,
+      "buggy_length": 568,
+      "fix_length": 596,
+      "preserved_ratio": 95.24
+    }
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name().toLowerCase();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equals(elName)) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        stack.remove(pos);\n        if (next == firstFound)\n            break;\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 13,
+      "deleted_tokens": 9,
+      "total_changed_tokens": 22,
+      "edit_distance": 14,
+      "edit_similarity": 97.59,
+      "norm_edit_distance": 0.0241,
+      "norm_edit_distance_pct": 2.41,
+      "buggy_length": 568,
+      "fix_length": 582,
+      "preserved_ratio": 95.24
+    }
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name().toLowerCase();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equals(elName)) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next == firstFound)\n            break;\n        else {\n            stack.remove(pos);\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.parser.XmlTreeBuilderTest::normalizesDiscordantTags"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void pop StackTo close(Token.End Tag end Tag) {\n    String elName = end Tag. name();\n    String elNameLowcase = elName. lowcase();\n    element e = null;\n\n    for (int pos = Stack. size () -1; pos>= 0; pos--) {\n        element next = Stack. get(pos);\n        if (next. nodeName(). lowcase().\u7b49\u4e8e(elNameLowcase)) {\n            e = next;\n            break;\n        }\n    }\n    if (e == null) return; // Not found, no action required\n\n    for (int pos = Stack. size () -1; pos>= 0; pos--) {\n        element next = Stack. get(pos);\n        Stack. remove(pos);\n        if (next == e) break;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void pop StackTo Close(Token.End Tag end Tag) {\n    String elName = end Tag. name();\n    element first Found = null;\n\n    for (int pos = Stack. size () -1; pos>=0; pos--){\n        element next = Stack. get(pos);\n        if (next. nodeName(). equalss(elName)) {\n            first Found = next;\n            break;\n        }\n    }\n    if (first Found == null) return; // not found, Skip\n\n    for (int pos = Stack. size () -1; pos>=0; pos--){\n        element next = Stack. get(pos);\n        Stack. remove(pos);\n        if (next == first Found) {\n            break;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void pop StackTo Close(Token.End Tag end Tag) {\n    String elName = end Tag.name();\n    element first Found = null;\n\n    for (int pos = Stack.size () -1; pos>= 0; pos--) {\n        element next = Stack.get(pos);\n        if (next. nodeName () . equalss(elName)) {\n            first found = next;\n            break;\n        }\n    }\n    if (first found == null)\n        return; // not found, skips\n\n    for (int pos = Stack.size () -1; pos>= 0; pos--) {\n        element next = Stack.get(pos);\n        Stack. remove(pos);\n        if (next == first found)\n            break;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().toLowerCase().equals(elName.toLowerCase())) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        stack.remove(pos);\n        if (next == firstFound)\n            break;\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 22,
+      "deleted_tokens": 14,
+      "total_changed_tokens": 36,
+      "edit_distance": 28,
+      "edit_similarity": 95.3,
+      "norm_edit_distance": 0.047,
+      "norm_edit_distance_pct": 4.7,
+      "buggy_length": 568,
+      "fix_length": 596,
+      "preserved_ratio": 95.24
+    }
+  },
+  {
+    "patch_code": "private void popStackToClose(Token.EndTag endTag) {\n    String elName = endTag.name().toLowerCase();\n    Element firstFound = null;\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next.nodeName().equals(elName)) {\n            firstFound = next;\n            break;\n        }\n    }\n    if (firstFound == null)\n        return; // not found, skip\n\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element next = stack.get(pos);\n        if (next != firstFound) continue;\n        \n        stack.remove(pos);\n        break;\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-77",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 4,
+      "deleted_lines": 3,
+      "total_changed_lines": 7,
+      "added_tokens": 24,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 42,
+      "edit_distance": 67,
+      "edit_similarity": 88.78,
+      "norm_edit_distance": 0.1122,
+      "norm_edit_distance_pct": 11.22,
+      "buggy_length": 568,
+      "fix_length": 597,
+      "preserved_ratio": 81.82
+    }
+  }
+]

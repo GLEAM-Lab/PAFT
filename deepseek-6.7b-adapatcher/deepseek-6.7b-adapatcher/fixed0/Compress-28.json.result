@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\tint totalRead = 0;\n    //Check if we have reached EOF or start of the next file in the archive\n    if (hasHitEOF || entryOffset >= entrySize) {\n        try {\n            currEntry = getNextEntryImpl();\n            if(currEntry == null){\n                return -1;\n            }else {\n                entryName = currEntry.getName();\n                entrySize = currEntry.getSize();\n                entryOffset = 0;\n                hasHitEOF = false;\n            }\n        } catch (IOException e) {\n            handleIOE(e, \"Reading from stream\");\n            close();\n            throw e;\n        }\n    }\n    \n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    count(totalRead);\n    \n    if (totalRead == -1) {\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\tint totalRead = 0;\n\n    if (hasHitEOF || entryOffset >= entrySize) {\n        if (!getNextEntry()) return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    count(totalRead);\n    \n    if (totalRead == -1) {\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}\n\nprivate boolean getNextEntry() throws IOException {\n    currEntry = tais.getNextEntry();\n    if (currEntry == null) {\n        hasHitEOF = true;\n        return false;\n    }\n    entryOffset = 0;\n    entrySize = currEntry.getSize();\n    return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    if (entryOffset >= entrySize) {\n        return -1;\n    }\n    \n    if (!isInitialized) {\n        initialize();\n        isInitialized = true;\n    }\n    \n    if (headerParsed && currHeader.isDirectory()) {\n        headerParsed = false;\n        return read(buf, offset, numToRead);\n    }\n    \n    if (headerParsed && !currHeader.isDirectory()) {\n        numToRead = Math.min(numToRead, (int)(entrySize - entryOffset));\n    } else if (!headerParsed) {\n        numToRead = Math.min(numToRead, getRecordSize());\n    }\n    \n    if (numToRead <= 0) {\n        return 0;\n    }\n    \n    int bytesRead = 0;\n    try {\n        bytesRead = is.read(buf, offset, numToRead);\n    } catch (IOException e) {\n        // Handle IOExceptions with missing files and such better here than in org.apache.commons.compress.archivers.tar.TarArchiveEntry.getRealContent().handleIOE(e);\n        if (bytesRead < 0 && ((IOException)e).getMessage().contains(\"Received disconnect from\")) {\n            return -1;\n        }\n        \n        throw e;\n    }\n    \n    if (bytesRead >= 0) {\n        entryOffset += bytesRead;\n    }\n    \n    return bytesRead;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\tint totalRead = 0;\n\n    if (hasHitEOF || entryOffset >= entrySize) {\n        return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n    \n    totalRead = is.read(buf, offset, numToRead);\n    count(totalRead);\n    \n    if (totalRead == -1) {\n        if (!isFinished()) {\n            throw new IOException(\"Unexpected end of file reading archive data.\");\n        }\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n    int totalRead = 0;\n\n    if ((offset < 0) || (numToRead < 0) || (offset + numToRead > buf.length)) {\n            throw new IndexOutOfBoundsException();\n    }\n    \n    if (hasHitEOF || entryOffset >= entrySize) {\n        return -1;\n    }\n\n    if (currEntry == null) {\n        throw new IllegalStateException(\"No current tar entry\");\n    }\n\n    numToRead = Math.min(numToRead, available());\n\n    // Check for EOF condition within loop rather than at top of loop\n    // so we can still read any data before actual EOF is hit\n    while (totalRead < numToRead && (is.read(buf, offset + totalRead, numToRead - totalRead) != -1)) {\n        totalRead += is.read(buf, offset + totalRead, numToRead - totalRead);\n    }\n        \n    if (totalRead == 0) {\n        hasHitEOF = true;\n    } else {\n        entryOffset += totalRead;\n    }\n\n    return totalRead;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.tar.TarArchiveInputStreamTest::shouldThrowAnExceptionOnTruncatedEntries"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(int num bytes) {\n\tif (has hit Eof) {\n\t\treturn -1;\n\t}\n\tif (num bytes == 0) {\n\t\treturn num bytes;\n\t}\n\tif (curr Entry == null) {\n\t throw new Illegal state exception(\" No current entry\");\n\t}\n\tif ( entry size < entry Offset + num bytes) {\n\tnum bytes = entry size - entry Offset;\n\t}\n int r = super.read(num bytes);\n\t entry Offset+= r;\n\treturn r;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(char[] buff, int off, int length)  {\nint totalRead = 0;\n\nif (has hitE OF or entry Off off>= entry size ) {return -1; }\n\nif (curr Entry == null) {\n throw new Illegal state exception(\" No current entry in stream\");\n}\n\nlength = (int min(length, available());\n\n totalRead = is.read(buff, off, length);\n count( total Read);\n\nif ( total read== -1) {\nhas hitE OF = true;\n} else {\n entry Off off += total read;\n}\n\nreturn total Read;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read( final int num bytes) \n{\nint totalRead = 0;\n\n    if (has hitEof or entry Offset > entrySize) {\n        return -1;\n    }\n\n    if (curr entry null) {\n        throw new Illegal stateException(\" No current entry\");\n    }\n\n    totalRead = is.read( num bytes);\n    count( totalread);\n    entry Offset +=  totalRead;\n    return totalRead;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\t\n\tint totalRead = 0;\n\tif (!checkInitialized()) {\n\t    init();\n\t}\n\tif (endOfArchive) {\n\t    return -1;\n\t}\n\tif (bytesSkipped > 0) {\n\t    // if skipping bytes we need to check if there was any read or not first\n\t    int skipped = skipBytes(bytesSkipped, false);\n\t    if (skipped < 0){\n\t        endOfArchive = true;\n\t\treturn -1;\n\t    }else {\n\t      bytesSkipped -= skipped;  \n\t    }\n\t}\n\t\n\twhile ((currentReadCount = input.read(buffer)) != -1) {\n\t\t\n\t\tif (hasHitEOF || entryOffset >= entryLength) {\n\t\t    startReadingEntries();\n\t\t    continue;\n\t\t}\n\t\tremainingInCurrentBlock = currentReadCount + blockPointer;\n\t\tif (remainingInCurrentBlock > numToRead) {\n\t\t    remainingInCurrentBlock = numToRead;\n\t\t}\n\t\tSystem.arraycopy(blockBuffer, blockPointer, buf, offset, remainingInCurrentBlock);\n\t\tentryOffset += remainingInCurrentBlock;\n\t\toffset += remainingInCurrentBlock;\n\t\ttotalRead += remainingInCurrentBlock;\n\t\tnumToRead -= remainingInCurrentBlock;\n\t\tremainingInCurrentBlock = 0;\n\t\tblockPointer = 0;\n\t\tif (entryOffset >= entryLength) {\n\t\t    startReadingEntries();\n\t\t}\n\t\tif (numToRead <= 0) {\n\t\t    break;\n\t\t}\n\t    }\n\tif (!isCloseImmediately && totalRead == 0 && currEntry != null) {\n\t       currEntry = getNextEntry(currEntry);\n\t}\n\treturn totalRead;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int read(byte[] buf, int offset, int numToRead) throws IOException {\n\t\tif (numToRead <= 0) {\n\t\t\treturn 0;\n\t   \t}\n\t  \twhile (true) {\n            try {\n                return rawRead(buf, offset, numToRead);\n            } catch (IOException e) {\n            \t// The stream has probably been closed externally. We should propagate this exception instead of silencing it with an incomplete read.\n                throw e;\n            } catch (IndexOutOfBoundsException e) {\n\t\t\t\tbreak; // This should never happen since we have already checked that `offset + numToRead <= buf.length`\n        \t} finally {\n                closeCurrentEntryIfNecessary();\n            }\n       }\n      \n        return numToRead > 0 ? -1 : 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-28",
+    "diff_stats": null
+  }
+]

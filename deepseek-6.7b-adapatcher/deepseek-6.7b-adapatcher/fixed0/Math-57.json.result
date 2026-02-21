@@ -1,0 +1,227 @@
+[
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0.0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)^2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] > r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 3,
+      "deleted_lines": 3,
+      "total_changed_lines": 6,
+      "added_tokens": 28,
+      "deleted_tokens": 26,
+      "total_changed_tokens": 54,
+      "edit_distance": 10,
+      "edit_similarity": 99.31,
+      "norm_edit_distance": 0.0069,
+      "norm_edit_distance_pct": 0.69,
+      "buggy_length": 1435,
+      "fix_length": 1440,
+      "preserved_ratio": 92.11
+    }
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 5,
+      "deleted_tokens": 5,
+      "total_changed_tokens": 10,
+      "edit_distance": 6,
+      "edit_similarity": 99.58,
+      "norm_edit_distance": 0.0042,
+      "norm_edit_distance_pct": 0.42,
+      "buggy_length": 1435,
+      "fix_length": 1438,
+      "preserved_ratio": 97.37
+    }
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>> chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 2,
+      "deleted_lines": 3,
+      "total_changed_lines": 5,
+      "added_tokens": 40,
+      "deleted_tokens": 40,
+      "total_changed_tokens": 80,
+      "edit_distance": 10,
+      "edit_similarity": 99.3,
+      "norm_edit_distance": 0.007,
+      "norm_edit_distance_pct": 0.7,
+      "buggy_length": 1435,
+      "fix_length": 1434,
+      "preserved_ratio": 94.59
+    }
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 5,
+      "deleted_tokens": 5,
+      "total_changed_tokens": 10,
+      "edit_distance": 6,
+      "edit_similarity": 99.58,
+      "norm_edit_distance": 0.0042,
+      "norm_edit_distance_pct": 0.42,
+      "buggy_length": 1435,
+      "fix_length": 1438,
+      "preserved_ratio": 97.37
+    }
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)^2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 2,
+      "deleted_lines": 2,
+      "total_changed_lines": 4,
+      "added_tokens": 16,
+      "deleted_tokens": 15,
+      "total_changed_tokens": 31,
+      "edit_distance": 7,
+      "edit_similarity": 99.51,
+      "norm_edit_distance": 0.0049,
+      "norm_edit_distance_pct": 0.49,
+      "buggy_length": 1435,
+      "fix_length": 1439,
+      "preserved_ratio": 94.74
+    }
+  },
+  {
+    "patch_code": "private static <T : org.apache. Commons.math.geometry.Distanceable<T>>  List< Cluster<T>> choose initial centroids( final collection< T> points, final int k, final Random random){\n\n    final List< T> pointSet = newArrayList< T>( points);\n    final List< Cluster<T>>  resultSet = newArrayList< Cluster<T>>();\n\n    final T firstPoint = pointSet. remove( random.nextInt( pointSet. size()), random);\n    resultSet. add( new Cluster<T>( firstPoint));\n\n    while (resultSet. size() < k) {\n        final double[] s = new double[ pointSet. size()];\n        double sum = 0;\n        for (int i = 0; i < pointSet. size(); i++) {\n            final T p = pointSet. get( i);\n            final double d = p . distanceFrom( get Neighboring Cluster( resultSet, p)) / ( double) resultSet. size();\n            sum +=  d * d;\n            s[i] = sum;\n        }\n\n        final double r = random . next\u53cc double() * sum;\n        for (int i = 0; i < s. length; i++) {\n            if (s[i] > r) {\n                final T p = pointSet. remove( i);\n                resultSet. add( new Cluster<T>( p));\n                break;\n            }\n        }\n    }\n    return resultSet;\n}\n\nprivate static < T : org.apache. Commons.math.geometry.Distanceable<T>>  Cluster< T> get Neighboring Cluster( final List< Cluster< T>>  resultSet, final T p) {\n    double minDistance = p . distanceFrom( resultSet. get( resultSet. size() - 1)) / ( double) resultSet. size();\n    return resultSet. get( resultSet. size() - 1);\n}\n\nprivate static < T : org.apache. Commons.math.geometry.Distanceable<T>>  List< Cluster< T>>  choose initial center( final collection< T> points, final int k, final Random random){\n    return choose initial centroids( points, k, random);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static <T : org.apache. commons.math.geom.Point>  List< org.apache. commons.math. stat. clustering. Cluster< T>  choose initial Centers( final  collection< T>  points, final  int k, final  random random) {\n\n    final List< T>  point Set = newArrayList< T>( points);\n    final List< org.apache. commons.math. stat. clustering. Cluster< T>  result Set = newArrayList< org.apache. commons.math. stat. clustering. Cluster< T> \n    \n    //Choose one centeruniformly at random among the data points\n    final T first point = point Set. remove( random. nextInt( point Set. size()));\n    result Set. add( new org.apache. commons.math. stat. clustering. Cluster< T>( first point));\n    \n    final double[] dy2 = new double[point Set. size()];\n    \n    while (result Set. size() < k) {\n         //For each data point y,computeD(y),the distance between y and the nearst center that already be choose\n        int sum = 0;\n        for (int i = 0 ; i < point Set. size(); i++) {\n            final T p = point Set. get(i);\n            final org.apache. commons.math. stat. clustering. Cluster< T>  nearst = get nearst Cluster( result Set, p);\n            final double d = p. distanceFrom( nearst. get center());\n            sum +=  d * d;\n            dy2[i] = sum;\n        }\n        //Addone new data pointascentcenter each pointy is choose withproximity to D(y)2\n        final double r = random. next\u53cc(); r\n        for (int i = 0 ; i < dy2. length; i++) {\n            if (dy2[i] > r) {\n                final T p = point Set. remove(i);\n                result Set. add(new org.apache. commons.math. stat. clustering. Cluster< T>( p));\n                break;\n            }\n        }\n        \n    }\n    \n    return result Set;\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static <T> List choose initial Centers( final collection points, final int k, final Random random){\n\n    final List resultSet = newArrayList();\n\n    final List pointSet = newArrayList( points);\n    final List resultList = newArrayList();\n\n    final double[] resultArray = new double[pointSet.size()];\n    double sum = 0;\n    int index = 0;\n\n    int indexof choice = 0;\n\n    for ( int i = 0; i < pointSet.size(); i++){\n        resultList.add( i);\n    }\n\n    int choice index = random.nextInt( resultList.size());\n\n    while ( resultList.size() > 0){\n        for ( int i = 0; i < resultList.size(); i++){\n            index of choice = i;\n            sum = 0;\n            for ( int j = 0; j < resultList.size(); j++){\n                double distance = points. distanceFrom( points. get( resultList. get( indexof choice + j)));\n                sum  sum +=  ( double) distance * distance;\n                resultArray[j] sum;\n            }\n            sum /= ( double) resultList. size();\n\n            if ( sum > sum or ( sum == sum and random. nextInt( 2 == 0)){\n                index of choice = i;\n            }\n        }\n\n        resultSet. add( points. get( resultList. remove( indexof choice));\n\n        resultArray[indexof choice] sum;\n\n        sum /= ( double) resultList. size();\n\n        indexof choice = 0;\n\n        for ( int i = 0; i < resultArray. length - 1; i++){\n            if ( resultArray[i + 1] > sum and resultArray[i]. < sum){\n                indexof choice = i + 1;\n                break;\n            }\n        }\n\n        if ( resultList. size() == 0 and resultSet. size() < k){\n            resultSet. add( points. get( resultList. remove( indexof choice));\n            sum = resultArray[indexof choice];\n        }\n\n        if ( resultList. size() == 0 and resultSet. size() == k){\n            break;\n        }\n    }\n\n    return resultSet;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 5,
+      "deleted_tokens": 5,
+      "total_changed_tokens": 10,
+      "edit_distance": 6,
+      "edit_similarity": 99.58,
+      "norm_edit_distance": 0.0042,
+      "norm_edit_distance_pct": 0.42,
+      "buggy_length": 1435,
+      "fix_length": 1438,
+      "preserved_ratio": 97.37
+    }
+  },
+  {
+    "patch_code": "private static <T extends Clusterable<T>> List<Cluster<T>>\n    chooseInitialCenters(final Collection<T> points, final int k, final Random random) {\n\n    final List<T> pointSet = new ArrayList<T>(points);\n    final List<Cluster<T>> resultSet = new ArrayList<Cluster<T>>();\n\n    // Choose one center uniformly at random from among the data points.\n    final T firstPoint = pointSet.remove(random.nextInt(pointSet.size()));\n    resultSet.add(new Cluster<T>(firstPoint));\n\n    final double[] dx2 = new double[pointSet.size()];\n    while (resultSet.size() < k) {\n        // For each data point x, compute D(x), the distance between x and\n        // the nearest center that has already been chosen.\n        double sum = 0.0;\n        for (int i = 0; i < pointSet.size(); i++) {\n            final T p = pointSet.get(i);\n            final Cluster<T> nearest = getNearestCluster(resultSet, p);\n            final double d = p.distanceFrom(nearest.getCenter());\n            sum += d * d;\n            dx2[i] = sum;\n        }\n\n        // Add one new data point as a center. Each point x is chosen with\n        // probability proportional to D(x)2\n        final double r = random.nextDouble() * sum;\n        for (int i = 0 ; i < dx2.length; i++) {\n            if (dx2[i] >= r) {\n                final T p = pointSet.remove(i);\n                resultSet.add(new Cluster<T>(p));\n                break;\n            }\n        }\n    }\n\n    return resultSet;\n\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-57",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 7,
+      "deleted_tokens": 5,
+      "total_changed_tokens": 12,
+      "edit_distance": 8,
+      "edit_similarity": 99.44,
+      "norm_edit_distance": 0.0056,
+      "norm_edit_distance_pct": 0.56,
+      "buggy_length": 1435,
+      "fix_length": 1440,
+      "preserved_ratio": 97.37
+    }
+  }
+]

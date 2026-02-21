@@ -1,0 +1,132 @@
+[
+  {
+    "patch_code": "import org.apache.commons.math3.util.FastMath;\n\npublic void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (x[xOffset] > 0 || x[xOffset] < 0) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < getSize(); ++i) {\n            result[resultOffset + i] = 2 * tmp1[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else if (!Double.isFinite(x[xOffset])) {\n        \n        // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly\n        for (int i = 0; i < getSize(); ++i){\n           result[resultOffset + i] = Double.POSITIVE_INFINITY;\n        }\n        \n    }\n\n    if (x[xOffset] < 0 && y[yOffset] > 0) {\n\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        result[resultOffset] =\n                FastMath.PI - 2 * tmp2[0];           // +/-pi - 2 * atan(y / (r - x))\n        for (int i = 1; i < getSize(); ++i) {\n            result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n\n    } else if (!Double.isNaN(x[xOffset]) && Double.isInfinite(y[yOffset])){\n        \n        //fix value to take special cases (-0/+inf, -0/-inf) correctly\n        for (int i = 0; i < getSize(); ++i){\n           result[resultOffset + i] = Double.NEGATIVE_INFINITY;\n        }\n\n    }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static double atan2(double y, double x) {\n    if (x > 0) {\n        return StrictMath.atan(y / x);\n    } else if (x < 0 && y >= 0) {\n        return StrictMath.PI + StrictMath.atan(y / x);\n    } else if (x < 0 && y < 0) {\n        return -StrictMath.PI + StrictMath.atan(y / x);\n    } else if (Double.isInfinite(x) || Double.isNaN(x) || \n        \tDouble.isInfinite(y) || Double.isNaN(y)) {\n        throw new IllegalArgumentException(\"Arguments must be finite\");\n    } else { // x == 0\n        return y > 0 ? StrictMath.PI / 2 : -StrictMath.PI / 2;\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.analysis.differentiation.DerivativeStructureTest::testAtan2SpecialCases"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (x[xOffset] >= 0) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < tmp2.length; ++i) {\n            result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else if (x[xOffset] == 0 && y[yOffset] > 0){  \n\n        // compute atan2(y, x) = pi/2\n        result[resultOffset] = FastMath.PI / 2; \n        \n\n    }else{\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        result[resultOffset] =\n                ((tmp2[0] <= 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0]; // +/-pi - 2 * atan(y / (r - x))\n        for (int i = 1; i < tmp2.length; ++i) {\n            result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n\n    }\n\n    // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly\n\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.analysis.differentiation.DerivativeStructureTest::testAtan2SpecialCases"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2(double[] y, int yOffset, double[] x, int xOffset, double[] result, int resultOffset) {\n    if(Double.isNaN(y[yOffset]) && Double.isInfinite(y[yOffset])){\n         result[resultOffset]= y[yOffset] < 0 ? -Math.PI/2 : Math.PI/2;\n        return ;\n    }else if((Double.isNaN(x[xOffset]) || Double.isInfinite(x[xOffset]))){\n           if(y[yOffset] > 0) result[resultOffset] = Math.PI / 2;\n        else if(y[yOffset] < 0 ) result[resultOffset] = -Math.PI / 2;\n        else if(y[yOffset] == 0 && Double.isNaN(x[xOffset])) result[resultOffset]  = Double.POSITIVE_INFINITY;\n        else if(y[yOffset] == 0 && !Double.isNaN(x[xOffset])) result[resultOffset]  = 0;\n        \n        return;\n    }\n\n    if(x[xOffset]>0&&y[yOffset]>=0||x[xOffset]<0&&y[yOffset]>0){\n        double val=Math.atan(y[yOffset]/(Math.sqrt(x[xOffset]*x[xOffset]+y[yOffset]*y[yOffset])));\n        result[resultOffset]=val;\n        return;\n    }if(x[xOffset]==0&&y[yOffset]>=0){\n        result[resultOffset]=Math.PI/2;\n        return;\n    }if(x[xOffset]==0&&y[yOffset]<0){\n        result[resultOffset]=-Math.PI/2;\n        return;\n    }if(y[yOffset]==0&&x[xOffset]<0){\n        result[resultOffset]=Math.PI;\n        return;\n    }if(y[yOffset]==0&&x[xOffset]>0){\n        result[resultOffset]=0;\n        return;\n    }if(x[xOffset]<0&&y[yOffset]<0){\n        double val=Math.atan(y[yOffset]/x[xOffset]);\n        result[resultOffset]=-val;\n        return;\n    }if(x[xOffset]>0&&y[yOffset]<0){\n        double val=Math.atan(-y[yOffset]/x[xOffset]);\n        result[resultOffset]=-val;\n        return;\n    }\n\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.analysis.differentiation.DerivativeStructureTest::testAtan2SpecialCases"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2(double[] y, int yOffset,\n               double[] x, int xOffset,\n               double[] result, int resultOffset) {\n\n    int n = getSize();\n    boolean positiveX = true, positiveY = true;\n    if (Double.isInfinite(x[xOffset]) || Double.isNaN(x[xOffset])) {\n        xOffset--;\n    }\n    if (Double.isInfinite(y[yOffset]) || Double.isNaN(y[yOffset])) {\n        yOffset--;\n    }\n    if (x[xOffset] < 0) {\n        positiveX = false;\n    }\n    if (y[yOffset] < 0) {\n        positiveY = false;\n    }\n\n    if (!positiveX && !positiveY) {\n        for (int i = 0; i < n; i++) {\n            if (!Double.isNaN(y[i]) && !Double.isInfinite(y[i]) && !Double.isNaN(x[i]) && !Double.isInfinite(x[i])) {\n                result[i] = FastMath.PI;\n            }\n        }\n    } else if (!positiveX) {\n        for (int i = 0; i < n; i++) {\n            if (!Double.isNaN(y[i]) && !Double.isInfinite(y[i]) && !Double.isNaN(x[i]) && !Double.isInfinite(x[i])) {\n                result[i] = FastMath.PI - FastMath.atan(y[i] / (-x[i]));\n            }\n        }\n    } else if (!positiveY) {\n        for (int i = 0; i < n; i++) {\n            if (!Double.isNaN(y[i]) && !Double.isInfinite(y[i]) && !Double.isNaN(x[i]) && !Double.isInfinite(x[i])) {\n                result[i] = -FastMath.atan(y[i] / x[i]);\n            }\n        }\n    } else {\n        for (int i = 0; i < n; i++) {\n            if (!Double.isNaN(y[i]) && !Double.isInfinite(y[i]) && !Double.isNaN(x[i]) && !Double.isInfinite(x[i])) {\n                result[i] = FastMath.atan(y[i] / x[i]);\n            }\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.analysis.differentiation.DerivativeStructureTest::testAtan2SpecialCases"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2( final double[] y, final int y replicate\n                  final double[] x, final int x replica\n                  final double[] result, final int result replica) {\n\n    //compute r=sqrt(x^2 + y^2)\n    double[] t1 = new double[getSize()];\n    double[] t2 = new double[getSize()];\n    double[] t3 = new double[getSize()];\n    double[] t4 = new double[getSize()];\n    double[] t5 = new double[getSize()];\n    double[] t6 = new double[getSize()];\n    double[] t7 = new double[getSize()];\n    double[] t8 = new double[getSize()];\n\n    multiply(x, x replica, x, x replica, t1, 0);       // x^2\n    multiply(y, y replica, y, y replica, t2, 0);       // y^2\n    add(t1, 0, t2, 0, t3, 0);                        // x^2 + y^2\n    rootN(t3, 0, 2, t4, 0);                            // r =sqrt(x^2 + y^2)\n    if (x[x replica] > 0) {\n        add(t4, 0, x, x replica, t5, 0);              // r + x\n        divides(y, y replica, t5, 0, t6, 0);           // y / (r + x)\n        arctan(t6, 0, t5, 0, t7, 0);                  // arctan( y / (r + x) )\n        result[result replica] = 2 * t7[0];            \n    } else {\n        Subtract(t4, 0, x, x replica, t5, 0);          // r - x\n        divides(y, y replica, t5, 0, t6, 0);          \n        arctan(t6, 0, t5, 0, t7, 0);                 \n        result[result replica] = (((t7[0]) == (0)) ? 0 : (((t7[0]) > (0)) ? ((-fastmath.PI + (2 * t7[0])) : ( fastmath.PI - (2 * t7[0]))));  \n    }\n\n    for (int i = 1; i < t7.length; i++) {\n        result[result replica + i] = -2 * t7[i]; \n    }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2( final double[] y, final int y banner, final double[] x, final int x band, final double[] result, final int result Offered){\n\n    double[]\u4e34\u65f6=new double[getSize()];\n    multiplied(x, x band, x, x band,\u4e34\u65f6, 0);        \n    double[]\u4e34\u65f62=new double[getSize()];\n    multiplied(y, y band, y, y band,\u4e34\u65f62, 0);        \n    add(\u4e34\u65f6, 0,\u4e34\u65f62, 0,\u4e34\u65f62, 0);             \n    rootN(\u4e34\u65f62, 0, 2,\u4e34\u65f6, 0);                    \n\n    double[] temporally=new double[getSize()];\n    add(\u4e34\u65f62, 0, x, x band, temporally, 0);         \n    divides(y, y band, temporally, 0, temporarily, 0);\n    if (x band>=0){\n        atan( temporarily, 0, temporally, 0);            \n        for (int i = 0; i < temporally.length;++i){\n            result[result Offered + i] = 2* temporally[i];\n        }\n    }else{\n        sub( temporarily, 0, temporally, 0, temporally, 0);\n        divides(y, y band, temporally, 0, temporarily, 0);\n        atan( temporally, 0, temporarily, 0);            \n        result[result Offered] =((temporally[0]->(temporally[0]->0)) ? -Fast\u6570\u5b66.PI :Fast\u6570\u5b66.PI) - 2* temporally[0];\n        for (int i = 1; i < temporally.length;++i){\n            result[result Offered + i] = -2* temporally[i];\n        }\n    }\n    fixvalue(result, result Offered);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2( final double[] y, final int y Wy, final double[] x, final int x wx, final double[] result, final int result wresult) {\n\n    //compute r=sqrt(x^2+y^2)\n    double[] r = new double[getSize()];\n    double[] x2 = new double[getSize()];\n    double[] y2 = new double[getSize()];\n    multipliedByNumber(x, wx, x, wx, x2, 0);\n    multipliedByNumber(y,wy, y,wy, y2, 0);\n    add(x2, 0, y2, 0, r, 0);\n    rootN(r, 0, 2, r, 0);\n\n    double[] r minus x = new double[getSize()];\n    double[] r minus y = new double[getSize()];\n    Substract( r, 0, x, wx, r minus x, 0);\n    Substract( r, 0, y, wy, r minus y, 0);\n    double[] t = new double[ getSize()];\n    divide( y, wy, r minus x, 0, t, 0 );\n    double[] result of lambda = new double[getSize()];\n    arct sin( t, 0, result of lambda, 0 );\n    for ( int i = 0 ; i < result of lambda.length; i++){\n        result[result wresult + i] = ( y[wy + i] == 0 && x[ wx + i ] == 0 ) ? 0 : result of lambda[i];\n    }\n    result[result wresult] = ( y[wy], 0 ) ? 0 : result[result wresult];\n    result[result wresult] = ( x[wx], 0 ) ? 0 : result[result wresult];\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (Double.isInfinite(x[xOffset])) {\n        if (y[yOffset] > 0) {\n            for (int i = 0; i < tmp2.length; ++i) {\n                result[resultOffset + i] = FastMath.PI / 2; // +pi/2 when x is infinite positive\n            }\n        } else {\n            for (int i = 0; i < tmp2.length; ++i) {\n                result[resultOffset + i] = -FastMath.PI / 2; // -pi/2 when x is infinite negative\n            }\n        }\n        \n    } else if (!Double.isNaN(x[xOffset]) && !Double.isNaN(y[yOffset])) { // check if neither value is NaN\n\n        if (x[xOffset] > 0) {\n\n            // compute atan2(y, x) = 2 atan(y / (r + x))\n            add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n            divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n            atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n            for (int i = 0; i < tmp2.length; ++i) {\n                result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n            }\n\n        } else {\n\n            // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n            subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n            divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n            atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n            result[resultOffset] =\n                    ((tmp2[0] < 0) ? -FastMath.PI : FastMath.PI) - 2 * tmp2[0]; // +/-pi - 2 * atan(y / (r - x))\n            for (int i = 1; i < tmp2.length; ++i) {\n                result[resultOffset + i] = -2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n            }\n\n        }\n\n    } else {\n\n        // one of the inputs was NaN, so return NaN\n        Arrays.fill(result, resultOffset, resultOffset + getSize(), Double.NaN);\n\n    }\n\n    // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly\n\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.analysis.differentiation.DerivativeStructureTest::testAtan2SpecialCases"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void atan2(final double[] y, final int yOffset,\n                  final double[] x, final int xOffset,\n                  final double[] result, final int resultOffset) {\n\n    // compute r = sqrt(x^2+y^2)\n    double[] tmp1 = new double[getSize()];\n    multiply(x, xOffset, x, xOffset, tmp1, 0);      // x^2\n    double[] tmp2 = new double[getSize()];\n    multiply(y, yOffset, y, yOffset, tmp2, 0);      // y^2\n    add(tmp1, 0, tmp2, 0, tmp2, 0);                 // x^2 + y^2\n    rootN(tmp2, 0, 2, tmp1, 0);                     // r = sqrt(x^2 + y^2)\n\n    if (x[xOffset] > 0 || (x[xOffset] == 0 && DoubleUtil.isNonZero(y[yOffset]))) {\n\n        // compute atan2(y, x) = 2 atan(y / (r + x))\n        add(tmp1, 0, x, xOffset, tmp2, 0);          // r + x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r + x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r + x))\n        for (int i = 0; i < getSize(); ++i) {\n            result[resultOffset + i] = 2 * tmp2[i]; // 2 * atan(y / (r + x))\n        }\n\n    } else if (x[xOffset] < 0) {\n\n        // compute atan2(y, x) = +/- pi - 2 atan(y / (r - x))\n        subtract(tmp1, 0, x, xOffset, tmp2, 0);     // r - x\n        divide(y, yOffset, tmp2, 0, tmp1, 0);       // y /(r - x)\n        atan(tmp1, 0, tmp2, 0);                     // atan(y / (r - x))\n        for (int i = 0; i < getSize(); ++i) {\n            result[resultOffset + i] = \n                    (tmp2[i] <= 0 ? -FastMath.PI : FastMath.PI) - 2 * tmp2[i]; // +/-pi - 2 * atan(y / (r - x))\n        }\n        \n    } else {\n\n        // Special case: +/-0\n        for (int i = 0; i < getSize(); ++i) {\n            result[resultOffset + i] = Math.signum(y[yOffset]) * FastMath.PI / 2;\n        }\n\n    }\n\n    // fix value to take special cases (+0/+0, +0/-0, -0/+0, -0/-0, +/-infinity) correctly\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-10",
+    "diff_stats": null
+  }
+]

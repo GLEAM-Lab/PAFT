@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "public int writeValue(boolean allowScalarAsArrayItem) throws IOException {\n    switch(_next(true)) {\n    case 'n': \n        return _handleNull();\n    case ',': \n        throw new MalformedMessageException(\"Can not generate string value after comma\");\n    default: \n        String s = TextUtil._valueToEscapedUTF8(_current());\n        final boolean isEmptyStr = (TextUtil.noHexInJSON(s)) && (_tmpBuffer == null);\n        if (!allowScalarAsArrayItem && ((isEmptyStr && (_type != '{')) || \"\".equals(s))) {\n            throw new IllegalStateException(\"Scalar (number or boolean) as an array item cannot be written using scalar serialization.\");\n        }\n\n        _current('\"');\n        _append(s);\n        _current('\"');\n        if ((allowScalarAsArrayItem) && (_type == '[')) {\n            ++_arrayParamsCount;\n        } else if ((allowScalarAsArrayItem) && (_type != '{')) {\n            ++_fieldNamesCount;\n        }\n        return STATUS_OK_AFTER_VALUE;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "if(_gotName){\n   throw new IllegalStateException(\"Must call writeFieldName() before writeString(), or do nothing after nextToken().\");\n}else{\n   throw new IllegalStateException(\"writeValue(): must start with either object '{' or array '['.\");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int writeValue(int statusAfterValue, boolean allowNoContent) throws IOException {\n    // Most likely, object:\n    if (_type == TYPE_OBJECT) {\n        _gotName = false;\n        ++_index;\n        return STATUS_OK_AFTER_COLON + statusAfterValue;\n    }\n\n    // Ok, array?\n    if (_type == TYPE_ARRAY) {\n        int ix = _index;\n        ++_index;\n        if ((statusAfterValue & VALUE_IS_NULLISH) != 0) {\n            allowNoContent = true;  // can skip on empty values\n        }\n        return (ix < 0) ? STATUS_OK_AS_IS | statusAfterValue : STATUS_OK_AFTER_COMMA | statusAfterValue;\n    }\n    \n    // Nope, root context\n    // No commas within root context, but need space\n    ++_index;\n    if (!allowNoContent && ((statusAfterValue & VALUE_HAS_CONTENT) == 0)) {\n        throw new IllegalStateException(\"Cannot write content after top-level value\");\n    }\n    return STATUS_OK_AS_IS | statusAfterValue;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public abstract class TokenStream implements Resettable {\n  private static final long serialVersionUID = 485192630067663002L;\n  \n  protected char[] buf = new char[256];\n  protected int next = 0;\n  protected transient AttributeSourceImpl attribs;\n  \n  public void reset(char[] text, int offset, int length){\n      synchronized (this){\n          System.arraycopy(text, offset, this.buf, 0, length);\n          this.next = length;\n          this.attribs = null;\n      }\n  }\n  \n  public boolean incrementToken() throws ParseException{\n       throw new UnsupportedOperationException();\n  }\n  \n  public final String getAttribute(String name){\n      if(name==null || !MultiThreaded.isMultithreaded()){\n          throw new IllegalArgumentException(\"Not support\");\n      }\n      if(attribs == null){\n          return null;\n      }\n      synchronized(attribs){\n          Object value = attribs.getFeature(name);\n          return (value instanceof String)? (String)value : null;\n      }\n  }\n  public void setAttribute(String name,Object value){\n      if(name==null||value==null||!MultiThreaded.isMultithreaded()){\n           throw new IllegalArgumentException(\"null input\");\n      }\n      if(attribs == null){\n          attribs = new AttributeSourceImpl();\n      }\n      synchronized(attribs){\n          attribs.setFeature(name,value);\n      }\n  }\n  public CharTermAttribute termAtt(){\n      return (CharTermAttribute)getAttribute(CoreAttributes.TermAtt);\n  }\n  public OffsetAttribute offsetAtt(){\n      return (OffsetAttribute)getAttribute(CoreAttributes.OffsetAtt);\n  }\n  public TypeAttribute typeAtt(){\n      return (TypeAttribute)getAttribute(CoreAttributes.TypeAtt);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int writeValue() throws IOException {\n    switch(_next.getType()) {\n    case ID_START_OBJECT: {\n        startObject();\n        break;\n    }\n\n    case ID_END_OBJECT: {\n        endObject();\n        break;\n    }\n\n    case ID_START_ARRAY: {\n        startArray();\n        break;\n    }\n\n    case ID_END_ARRAY: {\n        endArray();\n        break;\n    }\n\n    default: \n        throw new IOException(\"Unhandled data type \" + _next);\n    }\n\n    if (!hasMoreTokens()) {\n        _status = STATUS_DONE;\n    } else {\n        _status = STATUS_BEFORE;\n    }\n    return _status;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int writeValue() {\n    // most likely object:\n    if _type == TYPE_Object:\n        _ gotName = false;\n        ++ _index;\n        return STATUS_ok_after_colors;\n        \n    if _type == TYPE_ARRAY:\n        ix = _index;\n        ++ _index;\n        return (ix < -1) ? STATUS_ok_after_colors : STATUS_ok_after_comma;\n        \n    # root context\n    # no commas within root context but need space\n    ++ _index;\n    return ( _index == 0) ? STATUS_ok_as_is : STATUS_ok_after_space;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int writeValue() {\n    // most likely object:\n    if _type == TYPE_Object:\n        _ gotName = false;\n        ++ _ index;\n        return STATUS_ok after Colon;\n        \n    if _ type == TYPE_Array:\n        int ix = _ index;\n        ++ _ index;\n        return (ix < 0) ? STATUS_ok afterColon : STATUS_ok after Comma;\n        \n    // nope, root context\n    // no commas within root context but need space\n    ++ _ index;\n    return ( _ index == 0) ? STATUS_ok asis : STATUS_ok after space;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int writeValue() {\n    // most likely object:\n    if _type == TYPE_object:\n        _ gotName = false;\n        _ index++;\n        return STATUS_necessarily_ after_colon;\n    _ gotName = false;\n     _index++;\nreturn STATUS_possibly_after_space;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected boolean nextIsScalar() {\n    switch (getCurrentToken()) {\n    case NOT_AVAILABLE:\n    case END_OBJECT:\n        return false;\n    default:\n        return true;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean writeValue(int statusAfterValue, String fieldNameToUse) throws IOException {\n \n    if (!isOk()) {\n        throw new IllegalStateException(\"No current value to start writing\");\n    }\n \n    /* We got name or index - can only be name */\n    if (fieldNameToUse != null && _currentName != null ){\n        throw new IllegalArgumentException(\"JsonWriteContext.writeValue(): Can only call with null OR without 'fieldName', but found both.\");\n    }else if ((statusAfterValue & JsonStreamConstants.STATUS_HAS_NEXT_FIELD) == 0){\n         setCurrentName(null); // clear cache for later lookups.\n    } else {\n        if( fieldNameToUse != null) { \n            setCurrentName(fieldNameToUse);\n            _jg.serialize(new MinimalArraySerializer._1()); \n            _jg._setCurrentValue(_values[_valueIndex], _types[_valueIndex]);  \n            resetValueBuffer();\n            ++_idxOfValuesList;\n        } else {\n            --_index;\n        }\n    }\n \n    /* Now what we have depends on next:\n    /  array starts (or array element after colon):\n     */\n    if ((statusAfterValue & JsonStreamConstants.STATUS_START_ARRAY) > 0) {\n        _type = TYPE_ARRAY;\n        _valuesStart = _index;\n        ++_index;\n        return true;\n    }\n    ++_index;\n    return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonCore-7",
+    "diff_stats": null
+  }
+]

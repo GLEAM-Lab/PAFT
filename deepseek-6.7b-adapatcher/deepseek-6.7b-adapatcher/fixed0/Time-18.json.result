@@ -1,0 +1,137 @@
+[
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                            int hourOfDay, int minuteOfHour,\n                            int secondOfMinute, int millisOfSecond)\nthrows IllegalArgumentException\n{\nlong instant;\nif (monthOfYear == 1 && dayOfMonth <= 4) {\n    instant = iHistoricalJulianChronology.getDateTimeMillis\n                (year, monthOfYear, dayOfMonth,\n                 hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    if (instant < iCutoverMillis) {\n        instant = iGregorianChronology.getDateTimeMillis\n                    (year, monthOfYear, dayOfMonth,\n                     hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        \n        if (instant >= iCutoverMillis){\n            throw new IllegalArgumentException(\"Specified date does not exist\");\n       }  \n    } else {\n       throw new IllegalArgumentException(\"Specified date does not exist\");\n     }\n} else {\n        instant = iGregorianChronology.getDateTimeMillis\n                  (year, monthOfYear, dayOfMonth,\n                   hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        if (instant >= iCutoverMillis) {\n          throw new IllegalArgumentException(\"Specified date does not exist\");\n        }\n    } \nreturn instant;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                              int hourOfDay, int minuteOfHour,\n                              int secondOfMinute, int millisOfSecond)\n    throws IllegalArgumentException\n{\n    Chronology base;\n    if ((base = getBase()) != null) {\n        return base.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    }\n\n    // Assume date is Gregorian.\n    long instant;\n        instant = iGregorianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    if (instant < iCutoverMillis) {\n        // Maybe it's Julian.\n        instant = iJulianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        if (instant >= iCutoverMillis && dayOfMonth > 28) {\n            // Okay, it's in the illegal cutover gap.\n            throw new IllegalArgumentException(\"Specified date does not exist\");\n        }\n    }\n    return instant;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.chrono.TestGJChronology::testLeapYearRulesConstruction"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                              int hourOfDay, int minuteOfHour,\n                              int secondOfMinute, int millisOfSecond)\n    throws IllegalArgumentException\n{\n    Chronology base;\n    if ((base = getBase()) != null) {\n        return base.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    }\n\n    // Assume date is Gregorian.\n    long instant;\n        instant = iGregorianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    if (instant < iCutoverMillis) {\n        // Maybe it's Julian.\n        instant = iJulianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        if (instant >= iCutoverMillis) {\n            // Okay, it's in the illegal cutover gap.\n            throw new IllegalArgumentException(\"Specified date does not exist\");\n        }\n    }\n    return instant;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.chrono.TestGJChronology::testLeapYearRulesConstruction"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                                  int hourOfDay, int minuteOfHour,\n                                  int secondOfMinute, int millisOfSecond)\n        throws IllegalArgumentException\n    {\n        Chronology base;\n        if ((base = getBase()) != null) {\n            return base.getDateTimeMillis\n                    (year, monthOfYear, dayOfMonth,\n                            hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        }\n        \n        boolean julian = false;\n        // Checking if year is before Julian-Gregorian transition.\n        if((year - 1500) < 47){\n            julian = true;\n        }else if((year - 1500) > 47){\n            julian = false;\n        }else if(monthOfYear <= 11 && (dayOfMonth - 15) < 31 ){\n                julian = true;\n        } else if(monthOfYear >= 12 && (dayOfMonth - 15) >  30){\n                julian = false;\n        } else {\n            throw new IllegalArgumentException (\"Invalid Date\");\n        }\n        \n        if (julian) {\n            return iJulianChronology.getDateTimeMillis\n                    (year, monthOfYear, dayOfMonth,\n                             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        } else {\n            return iGregorianChronology.getDateTimeMillis\n                    (year, monthOfYear, dayOfMonth,\n                             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        }\n    }",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.joda.time.chrono.TestBuddhistChronology::testKeyYears",
+        "org.joda.time.chrono.TestGJChronology::testParseEquivalence",
+        "org.joda.time.chrono.TestGJChronology::testIllegalDates"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                              int hourOfDay, int minuteOfHour,\n                              int secondOfMinute, int millisOfSecond)\n    throws IllegalArgumentException\n{\n    Chronology base;\n    if ((base = getBase()) != null) {\n        return base.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    }\n\n    // Assume date is Gregorian.\n    long instant;\n    try{\n         instant = iGregorianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n        if (instant < iCutoverMillis) {\n            // Maybe it's Julian.\n            instant = iJulianChronology.getDateTimeMillis\n                (year, monthOfYear, dayOfMonth,\n                 hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n            if (instant >= iCutoverMillis) {\n                // Okay, it's in the illegal cutover gap.\n                throw new IllegalArgumentException(\"Specified date does not exist\");\n            }\n        }\n     } catch (IllegalFieldValueException e){\n         throw new IllegalArgumentException(e.getMessage(), e);\n     }\n    return instant;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.chrono.TestGJChronology::testLeapYearRulesConstruction"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long get DateTime millis (int year, int monthOfyear, int dayOfMonth,\n                                int hourOfday, int minutesOf hour, int secondsOfMinute, int millisecondsOf second)\n{\n    chronology base;\n    long instant;\n    if (base = getbase()) {\n        return base.get DateTime millis (year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOf second);\n    }\n    instant = iGregorianChronology.get DateTime millis (year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOf second);\n    if (instant < iCutover millis) {\n        instant = i JuliaChronology.get DateTime millis (year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOf second);\n        if instant < iCutover millis) {\n            throw new IllegalArgumentException(\" specified date does not exist\");\n        }\n    }\n    return instant;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long get DateTime millis(int year, int monthOf year, int dayOf month, int hourOf day, int minutes of hour, int seconds of minutes, int milliseconds of seconds) {\n    chronology base;\n    long instant = 0;\n    if (base = get base()) {\n        instant = base.get DateTime millis(year, monthOf year, dayOf month, hourOf day, minutes of hour, seconds of minutes, milliseconds of seconds);\n    } else {\n        instant = iGregorian chronology.get DateTime millis(year, monthOf year, dayOf month, hourOf day, minutes of hour, seconds of minutes, milliseconds of seconds);\n        if (instant < i cutoff millis) {\n            instant = i Julia chronology.get DateTime millis(year, monthOf year, dayOf month, hourOf day, minutes of hour, seconds of minutes, milliseconds of seconds);\n        }\n        if (instant < i cutoff millis) {\n            throw new Illegal field value exception(\"Specified date does not exist\");\n        }\n    }\n    return instant;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getPeople millis(int year, int monthOfyear, int dayOfMonth,\n                            int hourOfday, int minutesOf hour, int secondsOfMinute, int millisecondsOfseconds)\n{\n    long instant;\n    chronology base;\n    instant = base millis(year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOfseconds);\n    if (base == null || base millis < i cutoff millis) {\n        instant = iGregorian millis(year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOfseconds);\n        if (instant < i cutoff millis) {\n            instant = i Julia millis(year, monthOfyear, dayOfMonth, hourOfday, minutesOf hour, secondsOfMinute, millisecondsOfseconds);\n            if instant millis < i cutoff millis){\n                throw new IllegalArgumentException(\" specified date does not exist \");\n            }\n        }\n    }\n    return instant;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                              int hourOfDay, int minuteOfHour,\n                              int secondOfMinute, int millisOfSecond)\n    throws IllegalArgumentException\n{\n    Chronology base;\n    if ((base = getBase()) != null) {\n        return base.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    }\n\n    // Assume date is Gregorian.\n    long instant;\n    try {\n        instant = iGregorianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    \n    } catch (IllegalFieldValueException e) {\n         instant = 0;\n    }\n\n    if (instant <= 0) {\n        // Maybe it's Julian.\n        try {\n           instant = iJulianChronology.getDateTimeMillis\n                (year, monthOfYear, dayOfMonth,\n                 hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n         \n        }catch (IllegalFieldValueException ex){\n            instant = 0;\n        }\n   }\n\n      if (instant > 0 && instant <= iCutoverMillis ) {\n        // Okay, it's in the illegal cutover gap.\n        throw new IllegalArgumentException(\"Specified date does not exist\");\n    }\n    \n    return instant;\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.joda.time.chrono.TestBuddhistChronology::testKeyYears",
+        "org.joda.time.chrono.TestGJChronology::testParseEquivalence",
+        "org.joda.time.chrono.TestGJChronology::testLeapYearRulesConstructionInvalid",
+        "org.joda.time.chrono.TestGJChronology::testIllegalDates"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,\n                              int hourOfDay, int minuteOfHour,\n                              int secondOfMinute, int millisOfSecond)\n    throws IllegalArgumentException\n{\n    Chronology base;\n    if ((base = getBase()) != null) {\n        return base.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    }\n\n    // Assume date is Gregorian.\n    long instant;\n    try {\n        instant = iGregorianChronology.getDateTimeMillis\n            (year, monthOfYear, dayOfMonth,\n             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);\n    } catch (IllegalFieldValueException e){\n          instant = iJulianChronology.getDateTimeMillis\n                (year,monthOfYear,dayOfMonth,hourOfDay,minuteOfHour,secondOfMinute,millisOfSecond);\n    }\n    \n    if (instant < 4*Constants.MILLIS_PER_DAY - iCutoverMillis) {\n        throw new IllegalArgumentException(\"Specified date does not exist.\");\n    }\n    return instant;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-18",
+    "diff_stats": null
+  }
+]

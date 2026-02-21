@@ -1,0 +1,142 @@
+[
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal - offsetLocal;\n    final int offsetAdjusted = getOffset(instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted) {\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) < 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal != nextAdjusted && nextAdjusted == instantLocal) {\n                return offsetLocal;\n            }\n        }\n    } else if (offsetLocal > 0) {\n        long prev = previousTransition(instantAdjusted);\n        if (prev < instantAdjusted) {\n            int offsetPrev = getOffset(prev);\n            int diff = offsetPrev - offsetLocal;\n            if (instantAdjusted - prev <= diff) {\n                return offsetPrev;\n            }\n        }\n    }\n    return offsetAdjusted;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_london"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n        \n        final int offsetLocal = getOffset(instantLocal);\n        \n        final long instantAdjusted = instantLocal - offsetLocal;\n        final int offsetAdjusted = getOffset(instantAdjusted);\n        \n        if (offsetLocal == offsetAdjusted && offsetLocal >= 0) {\n            \n            long prev = previousTransition(instantAdjusted);\n            if (prev < instantAdjusted) {\n                \n                int offsetPrev = getOffset((int)prev);\n                int diff = offsetPrev - offsetLocal;\n                if (instantAdjusted - prev <= diff) {\n                    return offsetPrev;\n                }\n            }\n        }\n        return offsetAdjusted;\n    }",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_NewYork_Spring",
+        "org.joda.time.TestDateTimeZoneCutover::test_DateTime_minusDay_Turk",
+        "org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_Turk",
+        "org.joda.time.TestDateTimeZoneCutover::test_DateTime_constructor_Moscow_Autumn",
+        "org.joda.time.TestDateTimeZoneCutover::test_DateTime_plusDayMidGap_Turk",
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_paris",
+        "org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_Moscow_Autumn_overlap_mins",
+        "org.joda.time.TestDateTimeZoneCutover::test_DateTime_plusDay_Turk",
+        "org.joda.time.TestDateTimeZoneCutover::testPeriod",
+        "org.joda.time.TestDateTimeZoneCutover::test_getOffsetFromLocal_Moscow_Autumn",
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_athens"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal + offsetLocal;\n    final int offsetAdjusted = getOffset((int)instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted && offsetAdjusted<=0){\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) <= 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal == nextAdjusted) {\n                 nextAdjusted = nextTransition(instantLocal - offsetAdjusted+1);\n               \n            }if(Math.abs(instantAdjusted-nextAdjusted)>Math.abs(instantLocal-(nextAdjusted))) {\n                return offsetLocal;\n            }\n        }\n         \n            \n        \n    } else if (offsetLocal > 0 ) {\n        long prev = previousTransition(instantAdjusted);\n       long prevAdjusted  = previousTransition(instantLocal);\n          \n        \n        if ( prev != Long.MIN_VALUE&& instantAdjusted - prev  < offsetLocal-previousOffset((int)prev)) {\n            int offsetPrev = getOffset((int)prev);\n            \n            int diff = offsetPrev - offsetLocal;\n           \n            if (instantAdjusted - prev <= diff) {\n                return offsetPrev;\n            }\n        }else if(prev==Long.MIN_VALUE&&instantAdjusted!=prevAdjusted+getOffset((int)prevAdjusted)){\n                  return offsetLocal;\n        \n        }\n    \n    }\n    return offsetAdjusted;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal - offsetLocal;\n    final int offsetAdjusted = getOffset(instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted) {\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) < 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal != nextAdjusted) {\n                return offsetLocal;\n            }\n        }\n    } else if (offsetLocal > 0) {\n        long prev = previousTransition(instantAdjusted);\n        if (prev < instantAdjusted) {\n            int offsetPrev = getOffset(prev);\n            int diff = offsetPrev - offsetLocal;\n            if (instantAdjusted - prev <= diff) {\n                return offsetPrev;\n            }\n        }\n    }\n    return offsetAdjusted;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_london"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal - offsetLocal;\n    final int offsetAdjusted = getOffset(instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted && instantAdjusted >= firstStandardOffset()) {\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) < 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal == nextAdjusted) {\n                return offsetLocal;\n            }\n        }\n    } else if (offsetLocal > 0) {\n        long prev = previousTransition(instantAdjusted);\n        if (prev < instantAdjusted) {\n            int offsetPrev = getOffset(prev);\n            int diff = offsetPrev - offsetLocal;\n            if (instantAdjusted - prev <= diff) {\n                return offsetPrev;\n            }\n        }\n    }\n    return offsetAdjusted;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int get Offline(long instant local){\n    final int offlocal = get Offline(instant);\n    final long adjustedInstant = instant - offlocal;\n    final int off adjusted = get Offline(adjustedInstant);\n    if (off local == off adjusted) {\n        if (instant > adjustedInstant) {\n            return off adjusted;\n        }\n    } else {\n        if (off adjusted > off local) {\n            long nextInstant = nextTransition(adjustedInstant);\n            long nextAdjustedInstant = nextTransition(instant - off adjusted);\n            if (nextInstant != next adjustedInstant) {\n                return off local;\n            }\n        } else {\n            long previousInstant = previousTransition(adjustedInstant);\n            long previousAdjustedInstant = previousTransition(instant - off adjusted);\n            if (previousInstant != previous adjustedInstant) {\n                return off adjusted;\n            }\n        }\n    }\n    return off adjusted;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int get Offline() {\n    int Offline =  super.get Offline();\n    int OfflineAdjusted = super.get Offline();\n    \n    long timeAdjusted = instant + Offline - Offline Adjusted;\n    int OfflineAdjusted = super.get Offline(timeAdjusted);\n    \n    if (offline != OfflineAdjusted) {\n        long timeAdjusted = instant + Offline - Offline adjusted;\n        int OfflineAdjusted = super.get Offline(timeAdjusted);\n        if (Offline adjusted > Offline) {\n            return Offline adjusted;\n        }\n        return Offline;\n    }\n    return Offline adjusted;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int get Offline() {\n    int result = 0;\n    long nextAdjusted = nextTransition(instantAdjusted + MIN_L Minutes);\n    long previousAdjusted = previousTransition(instantAdjusted - MIN_L Minutes);\n    if (nextAdjusted == instantAdjusted) {\n        result = get Offline(instantAdjusted + MIN_L minutes);\n    } else if (previousAdjusted == instantAdjusted) {\n        result = get Offline(instantAdjusted - MIN_L minutes);\n    } else {\n        result = get Offline(instantAdjusted);\n    }\n    return result;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal + offsetLocal;\n    final int offsetAdjusted = getOffset(instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted && instantLocal >= instantAdjusted) {\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) < 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal == nextAdjusted) {\n                return offsetLocal;\n            }\n        }\n    } else if (offsetLocal > 0) {\n        long prev = previousTransition(instantAdjusted);\n        if (prev < instantAdjusted) {\n            int offsetPrev = getOffset(prev);\n            int diff = offsetPrev - offsetLocal;\n            if (instantAdjusted - prev <= diff) {\n                return offsetPrev;\n            }\n        }\n    }\n    return offsetAdjusted;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_london"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int getOffsetFromLocal(long instantLocal) {\n    // get the offset at instantLocal (first estimate)\n    final int offsetLocal = getOffset(instantLocal);\n    // adjust instantLocal using the estimate and recalc the offset\n    final long instantAdjusted = instantLocal - offsetLocal;\n    final int offsetAdjusted = getOffset(instantAdjusted);\n    // if the offsets differ, we must be near a DST boundary\n    if (offsetLocal != offsetAdjusted) {\n        // we need to ensure that time is always after the DST gap\n        // this happens naturally for positive offsets, but not for negative\n        if ((offsetLocal - offsetAdjusted) < 0) {\n            // if we just return offsetAdjusted then the time is pushed\n            // back before the transition, whereas it should be\n            // on or after the transition\n            long nextLocal = nextTransition(instantAdjusted);\n            long nextAdjusted = nextTransition(instantLocal - offsetAdjusted);\n            if (nextLocal != nextAdjusted) {\n                return offsetAdjusted;\n            }\n        } else if((offsetLocal - offsetAdjusted) >= 0){\n            \n            long prev = previousTransition(instantAdjusted);\n            if (prev < instantAdjusted) {\n                int offsetPrev = getOffset(prev);\n                int diff = offsetPrev - offsetLocal;\n                if (instantAdjusted - prev <= diff) {\n                    return offsetPrev;\n                }\n            }\n        }\n    } \n    return offsetAdjusted;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.joda.time.TestDateTimeZoneCutover::testDateTimeCreation_london"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-19",
+    "diff_stats": null
+  }
+]

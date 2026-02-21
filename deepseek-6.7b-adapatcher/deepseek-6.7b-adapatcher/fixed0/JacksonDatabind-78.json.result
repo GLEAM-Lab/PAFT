@@ -1,0 +1,128 @@
+[
+  {
+    "patch_code": "@Override\npublic JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n                                                       JavaType type, BeanDescription beanDesc)\n        throws JsonMappingException\n{\n    final DeserializationConfig config = ctxt.getConfig();\n    // We may also have custom overrides:\n    JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n    if (custom != null) {\n        return custom;\n    }\n    /* One more thing to check: do we have an exception type\n     * (Throwable or its sub-classes)? If so, need slightly\n     * different handling.\n     */\n    if (type.isThrowable()) {\n        return buildThrowableDeserializer(ctxt, type, beanDesc);\n    }\n    /* Or, for abstract types, may have alternate means for resolution\n     * (defaulting, materialization)\n     */\n    // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n    //    not something we could materialize anything for\n    if ((type.isAbstract() || type.isInterface()) && !type.isPrimitive() && !type.isEnumType()) {\n        // Let's make it possible to materialize abstract types.\n        JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n        if (concreteType != null) {\n            /* important: introspect actual implementation (abstract class or\n             * interface doesn't have constructors, for one)\n             */\n            beanDesc = config.introspect(concreteType);\n            return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n        }\n    }\n    // Otherwise, may want to check handlers for standard types, from superclass:\n    @SuppressWarnings(\"unchecked\")\n    JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n    if (deser != null) {\n        return deser;\n    }\n\n    // Otherwise: could the class be a Bean class? If not, bail out\n    if (!isPotentialBeanType(type.getRawClass())) {\n        return null;\n    }\n    // For checks like [databind#1599]\n    // Use generic bean introspection to build deserializer\n    return buildBeanDeserializer(ctxt, type, beanDesc);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.interop.IllegalTypesCheckTest::testIssue1599"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public abstract class BeanDeserializer extends BaseDeserializer<Object> {\n    \n    private static final long serialVersionUID = 1L;\n    \n    protected final BeanProperty[] _properties;\n\n    /**\n     * Accessor properties used when mapping values during deserialization.\n     * Note that some fields may be null in case of MapperConfig.Feature.USE_STATIC_TYPES enabled.\n     */\n    protected final List<BeanPropertyWriter> _writers;\n\n    protected final Class<?> _beanClass;\n\n    public BeanDeserializer(JavaType srcType, Type baseType, BeanProperty[] props,\n            List<BeanPropertyWriter> writers, String msg)\n    {\n        super(srcType, baseType, msg);\n        _properties = props;\n        _writers = writers;\n        _beanClass = _baseType.getRawClass();\n    }\n\n    /*\n    /**********************************************************\n    /* Public API methods\n    /**********************************************************\n     */\n\n    @Override\n    public Object deserialize(JsonParser p, DeserializationContext ctxt)\n        throws IOException, JsonProcessingException\n    {\n        final Object beanOrArray;\n        switch (_handledType.getId()) {\n        case ARRAY:\n            beanOrArray = deserializeFromArray(p, ctxt);\n            break;\n        case OBJECT:\n        default:\n            beanOrArray = deserializeFromObject(p, ctxt);\n            break;\n        }\n        if (beanOrArray == null) {\n            return null;\n        } else if (_handledType.hasAndShouldSerializeNulls()) {\n            return beanOrArray;\n        }\n        assert _beanClass.equals(beanOrArray.getClass()) : \"Inconsistent class on deserialized object: \" + beanOrArray + \" , expected \"+_beanClass;\n        return handleNonValueInstances(_beanClass, beanOrArray, ctxt);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.io.*; \npublic class Main{\n    public static void main(String[] args){\n        System.out.println(\"Hello World\");\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n        JavaType type, BeanDescription beanDesc)\nthrows JsonMappingException\n{\n    final DeserializationConfig config = ctxt.getConfig();\n    // We may also have custom overrides:\n    JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n    if (custom != null) {\n        return custom;\n    }\n    /* One more thing to check: do we have an exception type\n     * (Throwable or its sub-classes)? If so, need slightly\n     * different handling.\n     */\n    if (type.isThrowable()) {\n        return buildThrowableDeserializer(ctxt, type, beanDesc);\n    }\n    /* Or, for abstract types, may have alternate means for resolution\n     * (defaulting, materialization)\n     */\n    // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n    //    not something we could materialize anything for\n    if (type.isAbstract() && !type.isPrimitive() && !type.isEnumType()) {\n        // Let's make it possible to materialize abstract types.\n        JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n        if (concreteType != null) {\n            /* important: introspect actual implementation (abstract class or\n             * interface doesn't have constructors, for one)\n             */\n            beanDesc = config.introspect(concreteType);\n            return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n        }\n    }\n    // Otherwise, may want to check handlers for standard types, from superclass:\n    @SuppressWarnings(\"unchecked\")\n    JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n    if (deser != null) {\n        return deser;\n    }\n\n    // Otherwise: could the class be a Bean class? If not, bail out\n    if (!config.isEnabled(Feature.DEFAULT_VIEW_INCLUSION)) {\n       return null;\n    }\n   if (!isPotentialBeanType(type.getRawClass())) {\n        return null;\n    }\n    // For checks like [databind#1599]\n    // Use generic bean introspection to build deserializer\n    return buildBeanDeserializer(ctxt, type, beanDesc);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n        JavaType type, BeanDescription beanDesc)\nthrows JsonMappingException\n{\n    final DeserializationConfig config = ctxt.getConfig();\n    // We may also have custom overrides:\n    JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n    if (custom != null) {\n        return custom;\n    }\n    \n    Class<?> raw = type.getRawClass();\n    if (raw == java.lang.Void.class || raw == java.lang.Integer.class || raw == java.lang.Boolean.class || \n      raw == java.lang.Byte.class  || raw == java.lang.Double.class || raw == java.lang.Float.class || \n       raw == java.lang.Long.class ) {\n        throw new IllegalArgumentException(\"Can not use default typing for '\"+ type +\"'\");\n    }\n  \n    /* One more thing to check: do we have an exception type\n     * (Throwable or its sub-classes)? If so, need slightly\n     * different handling.\n     */\n    if (type.isThrowable()) {\n        return buildThrowableDeserializer(ctxt, type, beanDesc);\n    }\n    /* Or, for abstract types, may have alternate means for resolution\n     * (defaulting, materialization)\n     */\n    // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n    //    not something we could materialize anything for\n    if (type.isAbstract() && !type.isPrimitive() && !type.isEnumType()) {\n        // Let's make it possible to materialize abstract types.\n        JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n        if (concreteType != null) {\n            /* important: introspect actual implementation (abstract class or\n             * interface doesn't have constructors, for one)\n             */\n            beanDesc = config.introspect(concreteType);\n            return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n        }\n    }\n    // Otherwise, may want to check handlers for standard types, from superclass:\n    @SuppressWarnings(\"unchecked\")\n    JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n    if (deser != null) {\n        return deser;\n    }\n\n    // Otherwise: could the class be a Bean class? If not, bail out\n    if (!isPotentialBeanType(type.getRawClass())) {\n        return null;\n    }\n    // For checks like [databind#1599]\n    // Use generic bean introspection to build deserializer\n    return buildBeanDeserializer(ctxt, type, beanDesc);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.interop.IllegalTypesCheckTest::testIssue1599"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\n    public JsonDeserializer<Object> create bean deserializer(DeserializationContext c txt,\n            java Type type, bean description beanDesc)\n        jspmapping exception mapper\n    {\n        final deserialization config = c txt.get config();\n        // We may also have custom overrides:\n        JsonDeserializer< Object > custom = _ find custom bean deserializer(type, config, beanDesc);\n        if ( custom !=  null ) {\n            return custom ;\n        }\n        /* One more thing to check: do we have an exception type\n         * (Throwable or its sub- classes)? if yes , need slightly\n         * different handle \n         */\n        if ( type .is throwable() ) {\n            return build throwable deserializer(ctxt, type, beanDesc);\n        }\n        /*Or, for Abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-\u575b-2015, tatu: Also, filter out call to primitive types, they are\n        //    not something we could materialize anything for\n        if ( type .is Abstract() && !type .is primitive() && !type .is Enum Type()) {\n            // Let's make it possible to materialize Abstract types\n            java Type ConcreteType = materialize Abstract type(ctxt, type, beanDesc);\n            if (ConcreteType != null) {\n                bean desc = config . introduct(concrete type);\n                return build bean deserializer(ctxt, ConcreteType, beanDesc);\n            }\n        }\n        // otherwise, may want to check handler for standard types, from super class:\n        @Suppress Warnings(\"un Checked\")\n        JsonDeserializer< Object > deser = ( Json deserializer< Object >) find std deserializer(ctxt, type, beanDesc);\n        if ( deser !=  null ) {\n            return deser ;\n        }\n\n        // otherwise : could the class be a bean class? if not, bail out\n        if ( !is potential bean type(type.get Raw class()) ) {\n            return null ;\n        }\n        // For check like [databind#1599]\n        // use introspect  to build deserializer\n        return build bean deserializer(ctxt, type, beanDesc);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\n    public JsonDeserializer<Object> create beanDeserializer(DeserializationContext c txt,\n            java type, bean description bean beanDesc)\n        throwmapping exception\n    {\n        final deserialization config config = c txt.get config();\n        // we may also have custom overrides:\n        JsonDeserializer<Object> custom = _find custom bean deserializer(type, config, beanDesc);\n        if ( custom ! null ) {\n            return custom;\n        }\n        /* one more thing to check: do we have an exception type\n         * (Throwable or its sub- classes? if yes, need slightly\n         * different hndlng.\n         */\n        if (type.is throwable()) {\n            return build throwable deserializer(ctxt, type, beanDesc);\n        }\n        /* or, for Abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29-Nov-2015, tatu: Also filter out call to primitive types, they are\n        // no thing we could materialize anything for\n        if (type.is Abstract() && !type.is primitive() && !type.is Enum type()) {\n            // let's make it possible to materialize Abstract types.\n            java type ConcreteType = materialize Abstract type(ctxt, type, beanDesc);\n            if (concreteType ! null) {\n                beanDesc = config. Introspector. Introspector (concreteType);\n                return build bean deserializer(ctxt, ConcreteType, beanDesc);\n            }\n        }\n        // otherwise, may want to check handler for standard types from superclass:\n        @Suppress Warning introspect\n        Json deserializer deser = (introspect bean deserializer deser) findStd deserializer(ctxt, type, beanDesc);\n        if ( deser ! null ) {\n            return deser;\n        }\n\n        // otherwise: could class be bean? if not, bail out\n        if (!is potential bean type(type. get Raw Class())){\n            return null;\n        }\n        // for check like databind[1599]\n        return build bean deserializer(ctxt, type, beanDesc);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\n    public JsonDeserializer<Object> create beanDeserializer(DeserializationContext c txt,\n            java type, bean description beanDesc)\n        throwmappingException\n    {\n        final deserialization config = c txt. getConfig();\n        // we may also have custom overrides:\n        JsonDeserializer<Object> custom = _find custom bean deserializer (type, config, beanDesc);\n        if ( custom !=  null) {\n            return custom;\n        }\n        /* one more thing to check: does it have an exception type\n         * (Throwable or its sub- classes)? If yes, it needs slightly\n         * different re- (build throwable deserializer)\n         */\n        if type. is throwable () {\n            return build throwable deserializer (ctxt, type, beanDesc);\n        }\n        /* or, for Abstract types, may have alternate means for resolution\n         * (defaulting, materialization)\n         */\n        // 29- Supported types are not supported by default (defaulting, materialization)\n        if type. is Abstract () && !type. is primitive () && !type. is Enum type () {\n            // let's make it possible to materialize Abstract types.\n            java typeconcrete = materialize Abstract type (ctxt, type, beanDesc);\n            if (concrete type !=  null) {\n                beanDesc = config. introspect (concrete type);\n                return build bean deserializer (ctxt, Typeconcrete, beanDesc);\n            }\n        }\n        // otherwise, maybe it's a bean class? if not, bail out\n        if !is potential bean type (type. get Raw Class()) {\n            return null;\n        }\n        // For check like [databind#1599]\n        // use introspect to build deserializer\n        return build bean deserializer (ctxt, type, beanDesc);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "if (_checkForCVE_2017_7525(type)) {\n    return _buildProhibitedBeanDeserializer(type);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic JsonDeserializer<Object> createBeanDeserializer(DeserializationContext ctxt,\n        JavaType type, BeanDescription beanDesc)\nthrows JsonMappingException\n{\n    final DeserializationConfig config = ctxt.getConfig();\n    // We may also have custom overrides:\n    JsonDeserializer<Object> custom = _findCustomBeanDeserializer(type, config, beanDesc);\n    if (custom != null) {\n        return custom;\n    }\n    /* One more thing to check: do we have an exception type\n     * (Throwable or its sub-classes)? If so, need slightly\n     * different handling.\n     */\n    if (type.isThrowable()) {\n        return buildThrowableDeserializer(ctxt, type, beanDesc);\n    }\n    /* Or, for abstract types, may have alternate means for resolution\n     * (defaulting, materialization)\n     */\n    // 29-Nov-2015, tatu: Also, filter out calls to primitive types, they are\n    //    not something we could materialize anything for\n    if ((type.isAbstract() || type.isInterface()) && !type.isPrimitive() && !type.isEnumType()) {\n        // Let's make it possible to materialize abstract types.\n        JavaType concreteType = materializeAbstractType(ctxt, type, beanDesc);\n        if (concreteType != null) {\n            /* important: introspect actual implementation (abstract class or\n             * interface doesn't have constructors, for one)\n             */\n            beanDesc = config.introspect(concreteType);\n            return buildBeanDeserializer(ctxt, concreteType, beanDesc);\n        }\n    }\n    // Otherwise, may want to check handlers for standard types, from superclass:\n    @SuppressWarnings(\"unchecked\")\n    JsonDeserializer<Object> deser = (JsonDeserializer<Object>) findStdDeserializer(ctxt, type, beanDesc);\n    if (deser != null) {\n        return deser;\n    }\n\n    // Otherwise: could the class be a Bean class? If not, bail out\n    if (!isPotentialBeanType(type.getRawClass())) {\n        return null;\n    }\n    // For checks like [databind#1599]\n    // Use generic bean introspection to build deserializer\n    return buildBeanDeserializer(ctxt, type, beanDesc);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.interop.IllegalTypesCheckTest::testIssue1599"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-78",
+    "diff_stats": null
+  }
+]

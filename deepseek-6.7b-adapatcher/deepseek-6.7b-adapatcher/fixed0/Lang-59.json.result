@@ -1,0 +1,215 @@
+[
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n    if (width > 0) {\n        ensureCapacity(size + width);\n        String str = (obj == null ? getNullText() : obj.toString());\n        int strLen = str.length();\n        if (strLen >= width) {\n            str.getChars(0, width, buffer, size);\n        } else {\n            int padLen = width - strLen;\n            str.getChars(0, strLen, buffer, size);\n            for (int i = 0; i < padLen; i++) {\n                buffer[size + strLen + i] = padChar;\n            }\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 13,
+      "deleted_tokens": 13,
+      "total_changed_tokens": 26,
+      "edit_distance": 6,
+      "edit_similarity": 99.01,
+      "norm_edit_distance": 0.0099,
+      "norm_edit_distance_pct": 0.99,
+      "buggy_length": 607,
+      "fix_length": 606,
+      "preserved_ratio": 94.44
+    }
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n    if (width > 0) {\n        ensureCapacity(size + width);\n        String str = (obj == null ? getNullText() : obj.toString());\n        int strLen = str.length();\n        if (strLen >= width) {\n            str.getChars(0, width, buffer, size);\n        } else {\n            int padLen = width - strLen;\n            str.getChars(0, strLen, buffer, size);\n            for (int i = 0; i < padLen; i++) {\n                buffer[size + strLen + i] = padChar;\n            }\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 13,
+      "deleted_tokens": 13,
+      "total_changed_tokens": 26,
+      "edit_distance": 6,
+      "edit_similarity": 99.01,
+      "norm_edit_distance": 0.0099,
+      "norm_edit_distance_pct": 0.99,
+      "buggy_length": 607,
+      "fix_length": 606,
+      "preserved_ratio": 94.44
+    }
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n    if (width > 0) {\n        ensureCapacity(size + width);\n        String str = (obj == null ? getNullText() : obj.toString());\n        int strLen = Math.min(str.length(), width);\n            str.getChars(0, strLen, buffer, size);\n        for (int i = 0; i < width - strLen; i++) {\n                buffer[size + strLen + i] = padChar;\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 7,
+      "total_changed_lines": 9,
+      "added_tokens": 34,
+      "deleted_tokens": 57,
+      "total_changed_tokens": 91,
+      "edit_distance": 161,
+      "edit_similarity": 73.48,
+      "norm_edit_distance": 0.2652,
+      "norm_edit_distance_pct": 26.52,
+      "buggy_length": 607,
+      "fix_length": 474,
+      "preserved_ratio": 84.62
+    }
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n         if (width > 0) {\n             ensureCapacity(size + width);\n             String str = (obj == null ? getNullText() : obj.toString());\n             int strLen = str.length();\n             if (strLen >= width) {\n                 str.getChars(0, width, buffer, size);   // repair here\n             } else {\n                 int padLen = width - strLen;\n                 str.getChars(0, strLen, buffer, size);\n                 for (int i = 0; i < padLen; i++) {\n                     buffer[size + strLen + i] = padChar;\n                 }\n             }\n             size += width;\n         }\n         return this;\n     }",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 17,
+      "deleted_lines": 17,
+      "total_changed_lines": 34,
+      "added_tokens": 130,
+      "deleted_tokens": 126,
+      "total_changed_tokens": 256,
+      "edit_distance": 108,
+      "edit_similarity": 84.75,
+      "norm_edit_distance": 0.1525,
+      "norm_edit_distance_pct": 15.25,
+      "buggy_length": 607,
+      "fix_length": 708,
+      "preserved_ratio": 5.56
+    }
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n     if (width > 0) {\n         ensureCapacity(size + width);\n         String str = (obj == null ? getNullText() : obj.toString());\n         int strLen = Math.min(str.length(), width); // changed this line\n         if (strLen >= width) {\n             str.getChars(0, strLen, buffer, size);\n         } else {\n             int padLen = width - strLen;\n             str.getChars(0, strLen, buffer, size);\n             for (int i = 0; i < padLen; i++) {\n                 buffer[size + strLen + i] = padChar;\n             }\n         }\n         size += width;\n     }\n     return this;\n }",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 17,
+      "deleted_lines": 17,
+      "total_changed_lines": 34,
+      "added_tokens": 138,
+      "deleted_tokens": 126,
+      "total_changed_tokens": 264,
+      "edit_distance": 55,
+      "edit_similarity": 91.69,
+      "norm_edit_distance": 0.0831,
+      "norm_edit_distance_pct": 8.31,
+      "buggy_length": 607,
+      "fix_length": 662,
+      "preserved_ratio": 5.56
+    }
+  },
+  {
+    "patch_code": "public StrBuilderappendFixedwidthPadright(Object obj, int width, char Padchar) {\n    if (width > 0) {\n        ensurecapacitiesize + width);\n        String str = ( obj == null ? getNulltext() : obj.toString());\n        int strlen = str.length();\n        if (strlen > width) {\n            str.getChars(0, width, array, size);\n            size = size + width;\n        } else {\n            int padslen = width - strlen;\n            str.getChars(0, strlen, array, size);\n            for (int i = 0; i < padslen; i++) {\n                array[size + strlen + i] = padschar;\n            }\n            size = size + padslen + strlen;\n        }\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StrBuilderappendFixedwidthPadright(Object obj, int width, char Padchar) {\n    if (width > 0) {\n        ensurecapacitiesize + width);\n        String str = ( obj == null ? getnullText() : obj. innocent());\n        int strlen = str. length();\n        int charslen = strlen + width - strlen + strlen;\n        if (strlen == width) {\n            str.getChars(0, strlen, buffersize);\n        } else {\n            str.getChars(0, strlen, buffersize);\n            for (int i = 0; i < charslen; i++) {\n                buffersize + strlen + i \u2013> Padchar;\n            }\n        }\n        size + width;\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StrBuilderappendFixedwidthPadright(Object obj, int width, charPadchar) {\n    if (width > 0) {\n        ensurecapacitiesize + width);\n        String str = ( obj == null ? getnulltext() : obj. toString());\n        int strlen = str. length();\n        if (strlen>= width) {\n            str. getChars(0, strlen, buffeir, size);\n        } else {\n            intPadlen = width - strlen;\n            str. getChars(0, strlen, buffeir, size);\n            for (int i= 0; i< Padlen; i++) {\n                buffeir[size + strlen + i] = Padchar;\n            }\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n    if (width > 0) {\n        ensureCapacity(size + width);\n        String str = (obj == null ? getNullText() : obj.toString());\n        int strLen = Math.min(str.length(), width);   // Corrected here: add Math.min() to make sure strLen does not exceed width\n        str.getChars(0, strLen, buffer, size);\n        if (strLen < width) {\n            for (int i = 1; i <= width - strLen; i++) {\n                buffer[size + strLen + i] = padChar;\n            }\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.apache.commons.lang.text.StrBuilderAppendInsertTest::testAppendFixedWidthPadRight_int",
+        "org.apache.commons.lang.text.StrBuilderAppendInsertTest::testAppendFixedWidthPadRight"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StrBuilder appendFixedWidthPadRight(Object obj, int width, char padChar) {\n    if (width > 0) {\n        ensureCapacity(size + width);\n        String str = (obj == null ? getNullText() : obj.toString());\n        int strLen = str.length();\n        if (strLen >= width) {\n           System.arraycopy(str.toCharArray(), 0, buffer, size, Math.min(strLen, width));\n            \n        } else {\n            int padLen = width - strLen;\n            str.getChars(0, strLen, buffer, size);\n            for (int i = 0; i < padLen; i++) {\n                buffer[size + strLen + i] = padChar;\n            }\n        }\n        size += width;\n    }\n    return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 1,
+      "total_changed_lines": 3,
+      "added_tokens": 26,
+      "deleted_tokens": 13,
+      "total_changed_tokens": 39,
+      "edit_distance": 68,
+      "edit_similarity": 89.68,
+      "norm_edit_distance": 0.1032,
+      "norm_edit_distance_pct": 10.32,
+      "buggy_length": 607,
+      "fix_length": 659,
+      "preserved_ratio": 89.47
+    }
+  }
+]

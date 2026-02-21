@@ -1,0 +1,167 @@
+[
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  if (mode == Mode.LENIENT && (Double.isNaN(value) || Double.isInfinite(value))) {\n      try {\n          if(value == Double.POSITIVE_INFINITY){\n              append(\"\\\\u221E\");\n          }else{\n             append(\"-\\\\u221E\");  \n          }\n          \n          return this;\n      } catch (NumberFormatException nfe) {\n          throw new AssertionError();\n      }\n  } else if (!lenient && (Double.isNaN(value) || Double.isInfinite(value))) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n  }\n  beforeValue();\n  out.append(Double.toString(value));\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n   if(!lenient && (Double.isNaN(value)||Double.isInfinite(value))) {\n     throw new IllegalArgumentException(\"Numeric values must be finite\");\n  }\n  beforeValue();\n  out.append(Double.toString(value));\n  return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 2,
+      "total_changed_lines": 4,
+      "added_tokens": 37,
+      "deleted_tokens": 36,
+      "total_changed_tokens": 73,
+      "edit_distance": 35,
+      "edit_similarity": 88.52,
+      "norm_edit_distance": 0.1148,
+      "norm_edit_distance_pct": 11.48,
+      "buggy_length": 305,
+      "fix_length": 300,
+      "preserved_ratio": 77.78
+    }
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  if (!lenient && (Double.isNaN(value) || Double.isInfinity(value))) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n  }\n  beforeValue();\n  out.append(Double.toString(value));\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  boolean exceptionCaught = false;\n  try {\n    if (Double.isNaN(value) || Double.isInfinite(value)) {\n      exceptionCaught = true;\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n  } catch (IllegalArgumentException e) {\n      if (exceptionCaught == true){\n          if(!lenient){\n              throw new IOException(e.getMessage(), e);\n          }else{\n             //lenient mode\n             append(String.valueOf(value)); \n             return this;\n          } \n          \n      }\n    \n  } finally {\n      exceptionCaught=false;\n  }\n  \n  beforeValue();\n  out.append(Double.toString(value));\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  if (!lenient && (Double.isNaN(value) || Double.isInfinite(value))) {\n    throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n  }\n  beforeValue();\n  out.append(Double.toString(value));\n  return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 24,
+      "deleted_tokens": 18,
+      "total_changed_tokens": 42,
+      "edit_distance": 14,
+      "edit_similarity": 95.61,
+      "norm_edit_distance": 0.0439,
+      "norm_edit_distance_pct": 4.39,
+      "buggy_length": 305,
+      "fix_length": 319,
+      "preserved_ratio": 88.89
+    }
+  },
+  {
+    "patch_code": "public JsonBuilder withValue( double value ){\n  if !(lenient && (value==NaN||value== infinity||value== negative infinity)){\n    throw new IllegalArgumentException(\"Numeric values must be finite, but was \"+ value);\n  }\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonBuilder value( double value ) {\n  if ( !this.lenient && ( value == doubleNaN || value == double infinity or value == double negative infinity ) ) {\n    throw new IllegalArgumentException( value + \" is not finite\" );\n  }\n  writeDeferedName();\n  beforeValue();\n  out.append( double.valueOf( value ) );\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Json\u5199\u5165\u5668 value( double value ) throwssIOException {\n  writeDefinedName();\n  if (lenient != 1 && (\u53cc.isNaN( value ) ||\u53cc.is\u65e0\u9650( value ))) {\n    throw new IllegalArgumentException(\" numeric values must be finite but was \" + value);\n  }\n  beforeValue();\n  out.append(\u53cc.toString( value));\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  beforeValue();\n  if (lenient && (Double.isNaN(value) || Double.isInfinite(value))) {\n  \tout.append(String.valueOf(value));\n  } else {\n    if (Double.isNaN(value)) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n    if (Double.isInfinite(value)) {\n      throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n    }\n    out.append(Double.toString(value));\n  }\n  return this;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 11,
+      "deleted_lines": 4,
+      "total_changed_lines": 15,
+      "added_tokens": 112,
+      "deleted_tokens": 52,
+      "total_changed_tokens": 164,
+      "edit_distance": 240,
+      "edit_similarity": 55.8,
+      "norm_edit_distance": 0.442,
+      "norm_edit_distance_pct": 44.2,
+      "buggy_length": 305,
+      "fix_length": 543,
+      "preserved_ratio": 31.25
+    }
+  },
+  {
+    "patch_code": "public JsonWriter value(double value) throws IOException {\n  writeDeferredName();\n  if (mode == Mode.LENIENT) {\n    if ((Double.isNaN(value) || Double.isInfinite(value))) {\n       switch ((int)value) {\n         case 0x7ff8 :\n           afterValue('\"', 'N');\n           break;\n         case 0xFFF8 :\n           afterValue('\"', '-');\n           afterValue('i', 'n');\n           afterValue('f', 'i');\n           afterValue('i', 't');\n           afterValue('y','\"');\n           break;\n        default:\n          throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n     }\n   } else {\n     if (Double.isNaN(value)||Double.isInfinite(value)) {\n       throw new IllegalArgumentException(\"Numeric values must be finite, but was \" + value);\n     }\n     beforeValue();\n     out.append(Double.toString(value));\n   }\n  return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-15",
+    "diff_stats": null
+  }
+]

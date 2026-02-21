@@ -1,0 +1,136 @@
+[
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (mappedChar != 0 && index > 1 ){\n        final char hwChar = str.charAt(index - 1);\n        if (hwChar == 'H' || hwChar == 'W') {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n             if ((firstCode == mappedChar ||  preHWChar == 'H'|| preHWChar == 'W')){\n                 return 0 ;\n            }\n        }\n    }\n   return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (index > 1 && mappedChar != '0') {\n        final char hwChar = str.charAt(index - 1);\n        if ('H' == hwChar || 'W' == hwChar) {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n            if ((firstCode == mappedChar)) {\n                return 0;\n            }\n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx3"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (index > 1 && mappedChar != '0') {\n        final char hwChar = str.charAt(index - 1);\n        if ('H' == hwChar || 'W' == hwChar) {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n            if ((firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar)) {\n                return 0;\n            }\n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (index > 1 && mappedChar != '0') {\n        final char hwChar = str.charAt(index - 1);\n        if ('H' == hwChar || 'W' == hwChar) {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n            if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {\n                return 0;\n            }\n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (mappedChar != '0') {\n        if (index > 1){\n            final char hwChar = str.charAt(index - 1);\n            if ('H' == hwChar || 'W' == hwChar ) {\n                    final char preHWChar = str.charAt(index - 2);\n                    final char firstCode = this.map(preHWChar);\n                        if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {\n                            return '0';\n                        }\n            }\n        } else if (index == 1) {\n          final char hwChar = str.charAt(index - 1);\n          if('H' == hwChar || 'W' == hwChar){\n              return '0';\n          }  \n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getmappingcode( final String str, final int index) {\n    final char mappedchar = this.map(str.charAt(index));\n    if( mappedchar != 0 && index > 1){\n        final char hwchar = str.charAt(index - 1);\n        final char prechar = str.charAt(index - 2);\n        if( hwchar == 'H' || hwchar == 'W'){\n            final char firstcode = this.map(prechar);\n            if( firstcode == mappedchar || firstcode == 0 || prechar == 'H' or prechar == 'W' ) {\n                mappedchar = 0;\n            }\n        }\n    }\n    return mappedchar;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getmappingcode( final String str, final int index) {\n    final char mappedchar = this.map(str.charAt(index));\n    if( mappedchar != 0 && mappedchar != 'H' && mappedchar != 'W' && index > 1){\n        final char previouschar = str.charAt(index - 1);\n        if(previouschar == 'H' || previouschar == 'W'){\n            final char firstmappedchar = this.map(str.charAt(index - 2));\n            if( firstmappedchar == mappedchar or firstmappedchar == 'H' or firstmappedchar == 'W'){\n                return 0;\n            }\n        }\n    }\n    return mappedchar;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getmappingcode( final String str, final int index ){\n    final char mappedchar = this.map(str.charAt(index));\n    if ( mappedchar != '0' ){\n        final char previouschar = str.charAt(index - 1);\n        if ( index > 1 ){\n            if ( 'H' == previouschar || 'W' == previouschar ){\n                final char firstmappedchar = this.map(str.charAt(index - 2));\n                if ( firstmappedchar == mappedchar ){\n                    return '0';\n                }\n            }\n        }\n    }\n    return mappedchar;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if (index > 1 && mappedChar != '0') {\n        final char hwChar = str.charAt(index - 1);\n        if ('H' == hwChar || 'W' == hwChar) {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n            if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {\n                return 0;\n            }\n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private char getMappingCode(final String str, final int index) {\n    // map() throws IllegalArgumentException\n    final char mappedChar = this.map(str.charAt(index));\n    // HW rule check\n    if ((index == 2 && mappedChar == 'H') || \n       (index == 2 && mappedChar == 'W')){  \n        return '0';\n    }\n     else if (index > 1 && mappedChar != '0') {\n        final char hwChar = str.charAt(index - 1);\n        if ('H' == hwChar || 'W' == hwChar) {\n            final char preHWChar = str.charAt(index - 2);\n            final char firstCode = this.map(preHWChar);\n            if (firstCode == mappedChar || 'H' == preHWChar || 'W' == preHWChar) {\n                return '0';\n            }\n        }\n    }\n    return mappedChar;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.codec.language.SoundexTest::testHWRuleEx1"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Codec-15",
+    "diff_stats": null
+  }
+]

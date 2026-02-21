@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n        Iterator var2 = properties.entrySet().iterator();\n\n        while(var2.hasNext()) {\n            Map.Entry<String,? extends JsonNode> entry = (Map.Entry)var2.next();\n            String key = (String)entry.getKey();\n            JsonNode value = (JsonNode)entry.getValue();\n            if (value == null) {\n                value = nullNode();\n            }\n\n            if (!this._children.containsKey(key)) {\n                this._children.put(key, value);\n            } else {\n                ((ObjectNode)this).replaceNode(this._children.get(key), value);\n            }\n        }\n\n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic int hashCode() {\n    final int prime = 31;\n    int result = 7;\n    for (Iterator<Entry<String,JsonNode>> iterator = entries();iterator.hasNext();) {\n        Entry<String,JsonNode> entry = iterator.next();\n        result += entry.hashCode() * prime;\n    }\n    return result;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n      // Changed from properties.entrySet() to properties.entrySet().iterator() because iterating over the entry set removes entries from the original Map\n        for (Iterator<Map.Entry<String,? extends JsonNode>> i = properties.entrySet().iterator();i.hasNext();){\n            \n          \n      \n            Map.Entry<String,? extends JsonNode> en = i.next();\n        \n    \n         \n        JsonNode n = en.getValue();\n        \n           if (n == null) {\n               n = nullNode();\n            }\n         \n            _children.put(en.getKey(), n);\n        }\n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n        Set<Entry<String, ? extends JsonNode>> entries = properties.entrySet();\n        Iterator<Entry<String, ? extends JsonNode>> iterator = entries.iterator();\n        while (iterator.hasNext()) {\n            Map.Entry<String,? extends JsonNode> entry= iterator.next();\n            String key = entry.getKey();\n            JsonNode value = entry.getValue();\n            if (value == null) {\n                value = nullNode();\n            }\n            _children.put(key, value);\n        }\n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n        Iterator iterator= properties.entrySet().iterator();\n       while (iterator.hasNext()){\n           Map.Entry<String,? extends JsonNode>  en = (Map.Entry) iterator.next();\n          JsonNode n = en.getValue();\n            if (n == null) {\n                n = nullNode();\n            }\n            _children.put(en.getKey(), n);\n        }\n        return this;\n    }",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.introspect.TestNamingStrategyStd::testNamingWithObjectNode"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String,?> properties)\n    {\n        for (Map. Entry<String,?> en : properties. entrySet()) {\n            JsonNode n = en. value();\n            if (n == null) {\n                n = nullNode();\n            }\n            _ children . put(en. key(), n);\n        }\n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class test {\n\n  public static class classWithObjectNodeField {\n    public String id;\n    public ObjectNode Json;\n  }\n  \n  public static void main(String[]args){\n      ObjectMapper mapper = new ObjectMapper();\n      mapper.setPropertyNamingStrategy(PropertyNamingStrategy.PROPERT_case);\n      classWithObjectNodeField deserialized = mapper.readValue(\"{\\\"id\\\":\\\"1\\\",\\\"json\\\":{\\\" foo\\\":\\\" bar\\\",\\\" baz\\\":\\\" bing\\\"}}\", classWithObjectNodeField.class);\n      Systemout.print(deserialized.id);\n      \n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class TestPropertyNamingStrategyIssue {\n  public static class ClassWithObjectNodeField {\n    public String id;\n    public ObjectNodejsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjson\n    public ObjectNodejsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjsonjson\n  }\n\n  @Test\n  public void test() throwseption {\n    ObjectMapper mapper = new ObjectMapper();\n    mapper.setPropertyNamingStrategy(PropertyNamingStrategy.PropertyNamingStrategy. camelcase);\n    ClassWithObjectNodeField deserialized = mapper.readValue(\"{\u201c id\u201d: \u201c1\u201d,\u201cjson\u201d: {\u201c foo\u201d: \u201cbar\u201d,\u201c baz\u201d: \u201c' + str + '\u201d} }\", ClassWithObjectNodeField.class);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String, ? extends JsonNode> properties) {\n        Iterator<Map.Entry<String, ? extends JsonNode>> iterator = properties.entrySet().iterator();\n        while(iterator.hasNext()) {\n            Map.Entry<String, ? extends JsonNode> next = iterator.next();\n            JsonNode value = next.getValue();\n            if (value == null) {\n                value = nullNode();\n            }\n            _children.put(next.getKey(), value);\n        }\n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JsonNode setAll(Map<String,? extends JsonNode> properties)\n    {\n        Iterator<Map.Entry<String, ? extends JsonNode>> iterator = properties.entrySet().iterator();\n        while (iterator.hasNext()){\n            Map.Entry<String, ? extends JsonNode> next = iterator.next();\n            put(next.getKey(), next.getValue());\n        }\n        \n        return this;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-20",
+    "diff_stats": null
+  }
+]

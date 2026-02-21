@@ -1,0 +1,154 @@
+[
+  {
+    "patch_code": "private double calculateAsymptoticPValue(final long Umin,\n                                        final long n1,\n                                        final long n2)\n        throws ConvergenceException, MaxCountExceededException {\n\n    final long n1n2prod = n1 * n2;\n\n    // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation\n    final double EU = n1n2prod / 2.0;\n    final double VarU = n1n2prod * (n1 + n2 + 1) / 12.0;\n\n    final double z = (Umin - EU) / FastMath.sqrt(VarU);\n\n    final NormalDistribution standardNormal = new NormalDistribution(0, 1);\n\n    return 2 * standardNormal.cumulativeProbability(z);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.math3.distribution.*;\n\npublic double calculateAsymptoticPValue(final double Umin, final long n1, final long n2){\n\n        final long n1n2prod = n1 * n2;\n\n        \n        final double EU = (double)n1n2prod / 2.0;\n        final double VarU = (double)n1n2prod * (n1 + n2 + 1) / 12.0;\n\n        final double z = (Umin - EU) / StrictMath.sqrt(VarU);\n\n        final NormalDistribution normaldistri=new NormalDistribution();\n        \n        return 2 * normaldistri.cumulativeProbability(-StrictMath.abs(z));\n     }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double calculateAsymptoticPValue(double Umin, int n1, int n2) {\n    if ((Double.isNaN(Umin)) || Double.isInfinite(Umin) || n1 <= 0 || n2 <=0){\n        throw new IllegalArgumentException();\n    }\n\n    final long n1l = n1;\n    final long n2l = n2;\n\n    final double EuSumTimes = n1l*n2l/(2.0*(n1+n2));\n    double varUSumTime=(n1l*n2l*(n1+n2+1)/(12.0)-(int)(((double) n1)*((double) n2)));\n    \n    /* check for zero variance case */\n    if (varUSumTime < 0 && varUSumTime > -EPSILON ){\n        varUSumTime = 0;\n    }else if (Double.isNaN(varUSumTime)){\n        throw new ArithmeticException(\"Overflow in variances calculation\");\n    }\n   final double Zscore =(Umin - EuSumTimes)/ Math.sqrt(varUSumTime);\n\n    final org.apache.commons.math3.distribution.NormalDistribution NormalDistribution = new org.apache.commons.math3.distribution.NormalDistribution(0, 1);\n    return 2 * NormalDistribution.probability(-Zscore);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double calculateAsymptoticPValue(double Umin,\n                                        int n1,\n                                        int n2)\n        throws ConvergenceException, MaxCountExceededException {\n\n    long n1L = n1;\n    long n2L = n2;\n    \n    double n1n2Prod = n1L * n2L;\n\n    if (Double.isInfinite(n1n2Prod)) {\n        throw new ArithmeticException(\"Underflow during calculation\");\n    }\n\n    // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation\n    double EU = n1n2Prod / 2.0;\n    double VarU = n1n2Prod * (n1 + n2 + 1) / 12.0;\n\n    if (Double.isNaN(VarU) || Double.isInfinite(VarU)) {\n        throw new ArithmeticException(\"Underflow during calculation\");\n    }\n\n    double z = (Umin - EU) / FastMath.sqrt(VarU);\n\n    final NormalDistribution standardNormal = new NormalDistribution(0, 1);\n\n    return 2 * standardNormal.cumulativeProbability(z);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 19,
+      "deleted_lines": 8,
+      "total_changed_lines": 27,
+      "added_tokens": 129,
+      "deleted_tokens": 74,
+      "total_changed_tokens": 203,
+      "edit_distance": 332,
+      "edit_similarity": 62.86,
+      "norm_edit_distance": 0.3714,
+      "norm_edit_distance_pct": 37.14,
+      "buggy_length": 634,
+      "fix_length": 894,
+      "preserved_ratio": 32.14
+    }
+  },
+  {
+    "patch_code": "private double calculateAsymptoticPValue(final double Umin,\n                                         final int n1,\n                                         final int n2)\n    throws ConvergenceException, MaxCountExceededException {\n\n    final long n1L = n1;\n    final long n2L = n2;\n    final long n1n2prod = n1L * n2L;\n\n    // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation\n    final double EU = n1n2prod / 2.0;\n    final double VarU = n1n2prod * (n1 + n2 + 1) / 12.0;\n\n    final double z = (Umin - EU) / FastMath.sqrt(VarU);\n\n    final NormalDistribution standardNormal = new NormalDistribution(0, 1);\n\n    return 2 * standardNormal.cumulativeProbability(z);\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.apache.commons.math3.util.MathArraysTest"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double createAsympotype( final double uMin, final int n1, final int n2 ) {\n    final int n1n2 product = n1 * n2;\n\n    final double Eu = n1n2 product / 2d;\n\n    final double varU = n1n2 product * (n1 + n2 + 1) / 12d;\n\n    final double z = (uMin - Eu) / fastmath.sqrt(varU);\n\n    final normaldistribution normal = new normaldistribution(0, 1);\n\n    return 2 * normal.cumulate probability(z);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double createAsymmptoticalPValue( final double Umin, final int n1, final int n2)\n    {\n        final int n1n2 = n1*n2;\n        final double p = 1d - ( n1n2 / ( n1 + n2 ) );\n        final double pmin = n1 < n2 ? p : 1 - p;\n        final double q = 1d - pmin;\n        final double d1 = n1*p;\n        final double d2 = n1*q;\n        final double[] a = new double[] { n1*pmin, n1*q, n2*pmin };\n        final double[] b = new double[] { n1*p, n1*qmin, n2*p };\n        final double[] c = new double[] { n1*pmin, n1*qmin, n2*pmin };\n        final double[] d = new double[] { n1*p, n1*qmin, n2*qmin };\n\n        final double[] x = new double[] { d1, d1+d2, n1+1, n1+n2+1 };\n        final double[] y = new double[] { n1*pmin, n1*qmin, n2*p, n2*q };\n        final double[] pv = new double[] { 0, 0, 0, 0 };\n        for (int i = 0; i < x.length; i++){\n            final double xi = fastmath.round(x[i]-1);\n            final double yi = fastmath.round(y[i]-1);\n            final double factorialX = fastmath. factorial((int)xi);\n            final double factorialY = fastmath. factorial((int)yi);\n            final double factorialXY = factorialX * factoralY;\n            final double factorialXYz = factorialXY * fastmath. factorial((int)(xi + yi));\n            pv[i] = factorialXYz / factorialXY * fastmath. pow( q / factoralXY, x[i]-1 ) * fastmath. pow( p / factoralXY, y[i]-1 );\n        }\n        final double sum = fastmath. sum(pv);\n        return sum;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double createAsympotizedPValue( final double Umin, final int n1, final int n2) {\n    final int n1n2 product = n1 * n2;\n\n    final double EU =  n1n2 product / 2.0;\n    final double VarU = n1n2 product * (n1 + n2 + 1) / 12.0;\n\n    final double z = (Umin - EU) / fastmath.sqrt( VarU);\n\n    final Normal distribution normal = new Normal distribution(0, 1);\n\n    return 2 * normal distribution .cumulativ probability(z);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double calculateAsymptoticPValue(double Umin, int n1, int n2) {\n    \n    long ln1 = n1;\n    long ln2 = n2;\n  \n    double Eun1 = ln1 * (ln1 + 1)/ 2;\n    double Eun2 = ln2 * (ln2 + 1)/ 2;\n\n    double varUn1 = ln1 * ln2;\n    double varUn2 = ln1 * ln1 - 1 + ln2 * ln2 - 1 ;\n\n    double Z = (Umin - Math.max((Eun1+Eun2)/2,(int)(n1*n2)/2))/(FastMath.sqrt(Math.max(varUn1,varUn2)));\n\n    double erfResult = new GaussIntegrator().integrate(new ErfFunction(), 0, Z);\n        \n    if (!Double.isNaN(erfResult)){ \n        return 2*(1-erfResult)/FastMath.sqrt(2)*FastMath.exp(-Z*Z/2);\n    } else{\n        throw new NotStrictlyPositiveException();\n    }\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private double calculateAsymptoticPValue(final double Umin,\n                                         final int n1,\n                                         final int n2)\n    throws ConvergenceException, MaxCountExceededException {\n\n    final long n1n2prod = (long)n1 * (long)n2;\n\n    // http://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U#Normal_approximation\n    final double EU = n1n2prod / 2.0;\n    final double VarU = n1n2prod * (n1 + n2 + 1) / 12.0;\n\n    final double z = (Umin - EU) / FastMath.sqrt(VarU);\n\n    final NormalDistribution standardNormal = new NormalDistribution(0, 1);\n\n    return 2 * standardNormal.cumulativeProbability(z);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-30",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 14,
+      "deleted_tokens": 8,
+      "total_changed_tokens": 22,
+      "edit_distance": 15,
+      "edit_similarity": 97.68,
+      "norm_edit_distance": 0.0232,
+      "norm_edit_distance_pct": 2.32,
+      "buggy_length": 634,
+      "fix_length": 647,
+      "preserved_ratio": 94.12
+    }
+  }
+]

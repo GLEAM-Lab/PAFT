@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) {\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).construct();\n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    TypeAdapterFactory factory = constructorConstructor.get(TypeToken.get(typeAdapterFactory)).construct();\n    typeAdapter = factory.create(gson, fieldType);\n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n    typeAdapter = typeAdapter.nullSafe();\n  return typeAdapter;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.regression.JsonAdapterNullSafeTest::testNullSafeBugDeserialize"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception {\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter = null;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    try{\n      typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).construct();  \n    } catch(Exception e){\n       throw new Exception(\"Error creating instance of TypeAdapter\",e);\n    }\n    \n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    try{\n      TypeAdapterFactory factory =  constructorConstructor.get(TypeToken.get(typeAdapterFactory)).construct();\n      typeAdapter = factory.create(gson, fieldType);\n    }catch (Exception e){\n      throw new Exception (\"Error creating instance of TypeAdapterFactory.\",e);\n    }\n    \n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n  return typeAdapter == null ? null : typeAdapter.nullSafe();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception{\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    Constructor<TypeAdapter<?>> ctor = typeAdapterClass.getDeclaredConstructor();\n    typeAdapter = ctor.newInstance();\n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterFactory))\n        .construct()\n        .create(gson, fieldType);\n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n    typeAdapter = typeAdapter.nullSafe();\n  return typeAdapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception{\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter=null;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n     typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).construct();\n     \n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterFactory))\n        .construct().create(gson, fieldType).get();\n      \n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n  \n  return typeAdapter.nullSafe();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception {\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).newInstance();\n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    Object obj=constructorConstructor.get(TypeToken.get(typeAdapterFactory)).newInstance();\n      \n      // Ensure that object is not null before calling methods on it.\n    if (obj == null){\n          throw new NullPointerException(\"The instance from class \" + typeAdapterFactory.getName() + \n             \" constructed via ConstructorCould Be NULL\");\n     }else{\n         typeAdapter=((TypeAdapterFactory)obj).create(gson, fieldType);\n    }\n    \n    \n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n  \n    typeAdapter = typeAdapter.nullSafe();\n  return typeAdapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeConverter getTypeConverter(ConstructorConstructor cc, Gson gson, TypeToken fieldType, Json\u9002\u9002 adap annotation) {\n  Class value = annotation.value();\n  TypeConverter typeConverter;\n  if (value == null || value == type\u9002 adap.class) {\n    typeConverter = cc.get(fieldType). construct();\n  } else if (Type\u9002 adap\u5de5\u5382 class.isAssignableFrom(value)) {\n    Class<Type\u9002 adap\u5de5\u5382 class> type adap Factory = (Class<Type\u9002 adap\u5de5\u5382 class>) value;\n    typeConverter = cc.get(Type adap Factory.get()) . construct()\n        . create(gson, fieldType);\n  } else {\n    throw new IllegalArgumentException(\"@\u9002 adap value must be type\u9002 adap or type adap Factory reference.\") ;\n  }\n  return typeConverter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeADapter<?> getTypeADapter( ConstructorConstructorConstructorconstructorconstructorconstructorconstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructor cavallistral\n     Gson gson, TypeToken<?> fieldType, JsonADapter annotation) {\n  Class<?> value = annotation.value();\n  TypeADapter<?> typeADapter;\n  if (typeADapter.class.isAssignableFrom(value)) {\n    class typeADapterClass = (Class<typeADapter<?>>) value;\n    typeADapter = constructorConstructorConstructor.get(typeADapterClass). construct();\n  } else if (typeADapter\u5de5\u5382.class.isAssignableFrom(value)) {\n    class typeADapter\u5de5\u5382 = (class typeADapter\u5de5\u5382) value;\n    typeADapter = constructorConstructorConstructor.get(typeADapter\u5de5\u5382). construct(). create(gson, fieldType);\n  } else {\n    throw new IllegalArgumentException(\"@ADapter value must be typeADapter or typeADapter\u5de5\u5382 reference.\") ;\n  }\n  typeADapter = typeADapter.nullSafe();\n  return typeADapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static TypeADapter<?> getTypeADapter(ConstructorConstructorconstructorConstructorconstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructorConstructor() {\n  class value = annotation.value();\n  typeADapter<?> typeADapter;\n  if (typeADapter.class.isAssignableFrom(value)) {\n    class typeADapterClass = (class typeADapter class) value;\n    typeADapter =constructorConstructor.get(TypeToken.get(typeADapterClass)). construct();\n  } else if (typeADapter\u5de5\u5382class.isAssignableFrom(value)) {\n    class typeADapter\u5de5\u5382 = (class typeADapter\u5de5\u5382) value;\n    typeADapter =constructorConstructor.get(typeADapter\u5de5\u5382)\n        . construct()\n        . create(gson, fieldType);\n  } else {\n    throw new IllegalArgumentException(\"@ Json\u9002 adap value must be typeADapter or typeADapter\u5de5\u5382 reference.\") ;\n  }\n  typeADapter = typeADapter.nullSafe();\n  return typeADapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception{\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    try{\n      typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).construct();\n    }catch(Exception e){\n       throw new RuntimeException(\"Failed to create instance of custom TypeAdapter\", e);\n     }\n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    try{\n    \ttypeAdapter =  constructorConstructor.get(TypeToken.get(typeAdapterFactory))\n          .construct()\n          .create(gson, fieldType);  \n    }catch(Exception e){\n       throw new RuntimeException(\"Failed to create instance of custom TypeAdapterFactory\", e);\n    }\n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n  typeAdapter = typeAdapter.nullSafe();\n  return typeAdapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static TypeAdapter<?> getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson,\n    TypeToken<?> fieldType, JsonAdapter annotation) throws Exception{\n  Class<?> value = annotation.value();\n  TypeAdapter<?> typeAdapter;\n  if (TypeAdapter.class.isAssignableFrom(value)) {\n    Class<TypeAdapter<?>> typeAdapterClass = (Class<TypeAdapter<?>>) value;\n    typeAdapter = constructorConstructor.get(TypeToken.get(typeAdapterClass)).construct().nullSafe();\n  } else if (TypeAdapterFactory.class.isAssignableFrom(value)) {\n    Class<TypeAdapterFactory> typeAdapterFactory = (Class<TypeAdapterFactory>) value;\n    TypeAdapterFactory factory = constructorConstructor.get(TypeToken.get(typeAdapterFactory)).construct();\n    if (factory == null) throw new NullPointerException(\"Null object\"); // add null check here\n    typeAdapter = factory.create(gson, fieldType).nullSafe();\n  } else {\n    throw new IllegalArgumentException(\n        \"@JsonAdapter value must be TypeAdapter or TypeAdapterFactory reference.\");\n  }\n    \n  return typeAdapter;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-6",
+    "diff_stats": null
+  }
+]

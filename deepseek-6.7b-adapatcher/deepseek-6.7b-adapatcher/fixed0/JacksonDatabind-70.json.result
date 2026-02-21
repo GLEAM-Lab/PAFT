@@ -1,0 +1,141 @@
+[
+  {
+    "patch_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm).split(\"\\\\.\")[1];\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            found = key.equalsIgnoreCase(prop.getName().split(\"\\\\.\")[1]);\n            if (found) {\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        throw new NoSuchElementException(\"No entry '\"+propToRm.getName()+\"' found, can't remove\");\n    }\n    init(props);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.struct.TestUnwrapped::testCaseInsensitiveUnwrap"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic void remove(SettableBeanProperty propToRm) {\n    ArrayList<SettableBeanProperty> props = new ArrayList<>();\n    String key = getPropertyName(propToRm).toLowerCase();\n    boolean found = false;\n    int index;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found && !key.equalsIgnoreCase(getPropertyName(prop))) {\n            props.add(prop);\n        } else {\n            found = true;\n            index = _findFromOrdered(prop);\n            if (index >= 0) {\n                _propsInOrder[index] = null;\n            }\n        }\n    }\n    if (!found) {\n        throw new NoSuchElementException(\"No entry '\" + propToRm.getName() + \"' found, can't remove\");\n    }\n    init(props);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(SettableBeanProperty propToRm) {\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm);\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty)_hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            if ((key.compareTo(prop.getField().getName()) == 0)) {\n                found = true;\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        throw new NoSuchElementException(\"No entry '\"+propToRm.getName()+\"' found, can't remove\");\n    }\n    init(props);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(SettableBeanProperty propToRm){\n    ArrayList<SettableBeanProperty> props = new ArrayList<>();\n    String key = getPropertyName(propToRm).replaceAll(\"businessAddress.\", \"\").trim();\n    boolean found = false;\n    for(int i=1 ; i<_hashArea.length; i++){\n        try {\n            SettableBeanProperty prop = (SettableBeanProperty) _hashArea[i];\n            if(prop==null){continue;}\n            if(!found){\n                if(prop.getName().toLowerCase().startsWith(key.toLowerCase())){\n                    int idx = _findFromOrdered(prop);\n                    assert idx >= 0;\n                    _propsInOrder[idx]=null;\n                    found = true;\n                }\n            }else{\n                props.add(prop);\n            }\n        } catch(Exception e){log.error (\"\",e);}\n        \n    }\n    if(!found){throw new NoSuchElementException(\"No entry '\" + key+ \"' found, can't remove\");}\n    init(props);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int findKeyword(String value, List<String> keywords){\n    for (int k=0; k<keywords.size(); k++){\n        if (value.toLowerCase().contains(keywords.get(k).toLowerCase())) return k;\n    }\n    return -1;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.struct.TestUnwrapped::testCaseInsensitiveUnwrap"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(Settable bean)\n{\n   ArrayList<Settable bean in order list = newArrayList<Settable bean in order list>\u6012\u751f\u5217\u8868.size());\n   String key = get property name(prop);\n    boolean found = false;\n\n    for (int i = 1, end = _ area size(); i < end; i + = 2) {\n        Settable bean prop = (Settable bean) _ area[i];\n        if ( bean prop == null) {continue};\n        if (! found){\n            found = key .eq ( bean prop.get property name());\n            if ( found){\n                // need to leave a hol in order list\n                _ bean in order list[ _ find from order list.find from order list( bean prop))] = null;\n                continue;\n            }\n        }\n        bean in order list.add( bean prop);\n    }\n    if (! found){\n        throw new No such element exception(\"No entry '\" + bean prop.get property name() +' not found can't remove');\n    }\n    init( bean in order list);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(Settable bean, Settable bean property)\n{\n   ArrayList<Settable bean property> properties = newArrayList<Settable bean property>\u535c\n    boolean found = false;\n\n    for ( int i = 1; i < _size; i++ ) {\n        Settable bean property prop = (Settable bean property) _propArray[i];\n        if ( prop == null ) { continue; }\n\n        String propertyName = bean property prop.getPropertyName();\n        String key = bean property prop.getPropertyName();\n        if ( ! found ) {\n            found = key.\u7b49\u4e8e(key);\n            if ( found ) {\n                _propArray[i] = null;\n                continue;\n            }\n        }\n        properties.add(prop);\n    }\n    if (! found ) {\n        throw new No such element exception(\"no entry found can't remove\");\n    }\n    bean bean bean.init( properties );\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(Setterter bean, Settable beanProperty)\n{\n   ArrayList<Setterter> beans = newArrayList<Setterter>();\n    String key = getPropertyName( beanProperty);\n    boolean found = false;\n\n    for (int i = 1, end = _ size; i < end; i + = 2) {\n        Setterter bean = (Setterter) _ [i];\n        if ( bean == null) {continue; }\n        if (! found) {\n            found = key . equals( bean. getter(). getter());\n            if ( found) {\n                _ beanProperty in order[ _ findfrom Ordered bean) null;\n                continue;\n            }\n        }\n        beans . add( bean);\n    }\n    if (! found) {\n        throw new No such element exception(\" no entry '\" + bean. getter(). getter() +' found, can's remove\");\n    }\n    init( beans);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm).replaceAll(\"\\\\.\", \"\").trim();\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty)_hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found) {\n            // 09-Jan-2017, tatu: Important: must check name slot and NOT property name,\n            //   as only former is lower-case in case-insensitive case\n            found = key.equalsIgnoreCase(getPropertyName(prop));\n            if (found) {\n                // need to leave a hole here\n                _propsInOrder[_findFromOrdered(prop)] = null;\n                continue;\n            }\n        }\n        props.add(prop);\n    }\n    if (!found) {\n        throw new NoSuchElementException(\"No entry '\" + propToRm.getName() + \"' found, can't remove\");\n    }\n    init(props);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 4,
+      "deleted_lines": 4,
+      "total_changed_lines": 8,
+      "added_tokens": 74,
+      "deleted_tokens": 59,
+      "total_changed_tokens": 133,
+      "edit_distance": 56,
+      "edit_similarity": 94.62,
+      "norm_edit_distance": 0.0538,
+      "norm_edit_distance_pct": 5.38,
+      "buggy_length": 992,
+      "fix_length": 1041,
+      "preserved_ratio": 85.71
+    }
+  },
+  {
+    "patch_code": "public void remove(SettableBeanProperty propToRm)\n{\n    ArrayList<SettableBeanProperty> props = new ArrayList<SettableBeanProperty>(_size);\n    String key = getPropertyName(propToRm);\n    int propIdx = -1;\n    boolean found = false;\n\n    for (int i = 1, end = _hashArea.length; i < end; i += 2) {\n        SettableBeanProperty prop = (SettableBeanProperty)_hashArea[i];\n        if (prop == null) {\n            continue;\n        }\n        if (!found && key.equalsIgnoreCase(prop.getName())) {\n            \n            found = true;\n            propIdx = i;\n            continue;\n        } else {\n            props.add(prop);\n        }\n        \n    }\n    if(!found){\n       throw new NoSuchElementException(\"No entry '\" + propToRm.getName() + \"' found, can't remove\"); \n    }\n    \n    if (_hashCollisionResistant != null) {\n        _hashCollisionResistant.entryRemovedAt(propIdx / 2);\n    }\n    _hashArea[propIdx] = null;\n    \n    --_size;\n    \n    if ((_hashArea.length > DEFAULT_CAPACITY)\n        && (_size <= (_hashArea.length >>= 1))) {\n        /* re-establish 'soft' limits after shrinking */\n        adjustSoftLimits();\n    }\n    init(props);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-70",
+    "diff_stats": null
+  }
+]

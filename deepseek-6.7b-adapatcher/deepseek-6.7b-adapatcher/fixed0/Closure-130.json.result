@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "public class Test{\n public static void main(String[] args){\n     System.out.println(mystery(\"hello\"));\n }\n\n private static String mystery(Object input){\n     return (String)input;\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void inlineAliases(GlobalNamespace namespace) {\n  // Invariant: All the names in the worklist meet condition (a).\n  Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pop();\n\n    // Don't attempt to inline a getter or setter property as a variable.\n    if (name.type == Name.Type.GET || name.type == Name.Type.SET) {\n      continue;\n    }\n\n    if (name.globalSets == 1 && name.localSets == 0 &&\n        name.aliasingGets > 0) {\n      // {@code name} meets condition (b). Find all of its local aliases\n      // and try to inline them.\n      List<Ref> refs = Lists.newArrayList(name.getRefs());\n      for (Ref ref : refs) {\n        if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {\n          // {@code name} meets condition (c). Try to inline it.\n          if (inlineAliasIfPossible(ref, namespace)) {\n            name.removeRef(ref);\n          }\n        }\n      }\n    }\n\n    // Check if {@code name} has any aliases left after the\n    // local-alias-inlining above.\n    if ((name.type == Name.Type.OBJECTLIT ||\n         name.type == Name.Type.FUNCTION) &&\n        name.aliasingGets == 0 && name.props != null) {\n      // All of {@code name}'s children meet condition (a), so they can be\n      // added to the worklist.\n      workList.addAll(name.props);\n    }\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.CollapsePropertiesTest::testIssue931"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class HelloWorld {\n     public static boolean isNotNil(Object x){\n          return x!=null;\n     }\n  \n     public static class Test{\n          \n       Object o1;\n    \n          \n       String b(){\n             final Object tmp=o1,tmp2=tmp==null?\"\":((CharSequence)tmp).toString(),tmp3=\" \";\n              System.out.println(\"\");\n           return \"\";\n       }\n     }\n \n     \n     \n     private static int findStringInParenthese(int startIndex, String str) {\n        if(str.charAt(startIndex)!='('||(startIndex+1>=str.length()))return -1;\n         char c;\n         do{\n           c=str.charAt(++startIndex);\n         }while(c!=')');\n        return startIndex;\n     }\n \n     private static int nextNonWhiteSpace(int pos, String s){\n         do{\n           ++pos;\n         }while(!Character.isWhitespace(s.charAt(pos)));\n         return pos;\n     }\n \n     public static void main(String[] args) {\n         String s=\",,,(346647\";\n      System.out.println(findStringInParenthese(1,s));\n     }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void inlineAliases(GlobalNamespace namespace) {\n  // Invariant: All the names in the worklist meet condition (a).\n  Deque<Name> workList = new ArrayDeque<Name>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pop();\n\n    // Don't attempt to inline a getter or setter property as a variable.\n    if (name.type == Name.Type.GET || name.type == Name.Type.SET) {\n      continue;\n    }\n\n    if (name.globalSets == 1 && name.localSets == 0 &&\n        name.aliasingGets > 0) {\n      // {@code name} meets condition (b). Find all of its local aliases\n      // and try to inline them.\n      List<Ref> refs = Lists.newArrayList(name.getRefs());\n      for (Ref ref : refs) {\n        if (ref.type == Type.ALIASING_GET && ref.scope.isLocal()) {\n          // {@code name} meets condition (c). Try to inline it.\n          if (inlineAliasIfPossible(ref, namespace)) {\n            name.removeRef(ref);\n          }\n        }\n      }\n    }\n\n    // Check if {@code name} has any aliases left after the\n    // local-alias-inlining above.\n    if ((name.type == Name.Type.OBJECTLIT ||\n         name.type == Name.Type.FUNCTION) &&\n        name.aliasingGets == 0 && name.props != null) {\n      // All of {@code name}'s children meet condition (a), so they can be\n      // added to the worklist.\n      workList.addAll(Arrays.asList(name.props));\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void inlineAliases(GlobalNamespace namespace) {\n  Deque<Name> workList = new ArrayDeque<>(namespace.getNameForest());\n  while (!workList.isEmpty()) {\n    Name name = workList.pollLast();\n    \n    if (name.type != Name.Type.PROPERTY || \n       name.globalSets > 0  || name.getScope().containsKey(\"eval\")) {\n      continue;\n    }\n    \n    ListIterator<Ref> i = name.getRefs().listIterator(name.getRefs().size());\n    while (i.hasPrevious()) {\n      Ref r = i.previous();\n      if (r.type == Type.ALIASING_GET && r.scope.depth() == 2) {\n        Object value = ((NamedObject)r.object).getValue();\n        if (value instanceof String) {\n          String strVal = (String)value;\n          \n          if (strVal.startsWith(\"#\") || strVal.startsWith(\"/\") || \n             strVal.endsWith(\".length\") || strVal.endsWith(\".item(\")) {\n            i.remove();\n            break;\n          }\n        } else if (value instanceof Function) {\n          i.remove();\n          break;\n        }\n      }\n    }\n    \n    if (name.type == Name.Type.OBJECTLIT) {\n      for (Entry<Expr, Name> e: name.props) {\n        workList.push(e.getValue());\n      }\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void advancements are moved to another scopeless than() {\n  Deque<Name> workList = newArrayDeque<Name>(namespace.getIdforest());\n  while (!workList.isEmpty()) {\n    name = workList. pop();\n\n    if (name. type == name. type. GET || name. type == name. type. Set) {\n      continue;\n    }\n\n    if (name. globalSets == 1 && name. localSets == 0 &&\n        name. inLine Gets > 0) {\n      List<Ref> refs = Lists.newArrayList(name. getRefs());\n      for (ref ref : refs) {\n        if (ref. type == type. AOA and ref. scopeless than()) {\n          if (in lineIf possible(ref,namespace)) {\n            name. removeRef(ref);\n          }\n        }\n      }\n    }\n\n    if (name. type == name. type. OBjects or name. type == name. type. FUNction) {\n      workList. addAll(name. getProps());\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void advanceAndInline\u522bas( global Namespace ns) {\n  Deque<Name> workList = newArrayDeque<Name>(ns.names());\n  while (!workList.isEmpty()) {\n    name work = workList. pop();\n\n    if (work. type == name.type.getter or work. type == name.type.setter) {\n      continue;\n    }\n\n    if (work. globalSets == 1 && work. localSets == 0 && work. \u522basSets > 0) {\n      List<ref> refs = Lists.newArrayList(work. getRefs());\n      for (ref ref : refs) {\n        if (ref. type == Ref. type.\u522bas && ref. scop. is\u5c40\u5c40()) {\n          if (repairif possible(ref, ns)) {\n            work. removeRef(ref);\n          }\n        }\n      }\n    }\n\n    if (work. type == name.type. object or work. type == name.type. fun) {\n      workList. addAll(work. get names());\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean advancementsAreMapped( global ) {\n  Deque<Name> workList = newArrayDeque<Name>( global );\n  while !workList.isEmpty() {\n    name = workList. pop();\n\n    if ( name. globalSets == 1 && name. localSets == 0 &&\n        name. advancements are mapped ) {\n      List< Ref > refs = Lists. newArrayList( name. get refs );\n      for ( ref in refs ) {\n        if ( ref. type == Type. advancements are mapped ) {\n          if ( advancementsarenotmapped(ref, global)) {\n            name. remove ref;\n          }\n        }\n      }\n    }\n\n    if ( name. global sets == 0 &&\n        name. advancements are mapped ) {\n      workList. addAll( name. get Props );\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private class GlobalName implements Name, Aliasable {\n  private boolean globalRead = false;\n  ...\n}\n\npublic static String findAliasedGetter(String globalVariableName) {\n  Namespace ns = currentThread().getContext().getUserCodeNamespace();\n  Name globalObjectName = ns.findOrNull(globalVariableName);\n  if (globalObjectName != null && globalObjectName instanceof GlobalName) {\n    GlobalName gn = (GlobalName) globalObjectName;\n    if (gn.globalRead) {\n      return gn.globalAliasee;\n    } else if (gn.type == Name.Type.PROPERTY) {\n      PropertyName pn = (PropertyName) globalObjectName;\n      List<Ref> refs = pn.refs;\n      for (int i = 0; i < refs.size(); i++) {\n        Ref r = refs.get(i);\n        if (r.type == Ref.Type.ALIASING_REF && r.target instanceof AliasedGetter){\n          AliasedGetter ag = (AliasedGetter) r.target;\n          return findAliasedGetter(ag.sourceName);\n        }\n      }\n    } else if (gn.type == Name.Type.FUNCTION) {\n      FunctionName fn = (FunctionName) globalObjectName;\n      Set<Binding> bindings = fn.bindings;\n      for (Binding b : bindings) {\n        Expr e = b.expr;\n        if (e instanceof GetField) {\n          GlobalName fldNm = (GlobalName)((GetField) e).field;\n          if (fldNm.globalRead) {\n            return fldNm.name;\n          }\n        }\n      }\n    }\n  }\n  return null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void f() {\n  Runnable runnable = () -> {\n     f1();\n };\n  Thread thread = new Thread(runnable);\n  thread.start();\n}\n\nprivate static void f1(){\n   new Object() {\n       final int x = 5;\n       protected void finalize() {\n           System.out.println(\"Finalized\");\n       }\n   };\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-130",
+    "diff_stats": null
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    if (_rootElementIsArray || ((ToXmlGenerator) jgen).isEnabled(Feature.WRITE_ROOT_VALUE_AS_ARRAY)) {\n        _rootAsArray(jgen, ROOT_NAME_FOR_NULL);\n    } else {\n        jgen.writeStartObject();\n        jgen.writeEndObject();\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    //    configured root name...\n    String confName = null;\n    \n    if (withRootName != null && !withRootName.isEmpty()) {\n       confName = withRootName;\n    } else if (jgen instanceof ToXmlGenerator){\n       confName = _rootNameFromConfig();\n    }  \n         \n    if (confName == null) return;\n          \n     ((ToXmlGenerator) jgen).setNextRootName(new com.fasterxml.jackson.dataformat.xml.util.QName(confName));\n    \n    super.serializeValue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    \n    String configRoot = (_config != null && _config.isEnabled(Feature.WRITE_ROOT_VALUE)) ? _config.getRootName() : null;\n    boolean setDefaultRoot = false;\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    //    configured root name...\n    if ((jgen instanceof ToXmlGenerator) ) {\n        if(configRoot != null && configRoot.length() > 0){\n            _initWithRootName((ToXmlGenerator) jgen, configRoot);\n        } else {\n            setDefaultRoot  = true;\n          \n            \n        }\n    }else{\n          setDefaultRoot  = true;  \n    }\n    if(setDefaultRoot){\n       _initWithRootName((ToXmlGenerator) jgen, ROOT_NAME_FOR_NULL);\n        \n    }\n  \n    super.serializeValue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    //    configured root name...\n    if (_rootNameForNull != null) {\n        if (jgen instanceof ToXmlGenerator) {\n            _initWithRootName((ToXmlGenerator) jgen, _rootNameForNull);\n        }\n        super.serializeValue(jgen, null);\n    } else {\n        if (jgen instanceof ToXmlGenerator) {\n            ((ToXmlGenerator)jgen).setNextIsEmptyElement();\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    String rootName = \"\";\n    if (_rootNameFromConfig() != null) {\n        rootName = _rootNameFromConfig();\n    } else {\n        rootName = ROOT_NAME_FOR_NULL;\n    }\n    \n    if (jgen instanceof ToXmlGenerator) {\n        _initWithRootName((ToXmlGenerator) jgen, rootName);\n    }\n    super.serializeValue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serizealizerxmlnull( JsonGenerator jgen) throwsIOException\n{\n    if (jgen instanceof Toxmlgenerator) {\n        _initwithrootname((toxmlgenerator) jgen,ROOT_namefornull);\n    }\n    super.serizealizervalue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serizealizexmlnull( Jsongenerator jgen) throwIOException\n{\n    if (jgen instanceof Toxmlgenerator) {\n        _initwithrootname((toxmlgenerator) jgen);\n    }\n    super.serizealizevalue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serizeitlizer( JsonSerializerContext serizeitlizerContext )\n\t{ _initWith RootName( serizeitlizerContext ); }\n protected void _serizeitlizer( JsonSerializerContext serizeitlizerContext , String rootName )\n\t{ _initWith rootName( serizeitlizerContext ); }\n protected void _initWith rootName( JsonSerializerContext serizeitlizerContext )\n\t{ _initWith rootName( serizeitlizerContext , _rootNameFromConfig()); }\n protected void _initWith rootName( JsonSerializerContext serizeitlizerContext , String rootName )\n\t{ super. _initWith rootName( serizeitlizerContext , rootName ); }\n protected String _rootNameFromConfig()\n\t{ String ret = _config().getString( config().ROOT_\u540d\u79f0 ); return (ret == null ? null : ret.isEmpty() ? null : ret ); }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    //    configured root name...\n    if (_rootElementName != null && jgen instanceof ToXmlGenerator) {\n        ((ToXmlGenerator) jgen).setRootElementName(_rootElementName);\n    } else {\n       _initWithRootName((ToXmlGenerator) jgen, ROOT_NAME_FOR_NULL);\n    }\n    super.serializeValue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void _serializeXmlNull(JsonGenerator jgen) throws IOException\n{\n    // 14-Nov-2016, tatu: As per [dataformat-xml#213], we may have explicitly\n    //    configured root name...\n    String root = _config != null ? _config().getRootNameForNull() : null;\n    if ((jgen instanceof ToXmlGenerator) && root!=null) {\n        _initWithRootName((ToXmlGenerator) jgen, root);\n    } else if(jgen instanceof ToXmlGenerator){\n        _initWithRootName((ToXmlGenerator) jgen, ROOT_NAME_FOR_NULL);\n    }\n    \n    super.serializeValue(jgen, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonXml-4",
+    "diff_stats": null
+  }
+]

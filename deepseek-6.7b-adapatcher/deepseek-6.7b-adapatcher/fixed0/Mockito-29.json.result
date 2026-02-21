@@ -1,0 +1,147 @@
+[
+  {
+    "patch_code": "@Override\npublic void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    description.appendValue(wanted);\n    appendQuoting(description);\n    description.appendText(\")\");\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithChar",
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithObject",
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithString"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    if (wanted != null){\n        wanted.describeTo(description);    \n    } else {\n       description.appendText(\"null\"); \n    }\n    description.appendText(\")\");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    if(wanted != null){\n        wanted.describeTo(description);\n    }\n    appendQuoting(description);\n    description.appendText(\")\");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    description.appendValue(wanted); \n    appendQuoting(description);\n    description.appendText(\")\");\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithChar",
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithObject",
+        "org.mockito.internal.matchers.MatchersToStringTest::sameToStringWithString"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    try {\n        description.appendText(wanted.toString());\n    } catch (NullPointerException e){\n      description.appendText(\"null\");  \n    }finally{\n     appendQuoting(description);\n    }\n    description.appendText(\")\");\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 7,
+      "deleted_lines": 2,
+      "total_changed_lines": 9,
+      "added_tokens": 38,
+      "deleted_tokens": 16,
+      "total_changed_tokens": 54,
+      "edit_distance": 113,
+      "edit_similarity": 67.25,
+      "norm_edit_distance": 0.3275,
+      "norm_edit_distance_pct": 32.75,
+      "buggy_length": 232,
+      "fix_length": 345,
+      "preserved_ratio": 41.67
+    }
+  },
+  {
+    "patch_code": "public void describeTo( final StringBuilder sb ) {\n    sb.append(\" same(\");\n   appendQuitting(sb);\n    sb.append(wanted. toString());\n   appendQuitting(sb);\n    sb.append(\")\");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo( final org.apache.logging.LoggingInterceptor. Summary description ) {\n    description.appendText(\" same(\");\n   appendQuizing( description );\n    description.appendText( wanted.toString() );\n   appendQuizing( description );\n    description.appendText(\") \");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo( final org.apache.logging.LoggingService ds ) {\n    ds.appendText(\" same(\");\n   appendQuitting( ds );\n    ds.appendText( wanted. toString());\n   appendQuitting( ds );\n    ds.appendText(\") \");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description, wanted.toString(), true);\n    description.appendText(\")\");\n}\nprivate static void appendQuoting(Description description, String text, boolean quoute){\n        if (quoute){\n            description.appendText(\"\\\"\");\n        }\n        description.appendText(text);\n        if (quoute){\n            description.appendText(\"\\\"\");\n        }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.mockitousage.bugs.NPEWithCertainMatchersTest::shouldNotThrowNPEWhenNullPassedToSame"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void describeTo(Description description) {\n    description.appendText(\"same(\");\n    appendQuoting(description);\n    if (null != wanted && null != unwanted){\n        description.appendText(wanted.toString());\n    }else {\n        description.appendText(\"null\");\n    } \n    appendQuoting(description);\n    description.appendText(\")\");\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Mockito-29",
+    "diff_stats": null
+  }
+]

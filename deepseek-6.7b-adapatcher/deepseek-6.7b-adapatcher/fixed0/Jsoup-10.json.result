@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (!\"\".equals(relUrl) && !hasAttr(attributeKey)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        URL base;\n        try {\n            try {\n                base = new URL(baseUri);\n            } catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n                URL abs = new URL(relUrl);\n                return abs.toExternalForm();\n            }\n            // workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired\n            URL abs = new URL(base, relUrl);\n            return abs.toExternalForm();\n        } catch (MalformedURLException e) {\n            return \"\";\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.nodes.NodeTest::absHandlesRelativeQuery"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n    \n    String relUrl = attr(attributeKey);\n    if(!hasAttr(attributeKey)){\n       throw new UnsupportedOperationException(\"Attribute does not exist in node \"+this.nodeName()); \n    }else{\n         if(relUrl.startsWith(\"#\")){\n             Document ownerDoc = this.ownerDocument();\n              Element element  = ownerDoc.getElementById(relUrl.substring(1));\n               if(element!=null){\n                  relUrl = element.attr(\"href\");\n               }\n         }else if(relUrl.startsWith(\"/\")||relUrl.startsWith(\"?\")){\n             URL base;\n             try {\n                 base =  new URL(baseUri);\n             }catch(MalformedURLException e){\n                 return null;\n             }\n             return new URL(base,relUrl).toString();\n         }else if(relUrl.startsWith(\"?\")){\n             URL base;\n             int qIndex = baseUri.indexOf('?');\n             if(qIndex > -1){\n                 baseUri = baseUri.substring(0,qIndex);\n             }\n             try {\n                 base =  new URL(baseUri);\n             }catch(MalformedURLException e){\n                 return null;\n             }\n             return new URL(base,relUrl).toString();\n         }\n      if(relUrl.startsWith(\".\")){\n          return \"error\";\n          \n     }else if(relUrl.startsWith(\"..\")){\n         int cIndex = baseUri.lastIndexOf('/');\n          if(cIndex < -1){\n              baseUri = \"/\"+relUrl.substring(2);\n          }else{\n               baseUri = baseUri.substring(0,cIndex);\n          }\n        \n    }else if(!relUrl.matches(\"^(https|http|ftp|mailto|javascript):.*$\")){\n        return \"error\";\n     }else {\n         return relUrl;\n      }\n    }\n    return relUrl;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (!hasAttr(attributeKey)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        if(!HtmlTreeBuilder.isAbsoluteUrl(relUrl)){\n        \ttry{\n        \t\t URL base = new URL(baseUri);\n    \t\t\t String fullPath= HtmlTreeBuilder.normalizeUrl(base+relUrl);\n    \t\t\t return fullPath;\n        \t}catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n            \treturn \"\";\n            }\n        }else{\n        \treturn relUrl;\n        }\n      \n    }\n}\n\npublic static boolean isAbsoluteUrl(String url) {\n    int indexOfDotDot =  url.indexOf(\"..\");\n    int indexOfSlashSlash = url.indexOf(\"//\");\n    if ((indexOfDotDot != -1 && indexOfDotDot < indexOfSlashSlash ) || indexOfSlashSlash == 0) {\n      return true;\n    }\n    if (url.startsWith(\"/\")) {\n        return true;\n    }\n    if (indexOfSlashSlash != -1 && indexOfSlashSlash < url.length()-3 && url.charAt(indexOfSlashSlash + 2)==':') {\n        return true;\n    }\n    return false;\n}\n\nprivate static String normalizeUrl(String input) {\n  URI uri;\n  try {\n    uri = new URI(input);\n    return uri.toASCIIString();\n  } catch (URISyntaxException e) {\n    throw new IllegalArgumentException(\"Input is not valid:\" + input);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n    \n    Validate.notEmpty(attributeKey);\n\n    Element e = this;\n    while(!e.tagName().equalsIgnoreCase(\"html\")){\n        String relUrl = e.attr(attributeKey);\n        if (!e.hasAttr(attributeKey)) {\n            \n            e = e.parent();\n            continue;\n        } else {\n            try {\n                URL base;\n                try {\n                    base = new URL(e.baseUri());\n                } catch (MalformedURLException ex) {\n                    \n                    URL abs = new URL(relUrl);\n                    return abs.toExternalForm();\n                }\n                \n                URL abs = new URL(base, relUrl);\n                return abs.toExternalForm();\n            } catch (MalformedURLException e1) {\n                \n                return \"\";\n            }\n        }\n        \n    }\n    return \"\";\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n     Validate.notEmpty(attributeKey);\n    String relUrl = attr(attributeKey);\n    if (!\"\".equals(relUrl)){\n         relUrl =  relUrl.startsWith(\"/\")? \"http://www.oschina.net\"+ relUrl : relUrl;\n    }else{\n       Element parent =  this.parent();\n      while (parent != null && !\"a\".equalsIgnoreCase(parent.tagName())){\n          relUrl = parent.absUrl(attributeKey);\n          parent  = parent.parent();\n      }\n    }\n    return relUrl;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absurl(String key) {\n    String rel url = key(key);\n    if (!hasKey(key)) {\n        return null; // nothing to makeabs with\n    } else {\n        url base;\n        try {\n            try {\n                base = new url(base URI);\n            } catch ( MalformedurlException e) {\n                // base is unsuitable but url may be abs on its own so try this\n                url abs = new url(rel url);\n                return abs.to external form();\n            }\n            // workaround: java resolves ' /path/ file + ? foo' to ' /path/? foo' not ' /path/ file? foo' as wanted\n            url abs = new url(base, rel url);\n            return abs.to external form();\n        } catch ( malformedurlException e) {\n            return null;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absurl(String key) {\n    String relurl = this.abs\u5c5e\u6027(key);\n    if (!this.has\u5c5e\u6027(key)) {\n        return null;\n    } else {\n        try {\n            url base = new url(base uri);\n            url abs = new url(base, relurl);\n            return abs.toexternform();\n        } catch ( MalformedurlException e ) {\n            return null;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String abs url(String absstr) {\n    validate.not empty(absstr);\n\n    String relurl = eval(absstr);\n    if (has att(absstr)) {\n        return eval(absstr);\n    } else {\n        try {\n            url base = new url(base URI);\n            url abs = new url(base, relurl);\n            return abs. to external form();\n        } catch ( Malformed url exception e) {\n            return \"\";\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String absUrl(String attributeKey) {\n    Validate.notEmpty(attributeKey);\n\n    String relUrl = attr(attributeKey);\n    if (\"\".equals(relUrl)) {\n        return \"\"; // nothing to make absolute with\n    } else {\n        URL base;\n        try {\n            try {\n                base = new URL(baseUri());\n            } catch (MalformedURLException e) {\n                // the base is unsuitable, but the attribute may be abs on its own, so try that\n                URL abs = new URL(relUrl);\n                return abs.toExternalForm();\n            }\n            // workaround: java resolves '//path/file + ?foo' to '//path/?foo', not '//path/file?foo' as desired\n            URL abs = new URL(base, relUrl);\n            return abs.toExternalForm();\n        } catch (MalformedURLException e) {\n            return \"\";\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.nodes.NodeTest::absHandlesRelativeQuery"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class HelloWorld {\n    public static void main(String[] args) throws Exception {\n         Document doc = Jsoup.connect(\"http://www.oschina.net/bbs/thread/12975\").timeout(5 * 1000).get();\n        Elements es = doc.select(\"a[href]\");\n        for(Iterator it = es.iterator();it.hasNext();){\n           Element e = (Element) it.next();\n        System.out.println(e.absUrl(\"href\"));\n        }\n    \n\t}\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-10",
+    "diff_stats": null
+  }
+]

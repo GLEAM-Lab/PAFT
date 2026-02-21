@@ -1,0 +1,128 @@
+[
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  List<Node> children = node.children();\n  int numChildren = children.size();\n  if (numChildren == 0) {\n    throw new IllegalStateException(\"Expected at least one child\");\n  } else if (numChildren > 1) {\n    // Note: It could be more complicated than this.  See comments in the spec for `.`.\n    // Here we just consider flat object literals for safety checks.\n    return false;\n  }\n  \n  Node firstChild = children.get(0);\n  if (!firstChild.isName() || !isNameAssignedTo(firstChild.getString(), replacement)) {\n    return false;\n  }\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n  \n  if(!node.hasChildren() || !node.children().next().isName()){\n      return true;\n  }\n    \n  Node tempNode= node.children().next();\n  while(tempNode!=null&& tempNode.hasParent()&& tempNode.parent().hasNextSibling()){\n       tempNode=  tempNode.parent().nextSibling();\n       if(tempNode!=null&& tempNode.toString().equals(\"=\") ){\n           if (replacement instanceof VariableHolder) {\n            String name = ((VariableHolder) replacement).getName();\n            return name != null && name.endsWith(\".parent\");\n        }else{\n             return false;\n         }\n       }\n  }\n\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  node = node.getFirstChild();\n  \n  if (!isNameOrEmpty(node)){\n        String nameOrEmpty = node.getString();\n        \n        Preconditions.checkNotNull(nameOrEmpty);\n    \n            int end = nameOrEmpty.indexOf('.');\n          if (end >= 0) {\n              String variableName = nameOrEmpty.substring(0, end);\n            \n              if (variableMap.containsKey(variableName)) {\n                  VarType typeOfVariable = variableMap.get(variableName).getType();\n                if (typeOfVariable == null || typeOfVariable.isAnyFunction() ){\n                    // Ignore this assignment since we don't want to change global variables.\n                    return false;\n                } else {\n                    \n                    typeOfVariable = resolveIfUndefined(typeOfVariable);\n                \n                    Preconditions.checkState(typeOfVariable != null,\"Unresolved type\");\n                \n                        String remainingPropertiesPath = nameOrEmpty.substring(end + 1);\n                      \n                        if(!remainingPropertiesPath.isEmpty())\n                      {\n                        \n                          if (resolvePropertyAccessIncludingChainLinksCalls(replacement, remainingPropertiesPath)!= null)\n                            return false;\n                        }\n                \n                }\n              \n          }\n          \n       }\n      \n    return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  \n  Preconditions.checkArgument(node.isGetProp());\n  \n  Node child = node.getFirstChild();\n\n  if (!child.isName() || !isNameAssignedTo(child.getString(), replacement)) {\n    return true;\n  }\n    \n  return false;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.ExploitAssignsTest::testIssue1017"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean isSafeReplacement(Node node, Node replacement) {\n        // No checks are needed for simple names.\n        if (node.isName()) {\n            return true;\n        }\n        Preconditions.checkArgument(node.isGetProp());\n    \n        Node child = node.getFirstChild();\n        if (child != null && child.isName()\n                && isNameAssignedTo(child.getString(), replacement)) {\n            return false;\n        }\n    \n        return true;\n    }",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.ExploitAssignsTest::testIssue1017"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacing(Node node,Node replacing){\n  if (!node.isGetprop()) {return true; }\n  node = node.getFirstchild();\n  if (!node.isName()) {return true; }\n  String name = node.getString();\n  if (!isNameAssignedTo(name, replacing)) {return false; }\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacingAssigns(Node node,Node node1){\n  if(node.isGetprop()) {\n    node = node.getFirstchild();\n  }\n  if(node.isName()) {\n    String name = node.getString();\n    if(isNameAssignedto(name, node1)) {\n      return false;\n    }\n  }\nreturn true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacingAssigns(Node node) {\n  node = node.getFirst child();\n  while null !== node:\n    if node is getprop:\n      node = node.get first child();\n      if node is name:\n        return true;\n      else if node is getprop:\n        node = node.get first child();\n        if node is name:\n          return true;\n    node = node.get next sibling();\n  return false;\n}\nprivate boolean is pad safe replacingAssigns(Node node) {\n  node = node.get first child();\n  while null !== node:\n    if node is getprop:\n      node = node.get first child();\n      if node is name:\n        return isPad safe replacingAssigns(node);\n      else if node is getprop:\n        node = node.get first child();\n        if node is name:\n          return isPad safe replacingAssigns(node);\n    node = node.get next sibling();\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n  Node firstChild = node.getFirstChild();\n  \n  /* Checking here */\n  if ((firstChild.isName() || firstChild instanceof Identifier)\n       && isNameAssignedTo(firstChild.getString(), replacement)) {\n    \n    return false;\n  }\n  while (!node.equals(replacement)){\n    node = node.getNext();\n    if((node.isName()|| node instanceof Identifier)&&\n            isNameAssignedTo(node.getString(),replacement)){\n        return false;\n    }\n  }\n\n  return true;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isSafeReplacement(Node node, Node replacement) {\n  // No checks are needed for simple names.\n  if (node.isName()) {\n    return true;\n  }\n  Preconditions.checkArgument(node.isGetProp());\n\n    node = node.getFirstChild();\n  if (!node.isName() || !isNameAssignedTo(node.getString(), replacement)) {\n    return true;\n  }\n\n  return false;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.ExploitAssignsTest::testIssue1017"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-124",
+    "diff_stats": null
+  }
+]

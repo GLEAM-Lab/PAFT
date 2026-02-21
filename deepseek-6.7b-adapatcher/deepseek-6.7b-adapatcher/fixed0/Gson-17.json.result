@@ -1,0 +1,132 @@
+[
+  {
+    "patch_code": "public Date read(JsonReader in) throws IOException {\n  if (in.peek() != JsonToken.NULL && in.peek() != JsonToken.STRING) {\n    throw new JsonParseException(\"The date should be either null or a string value\");\n  }\n  if (in.peek() == JsonToken.NULL) {\n      in.nextNull();\n      return null;\n  }\n  String str = in.nextString();\n  Date date = deserializeToDate(str);\n  if (dateType == Date.class) {\n    return date;\n  } else if (dateType == Timestamp.class) {\n    return new Timestamp(date.getTime());\n  } else if (dateType == java.sql.Date.class) {\n    return new java.sql.Date(date.getTime());\n  } else {\n    // This must never happen: dateType is guarded in the primary constructor\n    throw new AssertionError();\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.DefaultDateTypeAdapterTest::testUnexpectedToken"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Date read(JsonReader in) throws IOException {\n  if (in.peek() == JsonToken.NULL) {\n      in.skipValue();\n      return null;\n  }\n  if (in.peek() != JsonToken.STRING) {\n    throw new JsonParseException(\"The date should be a string value\");\n  }\n  Date date = deserializeToDate(in.nextString());\n  if (dateType == Date.class) {\n    return date;\n  } else if (dateType == Timestamp.class) {\n    return new Timestamp(date.getTime());\n  } else if (dateType == java.sql.Date.class) {\n    return new java.sql.Date(date.getTime());\n  } else {\n    // This must never happen: dateType is guarded in the primary constructor\n    throw new AssertionError();\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.DefaultDateTypeAdapterTest::testUnexpectedToken"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Date read(JsonReader in) throws IOException {\n  if (in.peek() != JsonToken.NULL && in.peek() != JsonToken.STRING) {\n    throw new JsonParseException(\"The date should either be a NULL or a string value\");\n  }\n  if (in.peek() == JsonToken.NULL){\n      in.skipValue();\n      return null;\n  }else{\n      String dateString = in.nextString();\n      Date date = deserializeToDate(dateString);\n      if (dateType == Date.class) {\n          return date;\n      } else if (dateType == Timestamp.class) {\n          return new Timestamp(date.getTime());\n      } else if (dateType == java.sql.Date.class) {\n          return new java.sql.Date(date.getTime());\n      } else {\n        // This must never happen: dateType is guarded in the primary constructor\n        throw new AssertionError();\n      }\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.DefaultDateTypeAdapterTest::testUnexpectedToken"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "@Override\npublic Date read(JsonReader in) throws IOException {\n  if (in.peek() == JsonToken.NULL) {\n      in.nextNull();\n      return null;\n  }\n  String s = in.nextString();\n  try {\n    if (s == null || s.trim().isEmpty()) {\n        return null;\n    }\n    return deserializeToDate(s);\n  } catch (RuntimeException e) {\n      throw new JsonSyntaxException(e);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Date read(JsonReader in) throws IOException {\n  if (in.peek() != JsonToken.STRING && in.peek() != JsonToken.NULL){\n      throw new JsonParseException(\"The date should be a string or Null value\");\n  }  \n  if(in.peek()== JsonToken.NULL){\n        in.skipValue();\n        return null;\n  }\n  String str_date = in.nextString();\n  Date date = deserializeToDate(str_date);\n  if (dateType == Date.class) {\n    return date;\n  } else if (dateType == Timestamp.class) {\n    return new Timestamp(date.getTime());\n  } else if (dateType == java.sql.Date.class) {\n    return new java.sql.Date(date.getTime());\n  } else {\n    // This must never happen: dateType is guarded in the primary constructor\n    throw new AssertionError();\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.DefaultDateTypeAdapterTest::testUnexpectedToken"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public final classDefaultDateType\u9002 adapater \n    private final Class<T> dateType;\n    \n    public defaultdateadapter(Class< T> dateType){this.dateType = dateType;}\n    @Override\n    public T read( Json Reader in) {\n      if (in. peek () != JsonToken. STRING) {\n        throw new Json parse exception(\"\u65e5\u671f\u5e94\u4e3a string value\");\n      }\n      date date = deserializepdate(in.nextString());\n      if (dateType == date.class) {return (T) date;\n      } else if (dateType ==timestamp.class) {return (T)newtimestamp(date.gettime());\n      } else if (dateType == java.sql.date.class) {return (T)new java.sql.date(date.gettime());\n      } else {\n        //\u6b64Must never happen: dateType guarded in primaryConstructor\n        throw new assertionerror();\n      }\n    }\n    private date deserializepdate(String s) {\n      try {return dateformat.getdate().deserializer(). deserialize(s);\n      } catch (IlArgumentException e) {return null;\n      }\n    }\n    \n    @Override\n    public void write( Json writing out, T date) {out.writeString(date.tostring());}\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public final class defaultdateadapter : com.google.gson.DefaultDateTypeAd adapater{\n public defaultdateadapter( Class<T> dateType) { super(dateType); }\n @Override\n public T read( Json Reader in) {\n  if (in. peek() != \n     throw new Json parse exception(\"The date should be a string value\");\n  String date =in. nextString();\n  T result = deserializetoddate(date);\n  if (result == null) {\n   throw new Json parse exception(\"The date should be a valid date or null\") ;\n  }\n  return result;\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public final classDefaultDateType\u9002 adapater: AbstractGsonTypeadapter<Date> {\n  private final Class<T> dateType;\n  public defaultDateType adapater(Class<T> dateType) {\n    this.dateType = dateType;\n  }\n @Override\npublic T read( Json Readerin) throwsIOException {\n  if (in. peek() != JsonToken. STRING) {\n    throw new Json parse exception(\"\u65e5\u671f\u5e94\u4e3a string\u503c\");\n  }\n  String string = in. nextString();\n  if (!string.isEmpty()) {\n    return deserializertodate(string);\n  }\n  else { return null; }\n}\n private T deserializertodate(String string) throwsIOException {\n  T result = deserializerTo date(string);\n  if (result == null && !dateType.isAssignableFrom(date.class)) {\n    throw new Json parse exception(\"\u65e5\u671f\u683c\u5f0f\u4e0d correct\");\n  }\n  return result;\n}\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import com.google.gson.*;\nimport java.lang.reflect.Type;\nimport java.util.Date;\n\npublic class NullSafeDateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date>{\n  private final Type dateType;\n  \n  public NullSafeDateTypeAdapter(Type dateType){\n      this.dateType = dateType;\n  }\n  \n  @Override\n  public synchronized JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {\n        return new JsonPrimitive(context.serialize(src));\n  }\n      \n    \n  @Override\n  public synchronized Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {\n          return new Date(json.getAsLong());\n      }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Date read(JsonReader in) throws IOException {\n  if (in.peek() != JsonToken.NULL && in.peek() != JsonToken.STRING) {\n      throw new JsonParseException(\"The date should be either NULL or a string value\");\n  }\n  \n  // Handling null values gracefully, as per JSR353 standard https://jcp.org/en/jsr/detail?id=353\n  if (in.peek() == JsonToken.NULL) {\n     in.nextNull();\n     return null;\n  }\n  String stringValue = in.nextString();\n  Date date = deserializeToDate(stringValue);\n  if (dateType == Date.class) {\n    return date;\n  } else if (dateType == Timestamp.class) {\n    return new Timestamp(date.getTime());\n  } else if (dateType == java.sql.Date.class) {\n    return new java.sql.Date(date.getTime());\n  } else {\n    // This must never happen: dateType is guarded in the primary constructor\n    throw new AssertionError();\n  }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.gson.DefaultDateTypeAdapterTest::testUnexpectedToken"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Gson-17",
+    "diff_stats": null
+  }
+]

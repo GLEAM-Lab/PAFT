@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "import java.lang.*;\npublic class Main {\n   public static void main(String[] args){\n      Vector3D v1=new Vector3D(9070467121.0, 4535233560.0, 1);\n      Vector3D v2=new Vector3D(9070467123.0, 4535233561.0, 1);\n      Vector3D c;\n      c= Vector3D.subtract(v1, Vector3D.multiply(v2,Vector3D.dotProduct(v1,v2)/Vector3D.normSquared(v2)));\n     System.out.print(\"{ \");\n     System.out.printf(\"%+e\",c.getX());\n     System.out.print(\",\");\n     System.out.printf(\"%+e\",c.getY());\n     System.out.print(\",\");\n     System.out.printf(\"%+e\",c.getZ());\n     System.out.print(\" }\\n\");\n   }\n}\nclass Vector3D{\n   private double x;\n   private double y;\n   private double z;\n   public Vector3D(double xx, double yy, double zz){\n      this.x =xx;\n      this.y =yy;\n      this.z =zz;\n   }\n   public double getX(){\n      return x;\n   }\n   public double getY(){\n      return y;\n   }\n   public double getZ(){\n      return z;\n   }\n\n   /**\n    * Add two vectors\n    */\n   public static Vector3D add(Vector3D a, Vector3D b){\n      return new Vector3D(a.x +b.x , a.y +b.y , a.z +b.z);\n   }\n\n   /**\n    * Multiply vector by scalar s\n    */\n   public static Vector3D multiply(Vector3D v, double s){\n      return new Vector3D(v.x*s , v.y*s , v.z*s);\n   }\n\n   /**\n    * Dot product between two vectors\n    */\n   public static double dotProduct(Vector3D a, Vector3D b){\n      return a.x*b.x +a.y*b.y +a.z*b.z ;\n   }\n\n   /**\n    * Norm squared of vector\n    */\n   public static double normSquared(Vector3D v){\n      return dotProduct(v,v);\n   }\n\n   /**\n    * Subtract vector b from a\n    */\n   public static Vector3D subtract(Vector3D a, Vector3D b){\n      return add(a,multiply(b,-1));\n   }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.math3.util.*;\nimport java.lang.Math;\n\npublic static Vector3D crossProduct(final Vector3D v1, final Vector3D v2) {\n    \n    double x = v1.getX();\n    double y = v1.getY();\n    double z = v1.getZ();\n    \n    double tx = v2.getX();\n    double ty = v2.getY();\n    double tz = v2.getZ();\n\n  \tdouble absx = Math.abs(x);\n  \tdouble absy = Math.abs(y);\n  \tdouble absz = Math.abs(z);\n\n\t// estimate rho without loss of precision\n\tdouble ax = Decimal64.valueOf(absx).rounded();\n\tdouble ay = Decimal64.valueOf(absy).rounded();\n\tdouble az = Decimal64.valueOf(absz).rounded();\n\t\n\tdouble mn = Math.min(ax*ay, Math.min(ax*az, ay*az));\n\tdouble pwr = Double.longBitsToDouble(((Decimal64) Double.doubleToLongBits(mn)).round());\n\t\n\tdouble st = 1 + pwr;\n\tst *= st;\n\t\n\tdouble rhx = ax * st;\n\tdouble rhy = ay * st;\n\tdouble rhz = az * st;\n\t\t\n\tdouble dpdxa_bya_bza = ax*(rhx/(Double.longBitsToDouble(((Decimal64)Double.doubleToLongBits(rhx*rhx + rhy*rhy + rhz*rhz)).round())))/pwr;\n    \n    return new Vector3D(ty*dpdxa_bya_bza - tz*(rhx*tpdy_bpzz),tz*(rhx*tdpx_bpzz) - tx*(rhx*tpdy_bpzz),tx*(rhx*tpx_bpy)) ;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.math3.util.FastMath;\n\npublic class Vector3D {\n   public static Vector3D crossProduct(final Vector3D v1, final Vector3D v2) {\n       double x=v1.getY()*v2.getZ()-v1.getZ()*v2.getY();\n        double y=v1.getZ()*v2.getX()-v1.getX()*v2.getZ();\n        double z=v1.getX()*v2.getY()-v1.getY()*v2.getX();\n        \n        int k= 1;\n        if(FastMath.abs((double)((float)x))<1e-5){\n            k=0;\n        }\n        if(FastMath.abs((double)((float)y))<1e-5){\n             k=0;\n        }\n        if(FastMath.abs((double)((float)z))<1e-5){\n             k=0;\n        }\n         \n        while(k-->0 ){\n            FastMath.scalb(FastMath.ulp(x),FastMath.ceil(FastMath.log1p(FastMath.ulp(x)*1.0f)));\n            FastMath.scalb(FastMath.ulp(y),FastMath.ceil(FastMath.log1p(FastMath.ulp(y)*1.0f)));\n            FastMath.scalb(FastMath.ulp(z),FastMath.ceil(FastMath.log1p(FastMath.ulp(z)*1.0f)));\n        }\n        \n        return new Vector3D(x,y,z);\n    }\n\n    private double getX() {\n           // TODO Auto-generated method stub\n      return 0;\n     }\n\n    private double getY() {\n       // TODO Auto-generated method stub\n      return 0;\n     }\n\n    private double getZ() {\n       // TODO Auto-generated method stub\n      return 0;\n     }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.lang.*;\n\nclass Main\n{\n    \n\tpublic static void main(String[] args)\n\t{\n        Vector3D v1 = new Vector3D(9070467121.0, 4535233560.0, 1);\n        Vector3D v2 = new Vector3D(9070467123.0, 4535233561.0, 1);\n\t\tdouble x = ((v1.getY()*v2.getZ())-(v1.getZ()*v2.getY()));\n        double y = ((v1.getZ()*v2.getX())-(v1.getX()*v2.getZ()));\n        double z = ((v1.getX()*v2.getY())-(v1.getY()*v2.getX()));\n        System.out.printf(\"%.0f \", x);\n        System.out.printf(\"%.0f \", y);\n        System.out.printf(\"%.0f \", z);\n\t}\n\n}\n\n class Vector3D {\n      private double x;\n      private double y;\n      private double z;\n  \n       public Vector3D(double x, double y, double z){\n           this.x=x;\n           this.y=y;\n           this.z=z;\n       }\n      public double getX(){\n          return x;\n      }\n      public double getY(){\n          return y;\n      }\n      public double getZ(){\n          return z;\n      }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.lang.Math;\n\npublic class Main {\n  public static void main(String[] args) {\n    Vector3D v1 = new Vector3D(9070467121.0, 4535233560.0, 1);\n    Vector3D v2 = new Vector3D(9070467123.0, 4535233561.0, 1);\n    \n    Vector3D cross = crossProduct(v1, v2);\n    \n    System.out.println(\"{\" + cross.getX() + \", \" + cross.getY() + \", \" + cross.getZ() + \"}\");\n  }\n  \n  public static Vector3D crossProduct(final Vector3D v1, final Vector3D v2) {\n      \n      double absX = Math.abs(v1.getX());\n      double absY = Math.abs(v1.getY());\n      double absZ = Math.abs(v1.getZ());\n      \n      int signX = 1;\n      int signY = 1;\n      int signZ = 1;\n      \n      if (absX < absY && absX < absZ) {\n          signX *= -1;\n      } else if (absY < absZ) {\n          signY *= -1;\n      } else {\n          signZ *= -1;\n      }\n      \n      double x = v1.getY() * v2.getZ() - v1.getZ() * v2.getY();\n      double y = v1.getZ() * v2.getX() - v1.getX() * v2.getZ();\n      double z = v1.getX() * v2.getY() - v1.getY() * v2.getX();\n      \n      return new Vector3D(signX * x, signY * y, signZ * z);\n  }\n  \n  private static class Vector3D {\n    private double x;\n    private double y;\n    private double z;\n\n    public Vector3D(double x, double y, double z) {\n      this.x = x;\n      this.y = y;\n      this.z = z;\n    }\n\n    public double getX() {\n      return x;\n    }\n\n    public double getY() {\n      return y;\n    }\n\n    public double getZ() {\n      return z;\n    }\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static final double EPS = 1e-12;\n...\nprivate static double divSafe( double numerator, double denom ) {\n    double div = numerator / denom;\n    if (denom != 0 && div * denom < EPS * (denom + numerator)) {\n        return EPS * denom + numerator;\n    } else {\n        return div;\n    }\n}\n...\npublic static final double EPS = 1e-12;\n...\npublic static vector3D cross product( vector3D v1, vector3D v2 ) {\n    double x = div safe(v1.y * v2.z - v1.z * v2.y, v2.z * v2.z);\n    double y = div safe(v1.z * v2.x - v1.x * v2.z, v2.x * v2.x);\n    double z = div safe(v1.x * v2.y - v1.y * v2.x, v2.y * v2.y);\n    return new vector3D(x, y, z);\n}\n...\npublic static vector3D cross product( vector3D v1, vector3D v2 ) {\n    double x = div safe(v1.y * v2.z - v1.z * v2.y, v2.z * v2.z + EPS);\n    double y = div safe(v1.z * v2.x - v1.x * v2.z, v2.x * v2.x + EPS);\n    double z = div safe(v1.x * v2.y - v1.y * v2.x, v2.y * v2.y + EPS);\n    return new vector3D(x, y, z);\n}\n...",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static final double EPS = 1e-8;\n\npublic static boolean equalWithinepsilon( double a, double b ) {\n return a < b + EPS && a > b - EPS;\n}\n\npublic static boolean almost equal( double a, double b ) {\n return equalWithinepsilon(a, b) || equalWithinepsilon(b, a) ;\n}\n\npublic static boolean almost equal( double[] array ) {\n double first = array[0];\n for( int i = 1 ; i < array.length ; i++ ) {\n if !( almost equal(first, array[i]) ) return false;\n }\n return true;\n}\n\npublic static void main( String[] arg ) {\n double[] array = new double[] {9070467121.0, 4535233560.0, 1};\n double[] array2 = new double[] {9070467123.0, 4535233561.0, 1};\n if !( almost equal(array2) ) {\n array[2] = array[0] * array2[1 - 2] - array[1] * array2[0];\n }\n System.out.print(array[0], array[1], array[2].toString());\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static vector3D cross\u4ea7\u54c1( final vector3D v1, final vector3D v2) {\n\n    double x = v1.y * v2.z - v1.z * v2.y;\n    double y = v1.z * v2.x - v1.x * v2.z;\n    double z = v1.x * v2.y - v1.y * v2.x;\n\n    return new vector3D(x, y, z);\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.math.util.*;\n\npublic static Vector3D crossProduct(final Vector3D v1, final Vector3D v2){\n   double x = v1.getY()*v2.getZ()-v1.getZ()*v2.getY();\n   double y = v1.getZ()*v2.getX()-v1.getX()*v2.getZ();\n   double z = v1.getX()*v2.getY()-v1.getY()*v2.getX();\n    \n   return new Vector3D(FastMath.roundToLong(x), FastMath.roundToLong(y), FastMath.roundToLong(z));\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.lang.Math;\npublic static Vector3D crossProduct(final Vector3D v1, final Vector3D v2) {\ndouble x=v1.getX(),y=v1.getY(),z=v1.getZ();\n    double x0=v2.getX(),y0=v2.getY(),z0=v2.getZ();\n    \n    double rho = 0.5+0.5*((x*x0 + y*y0)/(x0*x00+y0*y0+z0*z0)-1e-7);\n    \n    Vector3D vs=new Vector3D(-rho*x0,-rho*y0,-rho*z0);\n    \n    return Vector3D.add(vs,v2).rotateX(y*z0,x*z-y*x0,y*y0).subtract(v1);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-55",
+    "diff_stats": null
+  }
+]

@@ -1,0 +1,141 @@
+[
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat == df) {\n        return this;\n    }\n    \n    // Repair: Do not override the TimeZone if it has been already set from before\n    TimeZone tzOrig = (_timeZone != null) ? new TimeZoneInfo(_timeZone).getTimeZone() : null;\n    TimeZone tzNew = (df == null) ? _timeZone : df.getTimeZone();\n    \n    if (!(tzOrig != null && tzNew != null && tzOrig.hasSameRules(tzNew))) {\n        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n                _typeResolverBuilder, df, _handlerInstantiator, _locale,\n                tzNew, _defaultBase64);\n    }\n    \n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class CorrectedClassSettings extends AbstractDeserializationContext implements Serializable {\n    \nprotected final transient DateFormat _dateFormat;\n    \n@Deprecated\npublic BaseSettings withDateFormat(DateFormat df) {\n    if (this._dateFormat != df) {\n        return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n                _typeResolverBuilder, df, _handlerInstantiator, getLocale(), _timeZone, _defaultBase64);\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat == df) {\n        return this;\n    }\n    \n    // Corrected line to remove TimeZone assignment from the if condition\n    return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n            _typeResolverBuilder, df, _handlerInstantiator, _locale,\n            _timeZone, _defaultBase64);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 2,
+      "total_changed_lines": 5,
+      "added_tokens": 17,
+      "deleted_tokens": 23,
+      "total_changed_tokens": 40,
+      "edit_distance": 64,
+      "edit_similarity": 85.08,
+      "norm_edit_distance": 0.1492,
+      "norm_edit_distance_pct": 14.92,
+      "buggy_length": 406,
+      "fix_length": 429,
+      "preserved_ratio": 70.0
+    }
+  },
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat == df) {\n        return this;\n    }\n    TimeZone tz = (df == null) ? _timeZone : df.getTimeZone();\n    if(!tz.equals(_timeZone)) return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n            _typeResolverBuilder, df, _handlerInstantiator, _locale,\n            tz, _defaultBase64);\n    else return this;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.TestConfig::testDateFormatConfig"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat == df) {\n        return this;\n    }\n    TimeZone tz = (df != null) ? df.getTimeZone() : _timeZone;\n    return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n            _typeResolverBuilder, df, _handlerInstantiator, _locale,\n            tz, _defaultBase64);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.fasterxml.jackson.databind.ser.TestConfig::testDateFormatConfig"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public base settings withdateformat(date format df) {\n    if _date format == df) {\n        return this;\n    }\n    time Zone tz = (df == null) ? _time Zone : df.getTimeZone();\n    return new base settings _class Introspector, _ annotation Introspector, _ visibility checker, _ property naming strategy, _ type Factory, _ type resolver Builder, df, _ handler instantiating, _ locale, tz, _ default base64);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public base settings with date format date format){\n    if _ dateformat == format){\n        return this;\n    }\n    TimeZone tz = (format == null) ? _ timeZone : format. get timeZone();\nreturn new base settings _ class introspector _ annotation introspector _ visibility checker _ property naming strategy _ type Factory _ type resolver Builder _ date format df, _ handler instantiating _ locale _ default base64);\n}}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public base settingsWithDateformat(date format){\n\t\treturn new base settings( _ Class Introspector, _ annotation Introspector, _ visibility checker, _ property naming strategy, _ type Factory, _ type resolver Builder, format, _ instantiatingHandler, _ locale, tz, _ default base64);\n\t}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat == df) {\n        return this;\n    }\n    TimeZone tz = (df != null) ? df.getTimeZone() : getDefaultTimeZone();\n    return new BaseSettings(_classIntrospector, _annotationIntrospector, _visibilityChecker, _propertyNamingStrategy, _typeFactory,\n            _typeResolverBuilder, df, _handlerInstantiator, _locale,\n            tz, _defaultBase64);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public BaseSettings withDateFormat(DateFormat df) {\n    if (_dateFormat != df) {\n        _dateFormat = df;\n        \n        // Resetting the timezone after setting the dateformat\n        if (df != null && df instanceof SimpleDateFormat){\n            ((SimpleDateFormat) df).setTimeZone(_timeZone==null ? TimeZone.getDefault(): _timeZone);\n        }    \n    } else {\n        return this;\n    }\n    return this;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JacksonDatabind-24",
+    "diff_stats": null
+  }
+]

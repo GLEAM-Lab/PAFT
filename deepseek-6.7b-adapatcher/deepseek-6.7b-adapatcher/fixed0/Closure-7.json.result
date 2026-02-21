@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (\"function\".equalsIgnoreCase(value)) {\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n      // Objects are restricted to \"Function\", subtypes are left\n      // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") ? type : null;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.ClosureReverseAbstractInterpreterTest::testGoogIsFunction2"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  String value = getValue();\n  if (\"function\".equalsIgnoreCase(value)){\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return !resultEqualsValue || ctorType.isSubtype(type) ? ctorType : null;\n  }else{\n    return matchesExpectation(\"object\") ? type : null;\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private boolean isEqualToAnyIn(Collection<JSType> candidates) {\n        for (JSType candidate : candidates) {\n            if (candidate instanceof ObjectType) {\n                if (result.equals(candidate.toString())) {\n                    return true;\n                }\n            }\n        }\n        return false;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (\"function\".equalsIgnoreCase(((JSRuntimeTypeOracle) value).getLiteral())){\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n      // Objects are restricted to \"Function\", subtypes are left\n      // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  String value = getValue();\n  if (value != null) {\n    if (value.equals(\"function\")) {\n      JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n      return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n        // Objects are restricted to \"Function\", subtypes are left\n        // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") ? type : null;\n  }\n  return null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.matches(\"object|function| boolean| string| number| object\")){\n    if (value.matches(\"function| boolean| string| number\")) {\n      return null;\n    }\n  }else if (!value.matches(\"object| function| boolean| string| number| object\")){\n    return null;\n  }\n  return matchingType ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.isEmpty()) {\n    return null;\n  }\n  if (value.\u7b49\u4e8e(\"function\")) {\n    JSType catorType = get Native type U2U_CONstructor_type;\n    return result\u7b49\u4e8evalue && catorType.isSubtype(type) ? catorType : null;\n      // objects are limited to \"function\"\n      // only filter out sub types of \"function\"\n  }\n  return MatchesExpected(\"object\") ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.isEmpty()) {\n    return null;\n  }\n  if (value.endsWith(\"function\") || value.endsWith(\"function*\") || value.endsWith(\"function&\") || value.endsWith(\"function&amp;\") ) {\n    JSType cctorType = get Native Type(U2U_CONstructor_ TYPE);\n    return resultEqualsValue && cctorType.isSubtype(type) ? cctorType : null;\n  }\n  return matches Expectation(\"object\") ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.equals(\"function\")) {\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return resultEqualsValue && ctorType.isSubtype(type) ? ctorType : null;\n      // Objects are restricted to \"Function\", subtypes are left\n      // Only filter out subtypes of \"function\"\n  }\n  return matchesExpectation(\"object\") && !getIsSubtype() ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public JSType caseObjectType(ObjectType type) {\n  if (value.equals(\"function\")) {\n    if (!resultEqualsValue && isPrototypeOf || !ctorInstance instanceof Function) {\n        return null;\n    }\n    JSType ctorType = getNativeType(U2U_CONSTRUCTOR_TYPE);\n    return ctorType.isSubtype(type) ? ctorType : null;\n  }\n  return matchesExpectation(\"object\") ? type : null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-7",
+    "diff_stats": null
+  }
+]

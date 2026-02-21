@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "protected BasePeriod(long duration) {\n    this(duration, DateTimeZone.UTC, null);\n    // bug [3264409]\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "/**\n * Repairs the incorrect Java code.\n */\nprotected BasePeriod(long duration) {\n    this(duration, DateTimeZone.getDefault(), null);\n    //repairing [3264409]\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected BasePeriod(long duration, Chronology chrono, Calendar cal) {\n    super(chrono == null ? DateTimeUtils.getInstantPart(cal) : durToInstant(duration), chrono == null ? Calendars.newBaseCalendar(null) : chrono);\n    if (chrono != null && DateTimeUtils.isLenient()) {\n        ChronoUtil.calendar().setTimeInMillis(getStartMillis());\n        int y = DateTimeUtils.decadeOfCentury(ChronoUtil.calendar()), m;\n        if (y >= 0) {\n            m = (int) ((ChronoUtil.calendar().getTimeInMillis() / MILLIS_IN_YEAR + 1) * 1e3f - 1970 * 1e3f) % 1e3i;\n        } else {\n            long ml = ~((Math.abs(y) >>> 3) * MILLIS_IN_DECADE + Math.abs(y) * MILLIS_IN_CENTURY_ALT);\n            m = (int) ((ml + DateTimeUtils.getDayOfYear(ChronoUtil.calendar())) * MILLIS_IN_DAY_INVERTED & ~mskYear[y]);\n        }\n        setField(MONTH_OF_YEAR, m);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static boolean isInvalidated;\npublic static void main(String[] args){\n       /* for (int i = 0 ; i <= 863 ; i++ ){\n            System.out.println(i*1000 );\n        }*/\n        Date date1=new Date();\n      //  long startime=  date1.getTime();\n        try {\n          Thread.sleep(500);\n        } catch (InterruptedException e) {\n            e.printStackTrace(); \n        }\n        Date date2=new Date();\n     long endtime=date2.getTime();\n    long startime=date1.getTime();\n       long ss=  endtime-startime;\n       System.out.println(ss);\n    \n  \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected BasePeriod(long duration) {\n    this(duration, DateTimeZone.UTC, null);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected basePeriod( long l ) {\n        this( l, null );\n        // fixed [3264409]\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected basePeriod(long milliseconds){\n     super( milliseconds, null, null );\n     // fixed [3264409]\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected basePeriod(long d) {\n    this(d, null, null);\n    //Fixed code by cameron\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected BasePeriod(long duration) {\n        this(duration, DateTimeZone.getDefault(), null);\n        // bug [3264409]\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected BasePeriod(long duration) {\n    this(duration, null, DateTimeUtils.getInstantField().range().getMaximum(), false);\n    // Repaired bug [3264409]\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Time-22",
+    "diff_stats": null
+  }
+]

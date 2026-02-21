@@ -1,0 +1,124 @@
+[
+  {
+    "patch_code": "private static class FunctionNameRenamer extends RenamingVisitor {\n  private int argumentIndex = 0;\n\n  @Override public String getNameForLocal(Variable node) {\n    return \"\" + (char) ('a' + argumentIndex++);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class Normalizer implements TraversalCallback{\n  public boolean shouldTraverse(NodeTraversal t, Node n){\n    return true;\n  }\n  public void doTraversal(NodeTraversal t, Node n){\n     if(n instanceof FunctionCall){\n       Expression functionNameExpression=((FunctionCall)n).getMethodExpr();\n       if(!(functionNameExpression instanceof Variable)){\n         throw new AssertionError(\"Not implemented\");\n       }else{\n         String variableName=((Variable)functionNameExpression).getName();\n         if(variableName.equals(\"arguments\")){\n           List<String> localsToRemove=new ArrayList<>();\n           for(Node child : t.children(n)){\n             if(child instanceof VariableDeclarationStatement){\n               Local variableDeclarationLocal=((VariableDeclarationStatement)child).getVariable().name;\n                              \n                              \n                            \n                  \n                 \n               \n                           \n                   \n                       \n                         \n                             \n                                        \n                                                      \n                                     \n                                                                         \n                                  \n                               \n                \n                          \n                    \n                          \n                              \n                        \n                   \n                                 \n                     \n                           \n                    \n                                         \n                                    \n                                          \n                                             \n                                       \n                                   \n\n                                         \n                                       \n                                           \n                                      \n                                    \n                                     \n                                     \n                               \n                                         \n                                            \n                                                  \n                                               \n       \n                              \n                  \n              \n\n        \n              \n  t.replace(n,EmptyStatement.INSTANCE);\n}\n         }\n       \n     }\n    }\n  }\n  @Override\n  public void afterTraversal(NodeTraversal t, Node n){}\n  private static final org.apache.commons.logging.Log log =\n  org.apache.commons.logging.LogFactory.getLog(Normalizer.class);\n  protected Compiler compiler;\n  protected AbstractAlgorithm pass;\n  protected AlgorithmSettings settings;\n  public Normalizer(Compiler compiler,AbstractAlgorithm pass, AlgorithmSettings settings){\n    super();\n    this.compiler=compiler;\n    this.pass=pass;\n    this.settings=settings;\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void process(Node externs, Node root) {\n  NodeTraversal.traverse(compiler, root, this);\n  if (MAKE_LOCAL_NAMES_UNIQUE) {\n    MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();\n    NodeTraversal t = new NodeTraversal(compiler, renamer);\n    t.traverseRoots(externs, root);\n  }\n  removeDuplicateDeclarations(root);\n  new PropogateConstantAnnotations(compiler, assertOnChange)\n      .process(externs, root);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "com.google.javascript.jscomp.CompilerRunnerTest::testIssue115"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "class Solution extends Object{\n    public static int getSum(int[] arr){\n        int sum = 0;\n        for (int i : arr){\n            sum += i;\n        }\n        return sum;\n    }\n    public static boolean isSquareful(int[] nums) {\n        Arrays.sort(nums);\n        Set<Integer> set = new HashSet<>();\n        for(int i = 0 ;i < nums.length - 1;i++){\n            if(set.contains(nums[i])) continue;\n            for(int j = i + 1;j < nums.length;j++){\n                if((int)Math.sqrt(nums[i] + nums[j]) * (int) Math.sqrt(nums[i]+ nums[j]) == nums[i] + nums[j]){\n                    set.add(nums[i]);\n                    set.add(nums[j]);\n                }\n                \n            }\n            \n        }\n        return set.size() != nums.length ? true : false;\n        \n    }\n    \n    public static int countQuadruplets(int[] nums) {\n        Map<String , Integer> map = new HashMap<>();\n        StringBuffer sb  =new StringBuffer();\n        int n = nums.length;\n        int count = 0;\n        for(int i = 0 ;i  <n -3;i++){\n            for(int j = i+1;j <n -2;j++){\n                for(int k = j+1;k <n -1;k++){\n                    for(int l = k+1;l <n;l++){\n                        if(nums[i] + nums[j] + nums[k] == nums[l]){\n                            map.put(sb.append(i).append(\",\").append(j).append(\",\")\n                                 .append(k).append(\",\").append(l).toString(),1);\n                            count++;\n                            System.out.println(\"[\"+ nums[i] + \",\" + nums[j]  +\",\"+ nums[k] +\",\"+  nums[l] +\"]\");\n                           \n                        }\n                        \n                        \n                    }\n                }\n            }\n        }\n        \n        \n        \n        return count;\n    }\n    public static List<List<Integer>> permuteUnique(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        if(nums == null || nums.length == 0){\n            return res;\n        }\n        Arrays.sort(nums);\n        boolean [] used = new boolean [nums.length];\n        backtrack(res,nums,used,new ArrayList<Integer>());\n        return res;\n        \n    }\n    private static void backtrack(List<List<Integer>> res, int[] nums,boolean[] used,ArrayList<Integer> temp){\n        if(temp.size() == nums.length){\n            res.add(new ArrayList<>(temp));\n            return;\n        }\n        for(int i= 0 ;i < nums.length;i++){\n            if(used[i] || (i > 0 && nums[i] == nums[i - 1] && !used[i - 1])){\n                continue;\n            }\n            used[i] = true;\n            temp.add(nums[i]);\n            backtrack(res,nums,used,temp);\n            temp.remove(temp.size()-1);\n            used[i] = false;\n            \n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "class Solution {\n    public void process(Node externs, Node root) {\n        if (MAKE_LOCAL_NAMES_UNIQUE){\n            makeLocalNamesUnique(externs, root);\n        }\n        removeDuplicateDeclarations(root);\n        new PropogateConstantAnnotations(compiler, assertOnChange).process(externs, root);\n    }\n    \n    private void makeLocalNamesUnique(Node externs, Node root) {\n        MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();\n        NodeTraversal t = new NodeTraversal(compiler, renamer);\n        t.traverseRoots(externs, root);\n    }\n    \n    private void removeDuplicateDeclarations(Node root) {\n        \n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void process(Node externs,Node root){\n  node traversal = new node Traversal(Compiler Compiler, null);\n  traversal.traverse(externs, root);\n  if(MAKE_ Declared Names Unique ) {\n    make Declared names unique renamed = new make Declared names unique renamed();\n    node traversal = new node traversal(Compiler Compiler, renamed);\n    traversal.traverse Roots(externs, root);\n  }\n  removeDuplicate Declarations(root);\n  new propogateConstantAnations(Compiler Compiler, assert onchange)\n      .process(externs, root);\n}\n tercer tesco squirrel 2016",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void process(Node externs,Node root){\n  node traversal = new node traversal();\n  node traversal.traverse(externs,root);\n  if(MAKE_ Declared names unique){\n    make declares names unique renamed = new make declares names unique();\n    node traversal t = new node traversal();\n    t.traverse roots(externs,root);\n  }\n  remove Duplicate Declared(root);\n  new propogate constant An annotation process(Compiler compilers, boolean assert on change)\n{\n  process(externs, root);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public void process(Node externs,Node root){\n  node traversal = new node Traversal(Compiler Compiler, renaming renaming){\n    @Override\n    protected boolean visitNode(Node node){\n      return super.visitNode(node) || node.isDeclaration();\n    }\n  };\n  node traversal.traverse Roots(externs, root);\n  new propogateConstantAnions(Compiler Compiler, assert onchange){\n    @Override\n    protected boolean visitNode(Node node){\n      return super.visitNode(node) || node.isDeclaration();\n    }\n  };\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class Normalize {\n  public static void processExternsAndRoot(Compiler compiler, Node externs, Node root) {\n    NodeTraversal.traverse(compiler, root, new MakeLocalNamesUnique());\n    if (false) { // MAKE_LOCAL_NAMES_UNIQUE\n      MakeDeclaredNamesUnique renamer = new MakeDeclaredNamesUnique();\n      NodeTraversal t = new NodeTraversal(compiler, renamer);\n      t.traverseRoots(externs, root);\n    }\n    RemoveDuplicateDeclarations.removeDuplicateDeclarations(compiler, root);\n    new PropogateConstantAnnotations(compiler, true).process(externs, root);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private class MakeDeclaredNamesUnique extends SimpleAstVisitor {\n  private String makeNameUnique(String originalName) {\n    int index = 1;\n    String baseName = originalName;\n    while (!env.containsKey(originalName)) {\n      env.put(originalName, true);\n      return originalName;\n    }\n    while (true) {\n      originalName = baseName + \"_\" + index++;\n      if (!env.containsKey(originalName)) {\n        env.put(originalName, true);\n        break;\n      }\n    }\n    return originalName;\n  }\n  public Object visitFunctionLiteral(Node n) {\n    \n  }\n  public Object visitVariableDeclaration(Node n) {\n    VariableDeclarationStatement s = (VariableDeclarationStatement)n;\n    Expression e = AstTestUtil.findFirst(s.var, IdentifierExpression.class).name;\n    s.renameTo(makeNameUnique(((IdentifierExpression)e).name));\n    return super.visitVariableDeclaration(n);\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-102",
+    "diff_stats": null
+  }
+]

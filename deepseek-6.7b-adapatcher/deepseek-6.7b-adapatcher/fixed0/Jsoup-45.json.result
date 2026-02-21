@@ -1,0 +1,197 @@
+[
+  {
+    "patch_code": "private void resetInsertionMode() {\n     boolean last = false;\n     int sizeOfStack=stack.size();\n     for (int pos = sizeOfStack - 1; pos >= 0; pos--) {\n         Element node = stack.get(pos);\n         if (pos == 0){\n             last = true;\n             node = contextElement;\n         }\n         String name = node.nodeName();\n         if (\"select\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InSelect);\n             return;\n         }else if(( \"td\".equals(name)||\"th\".equals(name))&&!last){\n             transitionToState(HtmlTreeBuilderState.InCell);\n             return;\n         }else if(\"tr\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InRow);\n             return;\n         }else if(\"tbody\".equals(name)||\"thead\".equals(name)||\"tfoot\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InTableBody);\n             return;\n         }else if(\"caption\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InCaption);\n             return;\n         }else if(\"colgroup\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InColumnGroup);\n             return;\n         }else if(\"table\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InTable);\n             return;\n         }else if(\"head\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InBody);\n             return;\n         }else if(\"body\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InBody);\n             return;\n         }else if(\"frameset\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.InFrameset);\n             return;\n         }else if(\"html\".equals(name)){\n             transitionToState(HtmlTreeBuilderState.BeforeHead);\n             return;\n         }else if(last){\n             transitionToState(HtmlTreeBuilderState.InBody);\n             return;\n         }\n     }\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    boolean last = false;\n    int size = stack.size();\n    for (int pos = size - 1; pos >= 0; pos--) {\n        Element node = stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextElement;\n        }\n        String name = node.nodeName();\n        if (\"select\".equals(name)) {\n            transition(HtmlTreeBuilderState.InSelect);\n            return; // fix here\n        } else if ((\"td\".equals(name) || \"th\".equals(name)) && !last) {\n            transition(HtmlTreeBuilderState.InCell);\n            return; // fix here\n        } else if (\"tr\".equals(name)) {\n            transition(HtmlTreeBuilderState.InRow);\n            return; // fix here\n        } else if (\"tbody\".equals(name) || \"thead\".equals(name) || \"tfoot\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTableBody);\n            return; // fix here\n        } else if (\"caption\".equals(name)) {\n            transition(HtmlTreeBuilderState.InCaption);\n            return; // fix here\n        } else if (\"colgroup\".equals(name)) {\n            transition(HtmlTreeBuilderState.InColumnGroup);\n            return; // fix here\n        } else if (\"table\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTable);\n            return; // fix here\n        } else if (\"head\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            return; // fix here\n        } else if (\"body\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            return; // fix here\n        } else if (\"frameset\".equals(name)) {\n            transition(HtmlTreeBuilderState.InFrameset);\n            return; // fix here\n        } else if (\"html\".equals(name)) {\n            transition(HtmlTreeBuilderState.BeforeHead);\n            return; // fix here\n        } else if (last) {\n            transition(HtmlTreeBuilderState.InBody);\n            return; // fix here\n        }\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 15,
+      "deleted_lines": 14,
+      "total_changed_lines": 29,
+      "added_tokens": 130,
+      "deleted_tokens": 95,
+      "total_changed_tokens": 225,
+      "edit_distance": 212,
+      "edit_similarity": 89.06,
+      "norm_edit_distance": 0.1094,
+      "norm_edit_distance_pct": 10.94,
+      "buggy_length": 1808,
+      "fix_length": 1938,
+      "preserved_ratio": 69.39
+    }
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    boolean last = false;\n    int pos = stack.size()-1;\n    while (pos >=0 ){\n        \n        Element node = stack.get(pos);\n        if (pos== 0){\n            \n            last=true;\n            node=contextElement;\n        }\n        String name = node.nodeName();\n        if (\"select\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InSelect);\n            break ;//frag\n        }else if (( \"td\".equals(name)||\"th\".equals(name) )&&!last){\n            \n            transition(HtmlTreeBuilderState.InCell);\n            break ;\n        }else if (\"tr\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InRow);\n            break ;\n        }else if (\"tbody\".equals(name)||\"thead\".equals(name)||\"tfoot\".equals(name) ){\n            \n            transition(HtmlTreeBuilderState.InTableBody);\n            break ;\n        }else if (\"caption\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InCaption);\n            break ;\n        }else if (\"colgroup\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InColumnGroup);\n            break ;//frag\n        }else if (\"table\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InTable);\n            break ;\n        }else if (\"head\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InBody);\n            break ;//frag\n        }else if (\"body\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InBody);\n            break ;\n        }else if (\"frameset\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.InFrameset);\n            break ;//frag\n        }else if (\"html\".equals(name)){\n            \n            transition(HtmlTreeBuilderState.BeforeHead);\n            break ;//frag\n        }else if (last){\n            \n            transition(HtmlTreeBuilderState.InBody);\n            break ;//frag\n        }\n        pos --;\n    }\n    \n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 45,
+      "deleted_lines": 28,
+      "total_changed_lines": 73,
+      "added_tokens": 276,
+      "deleted_tokens": 276,
+      "total_changed_tokens": 552,
+      "edit_distance": 269,
+      "edit_similarity": 86.35,
+      "norm_edit_distance": 0.1365,
+      "norm_edit_distance_pct": 13.65,
+      "buggy_length": 1808,
+      "fix_length": 1970,
+      "preserved_ratio": 30.77
+    }
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    boolean last = false;\n    for (int pos = stack.size() -1; pos >= 0; pos--) {\n        Element node = stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextElement;\n        }\n        String name = node.nodeName();\n        if (\"select\".equals(name)) {\n            transition(HtmlTreeBuilderState.InSelect);\n            break; // frag\n        } else if ((!\"th\".equals(name) && \"td\".equals(name)) || !last ){ \n            transition(HtmlTreeBuilderState.InCell);\n            break;\n        } else if (\"tr\".equals(name)) {\n            transition(HtmlTreeBuilderState.InRow);\n            break;\n        } else if (\"tbody\".equals(name) || \"thead\".equals(name) || \"tfoot\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTableBody);\n            break;\n        } else if (\"caption\".equals(name)) {\n            transition(HtmlTreeBuilderState.InCaption);\n            break;\n        } else if (\"colgroup\".equals(name)) {\n            transition(HtmlTreeBuilderState.InColumnGroup);\n            break; // frag\n        } else if (\"table\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTable);\n            break;\n        } else if (\"head\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; // frag\n        } else if (\"body\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break;\n        } else if (\"frameset\".equals(name)) {\n            transition(HtmlTreeBuilderState.InFrameset);\n            break; // frag\n        } else if (\"html\".equals(name)) {\n            transition(HtmlTreeBuilderState.BeforeHead);\n            break; // frag\n        } else if (last) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; // frag\n        }\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 31,
+      "deleted_tokens": 30,
+      "total_changed_tokens": 61,
+      "edit_distance": 10,
+      "edit_similarity": 99.45,
+      "norm_edit_distance": 0.0055,
+      "norm_edit_distance_pct": 0.55,
+      "buggy_length": 1808,
+      "fix_length": 1810,
+      "preserved_ratio": 97.92
+    }
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    int size = stack.size(); \n    if (size > 1){\n      int pos = 0;\n       do{\n         Element node = stack.get(--size);\n         if (!(\"td\".equals(node.nodeName()) || \n                (\"td\".equals(stack.get((size)).nodeName()) && !\"td\".equals(stack.get((size+1)).nodeName())))){\n          pos = size ;\n           }\n       } while(size!= 0);\n     }\n    else {\n      pos = size ;\n    }\n    \n    Element node = stack.get(pos);\n    String name = node.nodeName();\n    if (\"select\".equals(name)) {\n        transition(HtmlTreeBuilderState.InSelect);\n    } else if ((\"td\".equals(name))) {\n        transition(HtmlTreeBuilderState.InCell);\n    } else if (\"tr\".equals(name)) {\n        transition(HtmlTreeBuilderState.InRow);\n    } else if (\"tbody\".equals(name) || \"thead\".equals(name) || \"tfoot\".equals(name)) {\n        transition(HtmlTreeBuilderState.InTableBody);\n    } else if (\"caption\".equals(name)) {\n        transition(HtmlTreeBuilderState.InCaption);\n    } else if (\"colgroup\".equals(name)) {\n        transition(HtmlTreeBuilderState.InColumnGroup);\n    } else if (\"table\".equals(name)) {\n        transition(HtmlTreeBuilderState.InTable);\n    } else if (\"head\".equals(name)) {\n        transition(HtmlTreeBuilderState.InBody);\n    } else if (\"body\".equals(name)) {\n        transition(HtmlTreeBuilderState.InBody);\n    } else if (\"frameset\".equals(name)) {\n        transition(HtmlTreeBuilderState.InFrameset);\n    } else if (\"html\".equals(name)) {\n        transition(HtmlTreeBuilderState.BeforeHead);\n    } else {\n        transition(HtmlTreeBuilderState.InBody);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void set insertion mode() {\n    boolean last = false;\n    for (int pos = Stack.size() -1; pos>= 0; pos--) {\n        element node = Stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextElement;\n        }\n        String name = node.nodeName();\n        if \"select\".\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in select);\n            break;\n        } else if ((\"td\".\u7b49\u4e8e(name) || \"th\".\u7b49\u4e8e(name) && !last)) {\n            transition(htmlBuilderState.in cell);\n            break;\n        } else if VIIIth.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in row);\n            break;\n        } else if IIIi.\u7b49\u4e8e(name) || IIIii.\u7b49\u4e8e(name) || IIIll.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in table body);\n            break;\n        } else if IIIa.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in caption);\n            break;\n        } else if IIIg.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in column group);\n            break;\n        } else if IIIt.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in table);\n            break;\n        } else if IIIIh.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.in body);\n            break;\n        } else if IIIISet.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.inframeset);\n            break;\n        } else if IIIIhtml.\u7b49\u4e8e(name) {\n            transition(htmlBuilderState.before head);\n            break;\n        } else if last) {\n            transition(htmlBuilderState.in body);\n            break;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void set insertion mode() {\n    boolean last = false;\n    for (int pos = Stack size -1; pos>= 0; pos--) {\n        element node = Stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = context element;\n        }\n        String name = node. node name();\n        if \"select\".\u7b49\u4e8e(name) {\n            transition(html tree Builder State.in select);\n            break;\n        } else if ((\"td\".\u7b49\u4e8e(name) || \"th\".\u7b49\u4e8e(name) && !last)) {\n            transition(html tree Builder State.in cell);\n            break;\n        } else if \"tr\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in row);\n            break;\n        } else if ((\"\u4e5f\u5c31\u662f\".\u7b49\u4e8e(name) || \"thead\".\u7b49\u4e8e(name) || \"tfoot\".\u7b49\u4e8e(name)) {\n            transition(html tree Builder state.in table body);\n            break;\n        } else if \"caption\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in caption);\n            break;\n        } else if \"colgroup\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in column group);\n            break;\n        } else if \"table\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in table);\n            break;\n        } else if \"head\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in body);\n            break;\n        } else if \"body\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.in body);\n            break;\n        } else if \"frameset\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.inframeset);\n            break;\n        } else if \"html\".\u7b49\u4e8e(name) {\n            transition(html tree Builder state.before head);\n            break;\n        } else if last) {\n            transition(html tree Builder state.in body);\n            break;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void update insertion mode after transition(String name){\n    boolean last = false;\n    for (int pos = Stacksize -1; pos > 0; pos--) {\n        element node = Stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextelement;\n        }\n        String name = node.nodeName();\n        if \"select\" == name) {\n            transition(html.parsing.in select);\n            break;\n        } else if \"td\" == name || (last && \" td\" == name) \n            transition(html.parsing.in cell);\n            break;\n        else if \"tr\" == name) {\n            transition(html.parsing.in row);\n            break;\n        } else if \"\u4f53\u80b2\u3001\u4f53\u529b\u3001\u4f53\u5236\u3001\u4f53\u578b\u3001\u4f53\u79ef\u3001\u4f53\u79ef\u3001 body\" == name || \"thead\" == name || \"tfoot\" == name) {\n            transition(html.parsing.in tablebody);\n            break;\n        } else if \" caption\" == name) {\n            transition(html.parsing.in caption);\n            break;\n        } else if \" colgroup\" == name) {\n            transition(html.parsing.in column group);\n            break;\n        } else if \" table\" == name) {\n            transition(html.parsing.in table);\n            break;\n        } else if \" head\" == name or last) {\n            transition(html.parsing.in body);\n            break;\n        } else if \"frameset\" == name) {\n            transition(html.parsing.inframeset);\n            break;\n        } else if \"html\" == name) {\n            transition(html.parsing.before head);\n            break;\n        } else if last) {\n            transition(html.parsing.in body);\n            break;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    boolean last = false;\n    for (int pos = stack.size() - 1; pos >= 0; pos--) {\n        Element node = stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextElement;\n        }\n        String name = node.nodeName();\n        if (\"select\".equals(name)) {\n            transition(HtmlTreeBuilderState.InSelect);\n            break; // frag\n        } else if ((\"td\".equals(name) || \"th\".equals(name))) {\n            transition(HtmlTreeBuilderState.InCell);\n            break;\n        } else if (\"tr\".equals(name)) {\n            transition(HtmlTreeBuilderState.InRow);\n            break;\n        } else if (\"tbody\".equals(name) || \"thead\".equals(name) || \"tfoot\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTableBody);\n            break;\n        } else if (\"caption\".equals(name)) {\n            transition(HtmlTreeBuilderState.InCaption);\n            break;\n        } else if (\"colgroup\".equals(name)) {\n            transition(HtmlTreeBuilderState.InColumnGroup);\n            break; // frag\n        } else if (\"table\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTable);\n            break;\n        } else if (\"head\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; // frag\n        } else if (\"body\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break;\n        } else if (\"frameset\".equals(name)) {\n            transition(HtmlTreeBuilderState.InFrameset);\n            break; // frag\n        } else if (\"html\".equals(name)) {\n            transition(HtmlTreeBuilderState.BeforeHead);\n            break; // frag\n        } else if (last) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; // frag\n        }\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": {
+      "hunks": 2,
+      "added_lines": 2,
+      "deleted_lines": 2,
+      "total_changed_lines": 4,
+      "added_tokens": 49,
+      "deleted_tokens": 53,
+      "total_changed_tokens": 102,
+      "edit_distance": 11,
+      "edit_similarity": 99.39,
+      "norm_edit_distance": 0.0061,
+      "norm_edit_distance_pct": 0.61,
+      "buggy_length": 1808,
+      "fix_length": 1800,
+      "preserved_ratio": 95.83
+    }
+  },
+  {
+    "patch_code": "void resetInsertionMode() {\n    int size = stack.size();\n    boolean last = false;\n    for (int pos = size - 1; pos >= 0; pos--) {\n        Element node = stack.get(pos);\n        if (pos == 0) {\n            last = true;\n            node = contextElement;\n        }\n        String name = node.nodeName();\n        if (\"select\".equals(name)) {\n            transition(HtmlTreeBuilderState.InSelect);\n            break; \n        } else if ((\"td\".equals(name) || \"th\".equals(name)) && !last) {\n            transition(HtmlTreeBuilderState.InCell);\n            break;\n        } else if (\"tr\".equals(name)) {\n            transition(HtmlTreeBuilderState.InRow);\n            break;\n        } else if (\"tbody\".equals(name) || \"thead\".equals(name) || \"tfoot\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTableBody);\n            break;\n        } else if (\"caption\".equals(name)) {\n            transition(HtmlTreeBuilderState.InCaption);\n            break;\n        } else if (\"colgroup\".equals(name)) {\n            transition(HtmlTreeBuilderState.InColumnGroup);\n            break; \n        } else if (\"table\".equals(name)) {\n            transition(HtmlTreeBuilderState.InTable);\n            break;\n        } else if (\"head\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; \n        } else if (\"body\".equals(name)) {\n            transition(HtmlTreeBuilderState.InBody);\n            break;\n        } else if (\"frameset\".equals(name)) {\n            transition(HtmlTreeBuilderState.InFrameset);\n            break; \n        } else if (\"html\".equals(name)) {\n            transition(HtmlTreeBuilderState.BeforeHead);\n            break; \n        } else if (last) {\n            transition(HtmlTreeBuilderState.InBody);\n            break; \n        }\n    }\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-45",
+    "diff_stats": {
+      "hunks": 3,
+      "added_lines": 9,
+      "deleted_lines": 8,
+      "total_changed_lines": 17,
+      "added_tokens": 70,
+      "deleted_tokens": 83,
+      "total_changed_tokens": 153,
+      "edit_distance": 83,
+      "edit_similarity": 95.41,
+      "norm_edit_distance": 0.0459,
+      "norm_edit_distance_pct": 4.59,
+      "buggy_length": 1808,
+      "fix_length": 1788,
+      "preserved_ratio": 81.63
+    }
+  }
+]

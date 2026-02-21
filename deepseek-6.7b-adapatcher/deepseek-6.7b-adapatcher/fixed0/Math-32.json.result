@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "protected void computeGeometricalProperties() {\n\n    final Vector2D[][] v = getVertices();\n\n    if (v.length == 0) {\n        final BSPTree<Euclidean2D> tree = getTree(false);\n        if ((Boolean) tree.getAttribute()) {\n            // the instance covers the whole space\n            setSize(Double.POSITIVE_INFINITY);\n            setBarycenter(Vector2D.NaN);\n        } else {\n            setSize(0);\n            setBarycenter(new Vector2D(0, 0));\n        }\n    } else if (v[0][0] == null) {\n        // there is at least one open-loop: the polygon is infinite\n        setSize(Double.POSITIVE_INFINITY);\n        setBarycenter(Vector2D.NaN);\n    } else {\n        // all loops are closed, we compute some integrals around the shape\n\n        double sum  = 0;\n        double sumX = 0;\n        double sumY = 0;\n\n        for (Vector2D[] loop : v) {\n            double x1 = loop[loop.length - 1].getX();\n            double y1 = loop[loop.length - 1].getY();\n            for (final Vector2D point : loop) {\n                final double x0 = x1;\n                final double y0 = y1;\n                x1 = point.getX();\n                y1 = point.getY();\n                final double factor = x0 * y1 - y0 * x1;\n                sum  += factor;\n                sumX += factor * (x0 + x1);\n                sumY += factor * (y0 + y1);\n            }\n        }\n\n        if (sum < 0) {\n            // the polygon as a finite outside surrounded by an infinite inside\n            setSize(Double.POSITIVE_INFINITY);\n            setBarycenter(Vector2D.NaN);\n        } else {\n            setSize(sum / 2);\n            setBarycenter(new Vector2D(sumX / (6 * sum), sumY / (6 * sum)));\n        }\n\n    }\n\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest::testIssue780"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*;\npublic class Test{\n    private List<Integer> intList;\n    public Test(){\n        intList = new ArrayList<>();\n    }\n    \n    public synchronized boolean insertIntoList(int number){\n        return intList.add(number);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "package org.apache.commons.math3.geometry.euclidean.threed;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n/**\n * Set of polygonal representations in Euclidean 3D.\n */\npublic abstract class PolygonalSet extends Euclidean3DSpace {\n\n    private static final long serialVersionUID = 20140506L;\n    \n    public enum Orientation{COUNTERCLOCKWISE,CLOCKWISE};\n\n    /** Vertices. */\n    private List<Vector3D> vertices;\n\n    /** Edges. */\n    private List<Edge> edges;\n\n    /** Faces. */\n    private List<Face> faces;\n\n    /**\n     * Empty constructor.\n     */\n    protected PolygonalSet(){\n        super();\n        vertices = new ArrayList<Vector3D>();\n        edges  = new ArrayList<Edge>();\n        faces   = new ArrayList<Face>();        \n    }\n\n    /**\n     * Add a vertex to the set.\n     * @param pt the vector representing the vertex.\n     */\n    protected void addVertex(Vector3D pt){\n        vertices.add(pt);        \n    }\n\n    /**\n     * Obtain the number of vertices in the set.\n     * @return the count of vertices.\n     */\n    public int getVertexCount(){\n        return vertices.size();\n    }\n\n    /**\n     * Obtain a vertex specified by its index.\n     * @param idx the zero-based index of the vertex.\n     * @throws IndexOutOfBoundsException if the index is negative or not less than the size of the set.\n     */\n    public Vector3D getVertex(int idx) throws IndexOutOfBoundsException{\n        return vertices.get(idx);\n    }\n    \n    /**\n     * Add a edge to the set.\n     * @param ege the edge to be added.\n     */\n    protected void addEdge(Edge ege){\n        edges.add(ege);        \n    }\n\n    /**\n     * Obtain the number of edges in the set.\n     * @return the count of edges.\n     */\n    public int getEdgesCount(){\n        return edges.size();\n    }\n\n    /**\n     * Obtain a Edge specified by its index.\n     * @param idx the zero-based index of the Edge.\n     * @throws IndexOutOfBoundsException if the index is negative or not less than the size of the set.\n     */\n    public Edge getEdge(int idx) throws IndexOutOfBoundsException{\n        return edges.get(idx);\n    }    \n\n    /**\n     * Add a face to the set.\n     * @param fac the face to be added.\n     */\n    protected void addFace(Face fac){\n        faces.add(fac);        \n    }\n\n    /**\n     * Obtain the number of faces in the set.\n     * @return the count of faces.\n     */\n    public int getFacesCount(){\n        return faces.size();\n    }\n\n    /**\n     * Obtain a Face specified by its index.\n     * @param idx the zero-based index of the Face.\n     * @throws IndexOutOfBoundsException if the index is negative or not less than the size of the set.\n     */\n    public Face getFace(int idx) throws IndexOutOfBoundsException{\n        return faces.get(idx);\n    }      \n    \n    /*\n     * This function must be implemented according to specific requirements\n     */\n    public abstract boolean contains(Vector3D pt);\n    \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void computeGeometricalProperties() {\n\n    final Vector2D[][] v = getVertices();\n\n    if (v.length == 0) {\n        final BSPTree<Euclidean2D> tree = getTree(false);\n        if ((Boolean) tree.getAttribute()) {\n            // the instance covers the whole space\n            setSize(Double.POSITIVE_INFINITY);\n            setBarycenter(Vector2D.NaN);\n        } else {\n            setSize(0);\n            setBarycenter(new Vector2D(0, 0));\n        }\n    } else if (v[0][0] == null) {\n        // there is at least one open-loop: the polygon is infinite\n        setSize(Double.POSITIVE_INFINITY);\n        setBarycenter(Vector2D.NaN);\n    } else {\n        // all loops are closed, we compute some integrals around the shape\n\n        double sum  = 0;\n        double sumX = 0;\n        double sumY = 0;\n\n        for (Vector2D[] loop : v) {\n            double x1 = loop[loop.length - 1].getX();\n            double y1 = loop[loop.length - 1].getY();\n            for (final Vector2D point : loop) {\n                final double x0 = x1;\n                final double y0 = y1;\n                x1 = point.getX();\n                y1 = point.getY();\n                final double factor = x0 * y1 - y0 * x1;\n                sum  += factor;\n                sumX += factor * (x0 + x1);\n                sumY += factor * (y0 + y1);\n            }\n        }\n\n        if (sum <= 0) {\n            // the polygon as a finite outside surrounded by an infinite inside\n            setSize(Double.POSITIVE_INFINITY);\n            setBarycenter(Vector2D.NaN);\n        } else {\n            setSize(sum / 2);\n            setBarycenter(new Vector2D(sumX / (3 * sum), sumY / (3 * sum)));\n        }\n\n    }\n\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math3.geometry.euclidean.threed.PolyhedronsSetTest::testIssue780"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public abstract class GeometricObject implements Comparable<GeometricObject> {\n\n    public int compareTo(GeometricObject other){\n        \n        /* TODO: Implement comparison logic based on size */\n\n        return Double.compare(this.getSize(),other.getSize());\n    }\n    \n    public static class Vertex extends GeometricObject{\n       private final Vector3D pt;\n       private List<Vertex> neighbours = new ArrayList<>();\n       \n        public double distanceFromPoint(Vector3D target){\n            \n          /* TODO: Implement 3D Euclidean distance calculation between vertex and point*/\n            \n           return pt.subtract(target).getNorm();\n            \n        }\n\n        public boolean equals(Object other){\n            \n            if (!(other instanceof Vertex))\n                return false;\n            \n            Vertex o = (Vertex)other;\n            \n            return this.pt.equals(o.pt);\n                \n        }\n       \n        \n      // getters and setters\n    }\n    \n    public static class Edge extends GeometricObject {\n        \n        private final Vertex a;\n        private final Vertex b;\n        \n       \n        \n      // getters and setters\n        \n    }\n    \n    public static class Plane extends GeometricObject {\n        \n        private final Vector3D origin;\n        private final Vector3D normal;\n        \n        \n        public Vector3D projectPointOntoPlane(Vector3D source){\n            \n            /*TODO: implement projection algorithm */\n             \n            return null;\n        }\n\n      // getters and setters\n        \n    }\n\n\n    public static class Solid {\n        \n        Set<Vertex> vertices = new HashSet<>();\n        Set<Edge> edges = new HashSet<>();\n        Set<Plane> planes = new HashSet<>();\n        \n        \n        \n        // method for adding objects to sets\n        \n      \n    }\n\n    public static class BSPTree<E> {\n        \n        Node root;\n        BoundingBox bound;\n        \n        \n       \n\n        \n\n    }\n\n\n\n\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidcomputeGeometical properties() {\n\n    final vector[][] v = getvertices();\n\n    if (v.length == 0) {\n        final bsp tree = get tree(false);\n        if ((( boolean) tree.get attribut)) {\n            set size(\u53cc\u65e0\u9650);\n            set barycenter( vector.NaN);\n        } else {\n            set size(0);\n            set barycenter( new vector(0, 0));\n        }\n    } else if (v[0][0]) {\n        set size(\u53cc\u65e0\u9650);\n        set barycenter( vector.NaN);\n    } else {\n        double sum  = 0;\n        double sumX = 0;\n        double sumY = 0;\n        double sumZ = 0;\n        for ( vector[] loop : v) {\n            double x1 = loop[ loop. length - 1].get X();\n            double y1 = loop[ loop. length - 1].get Y();\n            double z1 = loop[ loop. length - 1].get Z();\n            for ( final vector point : loop) {\n                final double x0 = x1;\n                final double y0 = y1;\n                final double z0 = z1;\n                x1 = point.get X();\n                y1 = point.get Y();\n                z1 = point.get Z();\n                final double factor = x0 * y1 - y0 * x1 + x0 * z1 - z0 * x1 + y0 * z1 - z0 * y1 + z0 * x1 - x0 * z1;\n                sum  sum + factor;\n                sumX sumX + factor * (x0 + x1);\n                sumY sumY + factor * (y0 + y1);\n                sumZ sumZ + factor * (z0 + z1);\n            }\n        }\n        set size(sum / 2);\n        set barycenter( new vector(sumX / (3 * sum), sumY / (3 * sum), sumZ / (3 * sum readersetter));\n    }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidcomputeGeometical properties() {\n\n     final vector[][] v = getvertices();\n\n     if (v.length == 0) {\n         final BSP tree = get tree(false);\n         if(( boolean) tree.get attributet) {\n             // the instance coverstwo inf inf\n            set size( double.positive infinity);\n            set barycenter( vector. Nan);\n            set area( double. positive infinity);\n            set volume( double. positive infinity);\n        } else {\n            set size(0);\n            set barycenter( new vector(0, 0));\n            set area(0);\n            set volume(0);\n        }\n    } else if (v[0][0] == null) {\n        // there is at leastone open- loop: the polygon is inf inf inf\n        set size( double.positive infinity);\n        set barycenter( vector. Nan);\n        set area( double. positive infinity);\n        set volume( double. positive infinity);\n    } else {\n        // all lo loopsare closed, we computsome integrals around the shape\n\n        double sum  = 0;\n        double sumX = 0;\n        double sumY = 0;\n        double sumZ = 0;\n\n        for ( vector[] loop : v) {\n            double x1 = loop[ loop. length - 1]. get X();\n            double y1 = loop[ loop. length - 1]. get Y();\n            double z1 = loop[ loop. length - 1]. get Z();\n            for ( final vector point : loop) {\n                final double x0 = x1;\n                final double y0 = y1;\n                final double z0 = z1;\n                x1 = point. get X();\n                y1 = point. get Y();\n                z1 = point. get Z();\n                final double factor = x0 * y1 * z1 + x1 * y0 * z0 + y0 * z1 * x1 + z0 * x1 * y1 - x0 * y0 * z1 - x0 * z0 * y1 - y0 * z0 * x1;\n                sum  sum;\n                sumX sumX;\n                sumY sumY;\n                sumZ sumZ;\n            }\n        }\n\n        set size( sum / 6);\n        set barycenter( new vector( sumX / (sum * 2), sumY / (sum * 2), sumZ / (sum * 2AsyncExecutorBuilder\n        set area( sum / 2);\n        set volume( sum);\n    }\n\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidcomputeGeometical properties() {\n\n     final vector[][] v = getvertices();\n\n     if (v.length == 0) {\n         final BSP tree = get tree(false);\n         if ((( boolean) tree.getAttribut)) {\n            set size(\u53cc inf);\n            set barycenter( vector.NaN);\n        } else {\n            set size(0);\n            set barycenter(new vector(0, 0));\n        }\n    } else if (v[0][0) == null) {\n        set size(\u53cc inf);\n        set barycenter( vector.NaN);\n    } else {\n        double sum  = 0;\n        double sumX = 0;\n        double sumY = 0;\n        double sumZ = 0;\n\n        for ( vector[] loop : v) {\n            double x1 = loop[ loop.length - 1].get X();\n            double y1 = loop[ loop.length - 1].get Y();\n            double z1 = loop[ loop.length - 1].get Z();\n            for ( vector point : loop) {\n                double x0 = x1;\n                double y0 = y1;\n                double z0 = z1;\n                x1 = point.get X();\n                y1 = point.get Y();\n                z1 = point.get Z();\n                double factor = x0 * y1 - y0 * x1;\n                sum  += factor;\n                sumX +=  factor * (x0 + x1);\n                sumY +=  factor * (y0 + y1);\n                sumZ +=  factor * (z0 + z1);\n            }\n        }\n\n        if (sum < 0) {\n            set size(\u53cc inf);\n            set barycenter( vector.NaN);\n        } else {\n            set size(sum / 2);\n            set barycenter(new vector(sumX / (3 * sum), sumY / (3 * sum), sumZ / (3 * sumavel.get X(), sumvel.get Y(), sumvel.get Z());\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.math3.geometry.euclidean.oned.Interval;\nimport org.apache.commons.math3.geometry.euclidean.threed.*;\nimport java.util.List;\n\npublic abstract class PolygonExtractor<T extends Triangulation> implements Extrudable<Polygonal>{\n    \n    private BSPTree<SpacePartition<Point>> rootNode;\n    public PolygonExtractor(BSPTree<SpacePartition<Point>> node){\n        \n        rootNode = node;\n    }\n    \n    @Override\n    public List<Polygonal> getElements(){\n        return extractShapesFromSubtree(rootNode,true);\n    }\n    \n    protected ArrayList<Polygonal> extractShapesFromSubtree(BSPTree<SpacePartition<Point>> subTreeRoot, boolean extractFrontFace ){\n        ArrayList<Polygonal> outputList = new ArrayList<>();\n        BSPTree<SpacePartition<Point>> left = subTreeRoot.getLeftChild(), right = subTreeRoot.getRightChild();\n        \n        if(subTreeRoot.isLeaf()){\n            \n            SpacePartition<Point> partition = subTreeRoot.getData();\n            Interval intervalZ = new Interval(partition.getMin().getZ(), partition.getMax().getZ());\n            T triangulation = (T) partition.toTriangleGrid(intervalZ);\n            \n            if((extractFrontFace && subTreeRoot.hasFrontChildren()) || (!extractFrontFace && subTreeRoot.hasBackChildren())){\n                \n                for(int i = 0 ; i < triangulation.getVertexCount() ; i++){\n                    Point pt1 = triangulation.getVertex(i % triangulation.getVertexCount());\n                    Point pt2 = triangulation.getVertex((i + 1) % triangulation.getVertexCount());\n                    Point pt3 = triangulation.getVertex((i + 2) % triangulation.getVertexCount());\n                    \n                    Plane plane = Plane.fitThrough(pt1,pt2,pt3);\n                    if(plane != null){\n                        if(((extractFrontFace && plane.getOffset() > 0)||(!extractFrontFace && plane.getOffset() < 0))){\n                            outputList.add(new Polyhedron(triangulation));\n                            \n                        }\n                        \n                    }else{\n                        \n                        if(extractFrontFace){\n                            outputList.add(new Polyhedron(triangulation));\n                        }\n                        \n                    }\n                }\n                \n                \n            }\n            \n        }else{\n            \n            outputList.addAll(extractShapesFromSubtree(left , extractFrontFace));\n            outputList.addAll(extractShapesFromSubtree(right, extractFrontFace));\n            \n        }\n        return outputList;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static <P extends Polygon> Collection<P> getFacesFromBspTree(final BSPTree<P> bspTree) {\n    assert bspTree != null;\n    \n    List<P> list = new ArrayList<>();\n    \n    Stack<Pair<BSPNode<P>, Integer>> stack = new Stack<>();\n    stack.add(Pair.of(bspTree.getRoot(), 0));\n    \n    while (!stack.isEmpty()) {\n      Pair<BSPNode<P>, Integer> top = stack.pop();\n      BSPNode<P> node = top.getFirst();\n      \n      if (top.getValue().equals(1)) {\n        list.addAll(node.getRegion());\n      } else {\n        List<BSPNode<P>> children = Lists.reverse(Lists.newArrayList(node.getChildren()));\n        \n        for (BSPNode<P> child : children) {\n          stack.push(Pair.of(child, 1));\n        }\n        \n        stack.push(Pair.of(node, 0));\n      }\n    }\n    \n    return list;\n  }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-32",
+    "diff_stats": null
+  }
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\nint seqEnd = input.length();\nif(input.charAt(index) == '&' && index <= seqEnd - 1 && input.charAt(index + 1) == '#') {\n    int start = index + 2;\n    boolean isHex = false;\n\n    char firstChar = input.charAt(start);\n    if(firstChar == 'x' || firstChar == 'X') {\n        start++;\n        isHex = true;\n    }\n\n    int end = start;\n    while(end < seqEnd && input.charAt(end) != ';')\n    {\n        end++;\n    }\n\n    int entityValue;\n    try {\n        if(isHex) {\n            entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n        } else {\n            entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n        }\n    } catch(NumberFormatException nfe) {\n    System.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\n        return 0;\n    }\n\n    if(entityValue > 0xFFFF) {\n        char[] chrs = Character.toChars(entityValue);\n        out.write(chrs[0]);\n        out.write(chrs[1]);\n    } else {\n        out.write(entityValue);\n    }\n\n\n    return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n}\nreturn 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\nint seqEnd = input.length();\nif(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\nint start = index + 2;\nboolean isHex = false;\n\nchar firstChar = input.charAt(start);\nif(firstChar == 'x' || firstChar == 'X') {\nisHex = true;\nstart++;\n\n}\n\nint end = start;\nwhile(end < seqEnd && input.charAt(end)!=';') \n{\nend++;\n}\n\nint entityValue;\ntry {\nif(isHex) {\nentityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n} else {\nentityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n}\n} catch(NumberFormatException nfe) {\nSystem.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\nreturn 0;\n}\n\nif(entityValue > 0xFFFF) {\nchar[] chrs = Character.toChars(entityValue);\nout.write(chrs[0]);\nout.write(chrs[1]);\n} else {\nout.write(entityValue);\n}\n\nreturn end - index;\n}\nreturn 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n\n            // Check there's more than just an x after the &#\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(input.charAt(end) != ';') \n        {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n        System.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n\n            // Check there's more than just an x after the &#\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(input.charAt(end) != ';') \n        {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n        System.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class Main{\n    public static void main(String [] args){\n        \n        String s = \"&#03\";\n      \n        s = unescapeHtml4(s);\n    \n        System.out.println(s);\n  \n      }\n\n\tpublic static String unescapeHtml4(String input) {\n\t    NumericEntityUnescaper htmlUnescaper = new NumericEntityUnescaper('&', ';');\n\t\treturn htmlUnescaper.translate(input);\n\t}\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequenceinput, int index, Writermout) throwssIOException{\nint seqEnd = input. length();\n// Us uses -2 to ensure there is something after the &#\nif(input. charAt(index) == '&' && index < seqEnd - 1 && input. charAt(index + 1) == '#') {\n    int start = index + 2;\n    boolean isHex = false;\n\n    char firstchar = input. charAt(start);\n    if(firstchar == 'x' or firstchar == 'X') {\n        start++;\n        isHex = true;\n        // check there's more than just an x after the &#\n    }\n\n    int end = start;\n    // note that this support character code without a ; on the end\n    while(input. charAt(end) != \";\")  {\n        end++;\n    }\n\n    int entityValue;\n    try {\n        if(isHex) {\n            entityValue = int. ParseInt(input. sub sequence(start, end), 16);\n        } else {\n            entityValue = int. ParseInt(input. sub sequence(start, end), 10);\n        }\n    } catch(NumberformatException nfe) {\n        System. err. println(\"FAIL: \" + input. sub sequence(start, end) + \"[[\" + start +\"][\" + end +\"]\");\n        return 0;\n    }\n\n    if(itytyValue > 0xEEEEFF){\n        char[] chrs = char. toChars(itytyValue);\n        out. write(chrs[0]);\n        out. write(chrs[1]);\n    }else {\n        out. write(itytyValue);\n    }\n\n    return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n}\nreturn 0;\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequence input, int index, Writervout)  {\nint seqEnd = input. length();\nif(input. charAt(index) == '&' && index < seqEnd - 1 && input. charAt(index + 1) == '#') {\nint start = index + 2;\n booleanisHex = false;\n\n char firstchar = input. charAt(start);\nif(firstchar == 'x' or firstchar == 'X') {\nstart++;\nisHex = true;\n\n\n \nwhile(input. charAt(end) !=  sem; \n{\nend++;\n}\n\nint entityvalue;\n try {\nif(isHex) {\nityvalue = int. parsing(input. sub sequence(start, end). toString(), 16);\n} else {\nityvalue = int. parsing(input. sub sequence(start, end). toString(), 10);\n}\n} catch( numberformat exception nfe) {\nSystem. err. println(\"FAIL: \" + input. sub sequence(start, end) + \"[\nreturn 0;\n}\n\nif(ityvalue >>  0xFF and 0xFF) {\nchar[] chrs = character. toChars(ityvalue);\nout. write(chrs[0];\nout. write(chrs[1];\n} else {\nout. write(ityvalue);\n}\n\n\nreturn 2 + (end - start) + (isHex ? 1 : 0) + 1;\n}\nreturn 0;\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequence input, int index, W\u5668 out) {\n    int seqEnd = input. length();\n    // Uses -2 to ensure there is something after the &#\n    if(input. charAt(index) == '&' && index < seqEnd - 1 && input. charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char first Char = input. charAt(start);\n        if(first Char == 'x' || first Char == 'X') {\n            start++;\n            isHex = true;\n\n            // check there's more than just an x after the &#\n        }\n\n        int end = start;\n        // note that this support character code without a ; on the end\n        while(input. charAt(end) !=  sem; \n        {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = int. paseInt(input. sub sequence(start, end). toString(), 16);\n            } else {\n                entityStill = int. paseInt(input. sub sequence(start, end). toString(), 10);\n            }\n        } catch( number format exception nfe) {\n        System. err. println(\"FAIL: \" + input. sub sequence(start, end) + \"[\" + start +\u300b[]\");\n            return 0;\n        }\n\n        if( entity still> 0x breatF) {\n            char[] chrs = Character. toChars( entity still);\n            out. write(chrs[0]; \n            out. write(chrs[1]; \n        } else {\n            out. write( entity still);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(index <= seqEnd - 4 && input.charAt(index) == '&' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        \n        while(input.charAt(end) != ';') \n        {\n            end++;\n            \n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n        \n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    int seqEnd = input.length();\n    // Uses -2 to ensure there is something after the &#\n    if(input.charAt(index) == '&' && index < seqEnd - 1 && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n\n            // Check there's more than just an x after the &#\n        }\n\n        int end = start;\n        // Note that this supports character codes without a ; on the end\n        while(input.charAt(end) != ';') \n        {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n        System.err.println(\"FAIL: \" + input.subSequence(start, end) + \"[\" + start +\"][\"+ end +\"]\");\n            return 0;\n        }\n\n        if(entityValue > 0xFFFF) {\n            char[] chrs = Character.toChars(entityValue);\n            out.write(chrs[0]);\n            out.write(chrs[1]);\n        } else {\n            out.write(entityValue);\n        }\n\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-19",
+    "diff_stats": null
+  }
+]

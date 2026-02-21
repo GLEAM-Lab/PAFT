@@ -1,0 +1,130 @@
+[
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    for (int i = 0; i < token.length(); i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n\n        if (options.hasOption(ch))\n        {\n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg() && (token.length() != (i + 1)))\n            {\n                tokens.add(token.substring(i + 1));\n\n                break;\n            }\n        }\n        else if (stopAtNonOption)\n        {\n            process(token.substring(i));\n            \n            return ;\n        }\n        else\n        {\n            tokens.add(token);\n            \n            return ;\n        }\n    }\n    \n    process(\"\");\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.PosixParserTest::testStopBursting"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    for (int i = 0; i < token.length(); i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n\n        if (options.hasOption(ch))\n        {\n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg() && (token.length() != (i + 1)))\n            {\n                tokens.add(token.substring(i + 1));\n\n                break;\n            }\n        }\n        else if (stopAtNonOption)\n        {\n            process(token.substring(i));\n            return;  //added this line to exit the method immediately upon finding a non-option character.\n        }\n        else\n        {\n            tokens.add(token);\n            return;  //added this line to exit the method immediately.\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.PosixParserTest::testStopBursting"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    for (int i = 0; i < token.length(); i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n\n        if (options.hasOption(ch))\n        {\n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg()) \n            {\n                \n                 if((i + 1) == token.length())break;\n                \n                  else{\n                      i+=currentOption.getValueDelimiterCounts()-1;\n                       continue;\n                   }\n             }\n        }\n         else if (!stopAtNonOption)\n         {\n             if ((token.length() != (i + 1)))\n              tokens.add(token.substring(i));\n          return;\n         }else\n        {\n            break;\n        }\n        \n      }  \n    tokens.add(token);  \n    \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n     for (int i = 0; i < token.length(); i++) \n     {\n          char c = token.charAt(i);\n          \n          if (!((c == '-') || Character.isLetterOrDigit(c))) \n          {\n              if (stopAtNonOption)\n               {\n                  addTokenToList(token.substring(i));\n               }\n             return;  \n          } \n        \n       else if (c == '-') \n         {\n             int nextIdx = i + 1;\n             \n             if ((nextIdx < token.length()) && options.hasLongOpt(token.substring(nextIdx))) \n             {\n                 String longOpt = token.substring(nextIdx);\n                 \n                 tokens.add(\"--\" + longOpt);\n                 i += longOpt.length();\n                 continue;\n             } \n             else if ((nextIdx < token.length()) && options.hasShortOpt(String.valueOf(token.charAt(nextIdx)))) \n             {\n                 String shortOpt = String.valueOf(token.charAt(nextIdx));\n                 \n                 tokens.add(\"-\" + shortOpt);\n                 i += 1;\n                 continue;\n             } \n             else \n             {\n                if (stopAtNonOption) \n                    {\n                       addTokenToList(token.substring(i));\n                     }\n                   return;\n             }\n         } \n        \n         else if (!tokens.isEmpty() && tokens.getLast().startsWith(\"-\")) \n         {\n              int lastIdx = tokens.size() - 1;\n              \n              Options.Option opt = getOption(tokens.get(lastIdx));\n              \n              if (opt!=null && opt.hasArgs()) \n              {\n                  tokens.set(lastIdx , tokens.get(lastIdx) + \" \" + token.substring(i));\n                  return;\n              }\n         }\n         \n         tokens.add(token.substring(i , i+1));\n      }\n }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    int j = 0;\n    \n    while (j < token.length()) {\n        String str = String.valueOf(token.charAt(j));\n        \n        // Check whether it is an option or not\n        if (!str.equals(\"-\") && currentOption == null){\n            \n            if (stopAtNonOption) {\n                \n                tokens.add(token);\n                return; \n            }\n            continue;\n        } \n        if ((str.equals(\"-\")) || (str.equals(\"/\"))) {  \n         \n            if (currentOption != null) {\n                if (currentOption.hasArgs()) {\n                    throw new ParseException(\"Option \" + lastParsedOption.getValue() + \" requires an argument\");\n                }\n                 \n                Option newOpt = options.getOption(lastParsedOption.getKey());\n                 \n                if (newOpt != null && newOpt!=currentOption ) { \n                    \n                     \n                    checkBeforeSetValue(lastParsedOption);\n                  \n                    setUserSpecifiedValue(lastParsedOption,\"\"); \n                      \n                   \n                    lastParsedOption  = null;\n                    currentOption = null;\n                }\n            }\n             \n               continue ;\n        }else if (currentOption == null){\n          \n           ProcessArgument(token);\n         \n            continue ;\n        } else if ( currentOption != null) {\n            if (!currentOption.hasArgs() && !currentOption.isImplicit()){\n                 \n                 \n                tokens.add(\"-\"+str);\n               \n                lastParsedOption  = options.getOption(str);\n                \n                checkBeforeSetValue(lastParsedOption );\n      \n                setUserSpecifiedValue(lastParsedOption ,null);\n                \n                 \n                lastParsedOption   = null;\n                currentOption = null;\n               \n            }else if (currentOption.hasArgs()&&(!currentOption.isImplicit())) {\n                \n                if (j==token.length()-1) {\n                \n                    throw new ParseException (\"Option \" + currentOption.getKey ()+\" requires an argument\");\n                   \n                        \n                           \n                        }  else {\n                            \n                                 lastParsedOption   = options.getOption(token.substring(1, j + 2).trim()); \n                         \n                                 \n                                    \n                                    checkBeforeSetValue(lastParsedOption);\n                                    \n                                         \n                                     \n                                    setUserSpecifiedValue(lastParsedOption,token.substring(j+1).trim());\n                                            \n                                           \n                                lastParsedOption    = null;\n                                      \n                                        currentOption=null;\n                             \n                                \n                               break;\n                                 \n                                  \n                           } \n                 } else if (currentOption.isImplicit()) {\n                       tokens.add(\"-\"+str); \n                       \n                        lastParsedOption  = options.getOption(str); \n                \n                   \n                 \n                    checkBeforeSetValue(lastParsedOption);\n                    \n                    \n                   \n                 setUserSpecifiedValue(lastParsedOption, null); \n                   \n                \n                   lastParsedOption  = null;\n                \n                 \n                    currentOption = null;\n                     \n                \n                continue;\n                                        \n               \n               \n               \n               \n               \n            \n               \n            }\n            \n            \n            \n        } \n        j ++;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidburstToken(String\u4ee4\u724c, boolean stopAt\u975eoption)\n{\n    for (int i = 1; i <\u4ee4tokens.length(); i++)\n    {\n        String ch = String.valueOf(\u4ee4tokens.charAt(i));\n\n        if (options.hasoption(ch))\n        {\n           tokens.add(\"_\" + ch);\n            currentoption = options.option(ch);\n\n            if (currentoption.hasarg() && (tokens.length() != (i + 1 Jason))\n            {\n               tokens.add(tokens.substring(i + 1));\n\n                break;\n            }\n            else if (!currentoption.hasarg())\n            {\n                break;\n            }\n        }\n        else if ( stopAt\u975eoption )\n        {\n           process(tokens.substring(i));\n            break;\n        }\n        else\n{\n    break;\n}\n}}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidburstToken(StringToken, boolean stopAtnonoption)\n{\n    for (int i = 1; i <Token.length(); i++)\n    {\n        String ch = String.valueOf(Token.charAt(i));\n\n        if (options.hasoption(ch))\n        {\n           tokens.add(\"_\" + ch);\n            currentoption = options.getoption(ch);\n\n            if (currentoption.hasArg() && (Token.length() != (i + 1panel)\n            {\n               tokens.add(Token.substring(i + 1));\n                break;\n            }\n            else if (!currentoption.hasArg())\n            {\n                break;\n            }\n        }\n        else if (nonoption.hasoption(ch))\n{\ncontinue;\n}\nelse if (nonoption.hasoption(ch))\n{\ncontinue;\n}\nelse if ( stopAtnonoption)\n{\nprocess(Token.substring(i));\n}\nelse\n{\ntokens.add(Token);\nreturn;\n}\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected voidburstToken(Stringtokenset stopAt\u975eoption)\n{\n    for (int i = 1; i <tokenset.length(); i++)\n    {\n        String ch = String.valueOf(tokenset.charAt(i));\n\n        if (options.hasoption(ch))\n        {\n           tokens.add(\"_\" + ch);\n            currentoption = options.getoption(ch);\n\n            if (currentoption.hasarg() && (tokenset.length() != (i + 1\u0434\u043e\u0431))\n            {\n               tokens.add(tokenset.substring(i + 1));\n                break;\n            }\n            else if (currentoption.hasarg() && (tokenset.length() == (i + 1\u52c3))\n            {\n                break;\n            }\n            else\n            {\n                break;\n            }\n        }\n        else if ( stopAt\u975eoption )\n        {\n           process(tokenset.substring(i));\n            break;\n        }\n        else\n        {\n           tokens.add(tokenset);\n            break;\n        }\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    int initialOffset = 0;\n    \n    for (int i = 1; i < token.length(); i++)\n    {\n        String ch = String.valueOf(token.charAt(i));\n\n        if (options.hasOption(ch))\n        {\n            tokens.add(token.substring(initialOffset, i));\n            \n            tokens.add(\"-\" + ch);\n            currentOption = options.getOption(ch);\n\n            if (currentOption.hasArg())\n            {\n                initialOffset = i + 1;\n                \n                continue; \n            }\n        }\n        \n        if(!stopAtNonOption){\n          tokens.add(token.substring(initialOffset));  \n          return ;\n       }\n          \n        process(token.substring(i));\n        return ;\n\n    }\n    if(initialOffset!=token.length()-1){\n      tokens.add(token.substring(initialOffset));  \n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.PosixParserTest::testStopBursting"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "protected void burstToken(String token, boolean stopAtNonOption)\n{\n    for (int i = 0; i < token.length(); i++) \n    {\n        String ch = String.valueOf(token.charAt(i));\n    \n        if (!ch.equals(\" \"))\n        {\n            if (options.hasOption(ch))\n            {\n                tokens.add(\"-\" + ch);\n                currentOption = options.getOption(ch);\n        \n                if (currentOption.hasArg())\n                {\n                    if ((i + 1) == token.length())\n                    {\n                        process(token.substring(i + 1));\n                        return;\n                    }\n                    \n                    tokens.add(token.substring(i + 1, token.indexOf(' ', i)));\n                    break;\n                }\n            }\n            else if (stopAtNonOption)\n            {\n                process(token.substring(i));\n                \n                return;\n            }\n            else\n            {\n                tokens.add(token);\n                return;\n            }\n        }\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.cli.PosixParserTest::testStopBursting"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Cli-17",
+    "diff_stats": null
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n        Map<String, Integer> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<String, Integer>();\n            List<String> uniqueList = new ArrayList<>();\n            \n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n\n            // filter out duplicates\n            if (header != null) {\n                for (int i = 0; i < header.length; i++){\n                \tif (!uniqueList.contains(header[i])) {\n                        uniqueList.add(header[i]);\n                    \thdrMap.put(header[i], Integer.valueOf(i));  \n                    }\n                }\n            }\n        }\n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n        Map<String, Integer> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        List<String> allHeaders = new ArrayList<>();\n        if (formatHeader != null) {\n            \n            if (formatHeader.length > 0) {\n                allHeaders.addAll(Arrays.asList(formatHeader));                \n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n            }\n\n            while (true){\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord == null) break;\n                for (String s : nextRecord.getValues()){\n                  if (!allHeaders.contains(s)){\n                      allHeaders.add(s);\n                  }  \n                }              \n            }\n        \n            reset();\n\n            // build the name to index mappings\n            hdrMap = new LinkedHashMap<String, Integer>();\n            for (int i = 0; i < allHeaders.size(); i++) {\n                hdrMap.put(allHeaders.get(i), Integer.valueOf(i));\n            }          \n\n        }\n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private Map<String, List<Integer>> initializeHeader() throws IOException {\n        Map<String, List<Integer>> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<>();\n            \n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n            \n            // build the name to index mappings\n            if (header != null) {\n                for (int i = 0; i < header.length; i++) {\n                    if (!hdrMap.containsKey(header[i])) {\n                        ArrayList<Integer> indices = new ArrayList<>();\n                        indices.add(i);\n                        hdrMap.put(header[i], indices);\n                    }else{\n                        hdrMap.get(header[i]).add(i);\n                    }\n                }\n            }\n        }\n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private Map<String, List<Integer>> initializeHeader() throws IOException {\n        Map<String, List<Integer>> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<>();\n\n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n\n            // build the name to index mappings\n            if (header != null) {\n                for (int i = 0; i < header.length; i++) {\n                    hdrMap.computeIfAbsent(header[i], s -> new ArrayList<>()).add(i);\n                }\n            }\n        }\n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n        Map<String, Integer> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<String, Integer>();\n\n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n\n            // build the name to index mappings\n            if (header != null) {\n                for (int i = 0; i < header.length; i++) {\n                    String headerName = header[i];\n                    \n                    if (hdrMap.containsKey(headerName)) {\n                        int count = hdrMap.get(headerName);\n                        while (hdrMap.containsKey(headerName + \"(\" + count + \")\")) {\n                            count ++;\n                        }\n                        headerName += \"(\" + count + \")\";\n                    }\n                    \n                    hdrMap.put(headerName, Integer.valueOf(i));\n                }\n            }\n        }\n        \n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private map initializeheader() throwIOException {\n\tmap hdrMap = null;\n\tstring[] formatheader = this.format.getheader();\n\tif (formatheader !null){\n\t\thdrMap = new Linked coupledMap<string, int>();\n\t\t\n\t\tstring[]header = null;\n\t\tif (formatheader.length == 0){\n\t\t\t//read theheaderfromthefirstlineof thefile\n\t\t\tcsrec rec = this.nextrec();\n\t\t\tif rec ! null{\n\t\t\t\theader = rec. values();\n\t\t\t}\n\t\t\t else {\n\t\t\t\theader = formatheader;\n\t\t\t}\n\t\t\t\n\t\t\t//buildnametoindex mappings\n\t\t\tif (header ! null){\n\t\t\t\t for (int i= 0; i <header. length; i++){\n\t\t\t\t hdrMap. put(header[i], int. valueOf(i));\n\t\t\t}\n\t\t\t}\n\t\t}\n\treturn hdrMap;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private List<String[]> initializeheader() {\n    List<String[]> list = newArrayList();\n    String[] formatheader = this.format.getheader();\n    if (formatheader != null && formatheader.length > 0) {\n        list.add(formatheader);\n    }\n    else {\n        list.add(this.next record().get Values());\n    }\nreturn list;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private List<String[]> initializeheader() {\n    final String[] formatheader = this.format.getheader();\n    List<String[]> result = newArrayList();\n    String[]header = null;\n    if formatheader.length == 0:\n      final String[] next record = this.next record();\n      if next record != null:\n       header = next record. values();\n      result. add(header);\n    else:\n      if this.format.getSkipheader record():\n        this.next record();\n      result. add(formatheader);\n    return result;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "// repaired java code to handle duplicate column names\n    private Map<String, List<Integer>> initializeHeader() throws IOException {\n        Map<String, List<Integer>> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<>();\n            \n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n            \n            if (header == null || header.length <= 0){\n               throw new IllegalArgumentException(\"No headers found\");\n            }\n            \n            int count = 0;\n            // build the name to index mappings\n            if (header != null) {\n                for (String s : header) {\n                                   \n                                    if(!hdrMap.containsKey(s)){\n                                        ArrayList<Integer> integers = new ArrayList<>();\n                                        integers.add(count);\n                                        hdrMap.put(s,integers);\n                                        \n                                    }else{\n                                        hdrMap.get(s).add(count);\n                                    }\n                                    \n                                    \n                    \n                                  \n                     \n                                 \n                                   count++;  \n                                                        \n                       }\n            }\n        } else {\n           throw new IllegalArgumentException(\"Headers missing\");\n    \t\t}\n        \n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private Map<String, Integer> initializeHeader() throws IOException {\n        Map<String, Integer> hdrMap = null;\n        final String[] formatHeader = this.format.getHeader();\n        if (formatHeader != null) {\n            hdrMap = new LinkedHashMap<String, Integer>();\n\n            String[] header = null;\n            if (formatHeader.length == 0) {\n                // read the header from the first line of the file\n                final CSVRecord nextRecord = this.nextRecord();\n                if (nextRecord != null) {\n                    header = nextRecord.values().toArray(new String[0]);\n                }\n            } else {\n                if (this.format.getSkipHeaderRecord()) {\n                    this.nextRecord();\n                }\n                header = formatHeader;\n            }\n\n            // build the name to index mappings\n            if (header != null) {\n                Set<String> set = new HashSet<>();\n                List<String> list = Arrays.asList(header);\n                \n                for (int i = 0; i < header.length; i++) {\n                    if (!set.contains(header[i])) {\n                        hdrMap.put(header[i], Integer.valueOf(list.indexOf(header[i])));\n                        \n                    } else {\n                    \n                        throw new IllegalArgumentException(\"Duplicate column names are not allowed\");\n                    }\n                }\n            }\n        }\n        return hdrMap;\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-7",
+    "diff_stats": null
+  }
+]

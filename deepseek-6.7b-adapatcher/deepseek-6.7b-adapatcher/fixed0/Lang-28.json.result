@@ -1,0 +1,128 @@
+[
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    // TODO: Protect from ArrayIndexOutOfBounds\n    if(index+2<input.length()&&input.charAt(index)=='&'&&input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n        \n       if(input.charAt(start) == 'x' || input.charAt(start) == 'X') {\n            isHex = true;\n            start++;\n          \n      }  \n        \n     int end=start;\n    \n     while(index+end!=input.length()&&input.charAt(end)!=';') {\n             end++;\n          }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.substring(start, end), 16);\n            } else {\n                entityValue = Integer.parseInt(input.substring(start, end));\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n\n            out.write(entityValue);\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    // TODO: Protect from ArrayIndexOutOfBounds\n    if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input.charAt(end) != ';') {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString());\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n        \n        if(Character.getType(entityValue) == 4){\n           Character.UnicodeBlock ub = Character.UnicodeBlock.of(entityValue);\n          if(ub == Character.UnicodeBlock.BASIC_LATIN){\n              out.write('&');\n              out.write('#');\n              out.write('x');\n              out.write(Integer.toHexString(entityValue));\n              out.write(';');  \n          }else{\n               out.write(entityValue);\n           }\n            \n        }else{\n           out.write(entityValue);\n        }\n\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testSupplementaryUnescaping"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.io.IOException;\nimport java.io.Writer;\nimport java.util.HashMap;\nimport java.util.Map;\n\n/**\n * Unicode-specific implementation of {@link org.apache.commons.lang3.text.translate.NumericEntityUnescaper}.\n */\npublic final class NumericUnicodeEscaper extends NumericEntityUnescaper {\n    /** The sole instance. */\n    private static final NumericUnicodeEscaper INSTANCE = new NumericUnicodeEscaper();\n\n    /** Cache of frequent codes. */\n    private static final Map<Integer, Character> FREQUENT_CHARS = new HashMap<>();\n    \n    /** Maximum size of frequent chars cache. */\n    private static final int MAX_CACHE_SIZE = 512;\n    \n    static {\n        for (int code = 0; code <= 0xFFFF; code++) {\n            FREQUENT_CHARS.put(code, (char) code);\n        }\n    }\n\n    /** Private constructor, use {@link #INSTANCE} instead. */\n    private NumericUnicodeEscaper() {}\n\n    @Override\n    public Object clone() throws CloneNotSupportedException {\n        throw new CloneNotSupportedException(\"Instance has singleton properties\");\n    }\n\n    @Override\n    public int translate(final CharSequence input, final int index, final Appendable output) throws IOException {\n        int codePoint = Character.codePointAt(input, index);\n        Character cachedCharacter = FREQUENT_CHARS.get(codePoint);\n        if (cachedCharacter != null) {\n            output.append(cachedCharacter);\n            return index + 1;\n        } else if (codePoint >= 0x800 && codePoint < 0x10000) {\n            appendAsTwoDigitHex(output, codePoint >> 12 & 0xf);\n            appendAsTwoDigitHex(output, codePoint >>  8 & 0xf);\n            appendAsTwoDigitHex(output, codePoint >>  4 & 0xf);\n            appendAsTwoDigitHex(output, codePoint       & 0xf);\n            return index + 2;\n        } else {\n            throw new UnsupportedOperationException(\"Code point \" + codePoint + \" does not map to a supported unicode escape sequence.\");\n        }\n    }\n    \n    private static void appendAsTwoDigitHex(Appendable output, int value) throws IOException {\n        char highChar  = Character.toChars(value)[0];\n        output.append(\"\\\\u\"+ Integer.toHexString(highChar));\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    // TODO: Protect from ArrayIndexOutOfBounds\n    if(index+1 >= input.length()) {\n        return 0;\n    }\n    if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            isHex = true;\n            start++;\n        }\n        if(start >= input.length()) {\n            return 0;\n        }\n        int end = start;\n        while(input.charAt(end) != ';') {\n            if(end + 1 >= input.length()) {\n                break;\n            }\n            end++;\n        }\n        if(end == start){\n             return 0;\n         }\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString());\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n        if ((entityValue & 0xFFFF) == 0xFFFE) {\n            out.write(\"\\uD800\\uDC00\" + String.valueOf((char)(entityValue >> 16)));\n        } else if ((entityValue & 0xFFFF) >= 0xDC00 && (entityValue & 0xFFFF) <= 0xDFFF ){\n            continue;\n        }else {\n            out.write(entityValue);\n        }\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    // TODO: Protect from ArrayIndexOutOfBounds\n    if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input.charAt(end) != ';') {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n\n            out.write(entityValue);\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testSupplementaryUnescaping"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequence input, int index, final StringBuilder out) {\n    //\n    if(input. charAt(index) == '&' && input. charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstchar = input. charAt(start);\n        if(firstchar == 'x' || firstchar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input. charAt(end) != ';') {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entity stops at input. sub sequence(start, end). toString(), 16);\n            } else {\n                entity stopss at input. sub sequence(start, end). toString(), 10);\n            }\n        } catch(Number format exception e) {\n            return 0;\n        }\n\n        out. write(\u5b9e\u4f53 value);\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequence input , int index , W\u5668 out ) th throw IOException {\n    // TOD: protect from arrayIndexOutOfBounds\n    if(input.charAt(index) == ' &' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstchar = input.charAt(start);\n        if(firstchar == 'x' || firstchar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input.charAt(end) != ';') {\n            end++;\n        }\n\n        int entity value;\n        try {\n            if(isHex) {\n                entity value = Integer.valueOf(input.sub sequence(start, end), 16);\n            } else {\n                entity value = Integer.valueOf(input.sub sequence(start, end), 10);\n            }\n        } catch(Number format exception e) {\n            return 0;\n        }\n\n        out. write( entity value );\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public inttranslate( Char sequence input, int index, final  W\u5668 out) throwssIOException {\n    if(input. charAt(index) == '&' && input. charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char first Char = input. charAt(start);\n        if(first Char == 'x' or first Char == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input. charAt(end) != ';') {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = int. ParseInt(input. sub sequence(start, end). toString(), 16);\n            } else {\n                entityValue = int. ParseInt(input. sub sequence(start, end). toString(), 10);\n            }\n        } catch(Number FormatException nfe) {\n            return 0;\n        }\n\n        out. write(entitiesValue);\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public int translate(CharSequence input, int index, Writer out) throws IOException {\n    // TODO: Protect from ArrayIndexOutOfBounds\n    if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {\n        int start = index + 2;\n        boolean isHex = false;\n\n        char firstChar = input.charAt(start);\n        if(firstChar == 'x' || firstChar == 'X') {\n            start++;\n            isHex = true;\n        }\n\n        int end = start;\n        while(input.charAt(end) != ';') {\n            end++;\n        }\n\n        int entityValue;\n        try {\n            if(isHex) {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);\n            } else {\n                entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);\n            }\n        } catch(NumberFormatException nfe) {\n            return 0;\n        }\n\n            out.write(entityValue);\n        return 2 + (end - start) + (isHex ? 1 : 0) + 1;\n    }\n    return 0;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testSupplementaryUnescaping"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.io.*;\nimport org.apache.commons.lang3.StringEscapeUtils;\n\nclass Main {\n  static String custom_escape(String s) {\n    if (s.isEmpty()) {\n      return s;\n    }\n\n    final StringBuilder accumulator = new StringBuilder();\n\n    final int length = s.length();\n    for (int i = 0; i < length;) {\n      int codePoint = Character.codePointAt(s, i);\n\n      switch (Character.charCount(codePoint)) {\n        case 1:\n          accumulator.appendCodePoint(codePoint);\n          break;\n        default:\n          accumulator.append(\"&#\").append(codePoint).append(\";\");\n      }\n      i += Character.charCount(codePoint);\n    }\n\n    return accumulator.toString();\n  }\n  \n  public static void main(String[] args){\n      \n        System.out.println(custom_escape(\"Hello World\"));\n    \n        \n        /*Expected output\n         * Hello World\n           */\n            \n        System.out.println(custom_escape(\"\\uD834\\uDD1E\"));\n        \n        /* Expected output\n         * &#12354;\n           */\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-28",
+    "diff_stats": null
+  }
+]

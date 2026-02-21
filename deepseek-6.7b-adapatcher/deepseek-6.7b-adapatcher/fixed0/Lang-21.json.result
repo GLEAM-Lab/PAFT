@@ -1,0 +1,197 @@
+[
+  {
+    "patch_code": "public static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 20,
+      "total_changed_tokens": 40,
+      "edit_distance": 14,
+      "edit_similarity": 98.13,
+      "norm_edit_distance": 0.0187,
+      "norm_edit_distance_pct": 1.87,
+      "buggy_length": 735,
+      "fix_length": 749,
+      "preserved_ratio": 92.31
+    }
+  },
+  {
+    "patch_code": "public static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 20,
+      "total_changed_tokens": 40,
+      "edit_distance": 14,
+      "edit_similarity": 98.13,
+      "norm_edit_distance": 0.0187,
+      "norm_edit_distance_pct": 1.87,
+      "buggy_length": 735,
+      "fix_length": 749,
+      "preserved_ratio": 92.31
+    }
+  },
+  {
+    "patch_code": "import java.util.Calendar;\nimport org.apache.commons.lang3.time.DateUtils;\n\npublic class Main {\n  public static void main(String[] args) {\n    Calendar a = Calendar.getInstance();\n    a.setTimeInMillis(1297364400000L);\n    Calendar b = Calendar.getInstance();\n    b.setTimeInMillis(1297321200000L);\n    \n    System.out.println(isSameLocalTime(a, b));\n  }\n  \n  private static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n      throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n  }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.Calendar;\n\npublic class Main {\n    public static void main(String[] args){\n        long now = System.currentTimeMillis();\n        long nextYear = now + 1000 * 60 * 60 * 24 * 365;\n        \n        String x = \"2017-10-28\";\n        int y = 12 ;\n        \n        SimpleDateFormat sdf = new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\");\n        Date dtX = sdf.parse(x + \" \" +y+\":00:00\");\n        Date dtNow = new Date(now);\n        Date dtNextYear = new Date(nextYear);\n        \n        // \u521d\u59cb\u5316\u7b2c\u4e00\u4e2a\u65e5\u5386\u5b9e\u4f8b\n        Calendar calendar1 = Calendar.getInstance();\n        calendar1.setTime(dtNow);\n         \n        // \u521d\u59cb\u5316\u7b2c\u4e8c\u4e2a\u65e5\u5386\u5b9e\u4f8b\n        Calendar calendar2 = Calendar.getInstance();\n        calendar2.setTime(dtX);\n        \n        boolean sameLocalTime = DateUtils.isSameLocalTime(calendar1, calendar2);\n        \n        if (sameLocalTime){\n            System.out.println(\"\u76f8\u540c\u7684\u672c\u5730\u65f6\u95f4\u3002\");\n        }else{\n            System.out.println(\"\u4e0d\u540c\u7684\u672c\u5730\u65f6\u95f4\u3002\");\n        }\n    \n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 20,
+      "total_changed_tokens": 40,
+      "edit_distance": 14,
+      "edit_similarity": 98.13,
+      "norm_edit_distance": 0.0187,
+      "norm_edit_distance_pct": 1.87,
+      "buggy_length": 735,
+      "fix_length": 749,
+      "preserved_ratio": 92.31
+    }
+  },
+  {
+    "patch_code": "public static boolean isSame localTime( Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.DAY_of_year) == cal2.get(Calendar.DAY_of_year) &&\n            cal1.get(Calendar.Years) == cal2.get(Calendar.Years) &&\n            cal1.get(Calendar.HourOfday) == cal2.get(Calendar.HourOfday) &&\n            cal1.get(Calendar.Minute) == cal2.get(Calendar.Minute) &&\n            cal1.get(Calendar.seconds) == cal2.get(Calendar.seconds) &&\n            cal1.get(Calendar. milliseconds) == cal2.get(Calendar. milliseconds);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static boolean isSame localTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n return (cal1.get(Calendar. miilisecond) == cal2.get(Calendar. miilisecond) &&\n         cal1.get(Calendar. sec\u949f) == cal2.get(Calendar. sec\u949f) &&\n         cal1.get(Calendar. minutes) == cal2.get(Calendar. minutes) &&\n         cal1.get(Calendar. hourOf day) == cal2.get(Calendar. hourOf day) &&\n         cal1.get(Calendar. dayOf year) == cal2.get(Calendar. dayOf year) &&\n         cal1.get(Calendar. year) == cal2.get(Calendar. year) &&\n         cal1.get(Calendar. erA) == cal2.get(Calendar. erA) &&\n         cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static boolean isSamelocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar. millisecond) == cal2.get(Calendar. millisecond) &&\n            cal1.get(Calendar. SEcond) == cal2.get(Calendar. SEcond) &&\n            cal1.get(Calendar. MINute) == cal2.get(Calendar. MINute) &&\n            cal1.get(Calendar. hourOfday) == cal2.get(Calendar. hourOfday) &&\n            cal1.get(Calendar. dayOf year) == cal2.get(Calendar. dayOf year) &&\n            cal1.get(Calendar. year) == cal2.get(Calendar. year);\n    \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 20,
+      "total_changed_tokens": 40,
+      "edit_distance": 14,
+      "edit_similarity": 98.13,
+      "norm_edit_distance": 0.0187,
+      "norm_edit_distance_pct": 1.87,
+      "buggy_length": 735,
+      "fix_length": 749,
+      "preserved_ratio": 92.31
+    }
+  },
+  {
+    "patch_code": "public static boolean isSameLocalTime(Calendar cal1, Calendar cal2) {\n    if (cal1 == null || cal2 == null) {\n        throw new IllegalArgumentException(\"The date must not be null\");\n    }\n    return (cal1.get(Calendar.MILLISECOND) == cal2.get(Calendar.MILLISECOND) &&\n            cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND) &&\n            cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&\n            cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&\n            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&\n            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&\n            cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&\n            cal1.getClass() == cal2.getClass());\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-21",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 20,
+      "deleted_tokens": 20,
+      "total_changed_tokens": 40,
+      "edit_distance": 14,
+      "edit_similarity": 98.13,
+      "norm_edit_distance": 0.0187,
+      "norm_edit_distance_pct": 1.87,
+      "buggy_length": 735,
+      "fix_length": 749,
+      "preserved_ratio": 92.31
+    }
+  }
+]

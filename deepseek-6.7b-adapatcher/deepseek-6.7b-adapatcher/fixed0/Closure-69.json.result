@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "private void visitCall(NodeTraversal t, Node n) {\n  Node child = n.getFirstChild();\n  JSType childType = getJSType(child).restrictByNotNullOrUndefined();\n\n  if (!childType.canBeCalled()) {\n    report(t, n, NOT_CALLABLE, childType.toString());\n    ensureTyped(t, n);\n    return;\n  }\n\n  // A couple of types can be called as if they were functions.\n  // If it is a function type, then validate parameters.\n  if (childType instanceof FunctionType) {\n    FunctionType functionType = (FunctionType) childType;\n\n    boolean isExtern = false;\n    JSDocInfo functionJSDocInfo = functionType.getJSDocInfo();\n    if(functionJSDocInfo != null) {\n      String sourceName = functionJSDocInfo.getSourceName();\n      CompilerInput functionSource = compiler.getInput(sourceName);\n      isExtern = functionSource.isExtern();\n    }\n\n    // Non-native constructors should not be called directly\n    // unless they specify a return type and are defined\n    // in an extern.\n    if (functionType.isConstructor() &&\n        !functionType.isNativeObjectType() &&\n        (functionType.getReturnType().isUnknownType() ||\n         functionType.getReturnType().isVoidType() ||\n         !isExtern)) {\n      report(t, n, CONSTRUCTOR_NOT_CALLABLE, childType.toString());\n    }\n\n    // Functions with explicit 'this' types must be called in a GETPROP\n    // or GETELEM.\n\n    if (compilerOptions.getErrorOnInstanceMethodCallAsFunction()) {\n      report(t, n, INSTANCE_METHOD_FUNCTION_CALL, childType.toString());\n    } else {\n      visitParameterList(t, n, functionType);\n    }\n    ensureTyped(t, n, functionType.getReturnType());\n  } else {\n    ensureTyped(t, n);\n  }\n\n  // TODO: Add something to check for calls of RegExp objects, which is not\n  // supported by IE.  Either say something about the return type or warn\n  // about the non-portability of the call or both.\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private class TypeCheckVisitor extends TreeTranslatingVisitor {\n...\n@Override protected Node translateMethodCall(NodeTree tree, MethodCall call) {\n  ...\n  Object result;\n  if ((result = resolveMemberAccessorForReceiver(call)) != null) {\n    ...\n  } else if (call.getTarget().getKind() == SyntaxKind.IDENTIFIER) {\n    ...\n  } else if (call.getTarget().hasPropertyDereference()\n            || call.getTarget().getSyntaxType() == SyntaxType.COMPILATION_UNIT\n            || call.getTarget().getKind() == SyntaxKind.GETPROPERTY\n            || call.getTarget().getKind() == SyntaxKind.NEW) {\n    reportIncompatible(tree, call, RECEIVER_INCOMPATIBLE,\n                       JSUtils.typeToString(((Expression) call.getTarget()).getType()),\n                       0);\n  } else {\n    reportError(new CompilationError(\"unknown target kind\", call));\n  }\n\n  assert result != null;\n  return (Node) result;\n}\n...\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(NodeTraversal t, Node n) {\n  Node child = n.getFirstChild();\n  JSType childType = getJSType(child).restrictByNotNullOrUndefined();\n\n  if (!childType.canBeCalled()) {\n    report(t, n, NOT_CALLABLE, childType.toString());\n    ensureTyped(t, n);\n    return;\n  }\n\n  // A couple of types can be called as if they were functions.\n  // If it is a function type, then validate parameters.\n  if (childType instanceof FunctionType) {\n    FunctionType functionType = (FunctionType) childType;\n    \n    if (!((i==0)? functionType.isMoveTo(): functionType.isLineTo())){\n       report(t,n,WRONG_METHOD,\"'moveTo' or 'lineTo' expected\");\n       ensureTyped(t,n);\n       return;\n    }\n    \n    boolean isExtern = false;\n    JSDocInfo functionJSDocInfo = functionType.getJSDocInfo();\n    if(functionJSDocInfo != null) {\n      String sourceName = functionJSDocInfo.getSourceName();\n      CompilerInput functionSource = compiler.getInput(sourceName);\n      isExtern = functionSource.isExtern();\n    }\n\n    // Non-native constructors should not be called directly\n    // unless they specify a return type and are defined\n    // in an extern.\n    if (functionType.isConstructor() &&\n        !functionType.isNativeObjectType() &&\n        (functionType.getReturnType().isUnknownType() ||\n         functionType.getReturnType().isVoidType() ||\n         !isExtern)) {\n      report(t, n, CONSTRUCTOR_NOT_CALLABLE, childType.toString());\n    }\n\n    // Functions with explicit 'this' types must be called in a GETPROP\n    // or GETELEM.\n\n    visitParameterList(t, n, functionType);\n    ensureTyped(t, n, functionType.getReturnType());\n  } else {\n    ensureTyped(t, n);\n  }\n\n  // TODO: Add something to check for calls of RegExp objects, which is not\n  // supported by IE.  Either say something about the return type or warn\n  // about the non-portability of the call or both.\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitMethodInvocationExpression(NodeTraversal t, MethodInvocationExpr miexpr) {\n  Expression lhsexpr = miexpr.getObject();\n  Node rhsnode = miexpr.getMethodName();\n  Type methodtype = null;\n  \n  if (lhsexpr != null) {\n    Type lhstype = getJSType(lhsexpr).strict();\n    if (lhstype.instanceOf(Type.STRING) ||\n        lhstype.instanceOf(Type.ARRAY) ||\n        lhstype.instanceOf(DOMType.NODELIKE)) {\n      \n      Pair<Boolean, Type> result = findMethod(miexpr, lhsexpr, rhsnode, /*allowInstance=*/true);\n      if (result == null) {\n        return;\n      }\n      if (result.first) {\n        methodtype = result.second;\n      } else {\n        // Handle the situation where we have an unknown instance\n        ensureTyped(t, miexpr, lhstype);\n        return;\n      }\n    } else if (lhstype.instanceOf(Type.FUNCTION)) {\n      handleSpecialCasesForFunctionLhs(t, miexpr, lhsexpr, rhsnode);\n      return;\n    } else if (lhstype.instanceOf(DOMTYPE.EVENTTARGET) && rhsnode instanceof Identifier &&\n                ((Identifier)rhsnode).getName().equals(\"addEventListener\")) {\n      handleEventAddListenerCase(t, miexpr, lhsexpr, rhsnode);\n      return;\n    }\n  }\n  assert(methodtype != null);\n  ensureTyped(t, miexpr, methodtype.getInstanceType());\n}\n\n// Inserted this helper method after the original one\n/**\n * Returns whether the expression represents a closure instance.\n */\nprivate boolean isClosureExpression(Expression expr){\n  if (expr == null) {\n    return false;\n  }\n  Type exprType = getJSType(expr).restrictByNotNullOrUndefined();\n  return exprType.instanceOf(JSILTypeFactory.CLOSURE_INSTANCE_OBJECT) || \n          exprType.instanceOf(JSILTypeFactory.ANONYMOUS_FUNCTION_OBJECT);\n}\n\nprivate void ensureTyped(NodeTraversal t, Expr e, Type preferredType) {\n  ...\n  // Now modify the part where it checks whether the actual type has the same name as the preferred type\n  else if (actualType.getName().equals(preferredType.getName())) {\n    // Check if it's an instance method that was converted to normal function\n    if (isClosureExpression(e)){\n      Location loc = e.getLastChildLocation();\n      if (loc != null) {\n        ReportSettings rs = context_.getReportSettings();\n        IssueHandler.reportIssue(new MessageFormat.PlaceHolder(598, loc), rs,\n            ErrorCollector.MessageKind.WARNING, context_.currentFile_);\n      }\n    }else{\n      super.ensureTyped(t, e, preferredType);\n    }\n    return;\n  }\n  ...\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(NodeTraversal t, Node n) {\n  Node child = n.getFirstChild();\n  JSType childType = getJSType(child).restrictByNotNullOrUndefined();\n\n  if (!childType.canBeCalled()) {\n    report(t, n, NOT_CALLABLE, childType.toString());\n    ensureTyped(t, n);\n    return;\n  }\n\n  // A couple of types can be called as if they were functions.\n  // If it is a function type, then validate parameters.\n  if (childType instanceof FunctionType) {\n    FunctionType functionType = (FunctionType) childType;\n    \n    Type thisType = ((TypeScriptTypeVisitor) t.getTypeManager()).peekStackFrame().getVariable(\"this\").getJSType();\n    assert thisType != null;\n\n    boolean isExtern = false;\n    JSDocInfo functionJSDocInfo = functionType.getJSDocInfo();\n    if(functionJSDocInfo != null) {\n      String sourceName = functionJSDocInfo.getSourceName();\n      CompilerInput functionSource = compiler.getInput(sourceName);\n      isExtern = functionSource.isExtern();\n    }\n\n    // Non-native constructors should not be called directly\n    // unless they specify a return type and are defined\n    // in an extern.\n    if (functionType.isConstructor() &&\n        !functionType.isNativeObjectType() &&\n        (functionType.getReturnType().isUnknownType() ||\n         functionType.getReturnType().isVoidType() ||\n         !isExtern)) {\n      \n      report(t, n, CONSTRUCTOR_NOT_CALLABLE, childType.toString());\n    }\n\n    // Functions with explcit 'this' types must be called in a GETPROP\n    // or GETELEM.\n\n    visitParameterList(t, n, functionType);\n    ensureTyped(t, n, functionType.getReturnType());\n  } else {\n    ensureTyped(t, n);\n  }\n\n  // TODO: Add something to check for calls of RegExp objects, which is not\n  // supported by IE.  Either say something about the return type or warn\n  // about the non-portability of the call or both.\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(Node Traversal t,Node n){\n  Nodes child = n.getFirst child();\n  JSType child Type = getJSType(child). restrictBy NotNullOr Udefined();\n\n  if !child Type.can be called() {\n    report(t, n, NOT_CALLable, child Type. String());\n    ensureTyped(t, n);\n    return;\n  }\n\n  if (child Type is not an instanceof function type) {\n    ensureTyped(t, n);\n    return;\n  }\n\n  function type = (function type) child Type;\n  boolean isExtern = false;\n  JSDoc info functionJSDoc info = function type. getJSDoc info();\n  if (functionJSDdoc info !=  null) {\n    String source name = functionJSDdoc info. get source name();\n    Compiler input function source = Compiler inputs. get input(source name);\n    isExtern = function source. isextern();\n  }\n\n  if (function type is constructor and\n      !function type.is Native object type and\n      (function type.get Return type(). is Unknown type or\n       function type.get Return type(). is void type or\n       not isExtern)) {\n    report(t, n, Constructor not callable, child Type. string());\n  }\n\n  visit parameter list(t, n, function type);\n  ensureTyped(t, n, function type. get return type());\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(Node Traversal t,Node n){\n  node child = n.getFirstchild();\n  JSType childType = getJSType(child). restrictBy notnullOrUdefined();\n  \n  if (!childType.canBeCalled()) {\n    report(t, n, NOT_CALLable, childType.toString());\n    ensureTyped(t, n);\n    return;\n  }\n  if (childType.is(new ObjectType(\"goog.math.Size\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.math.Point\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.math.PointArray\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.math.rectangle\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.math. rectangleArray\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\"goog.graphics.LineStrip\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\"goog.graphics.LineStripBuilder\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.graphics.LineBuilder\"))){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.graphics. path\"){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.graphics. pathBuilder\"){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\" goog.graphics. line.line\"){\n    ensureTyped(t, n); return;\n  }\n  if (childType.is(new ObjectType(\"goog.graphics. line.LineBuilder\"){\n    ensureTyped(t, n); return;\n  }\n  ensureTyped(t, n);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(Node traversal, node) {\n  node child = node.getFirst child();\n  JSType childType = getJSType(child). restrictBy NotNullOr Udefined();\n\n  if (!childType.can be called()) {\n    report(traversal, node, not callable, childType.toString());\n    ensureTyped(traversal, node);\n    return;\n  }\n\n  // A couple of types can be called as if they were functions.\n  // If it is a function type, then validate parameters.\n  if (childType\u662f\u7531functionType\u5b9e\u73b0\u7684) {\n    functionType functionType = (functionType) childType;\n\n    boolean isExtern = false;\n    JSDdoc info functionJSDdoc info = functionType.getJSDdoc info();\n    if(functionJSDdoc info !=  null) {\n      String source name = functionJSDdoc info.get source name();\n     Compiler input function source = compiling.get input(source name);\n      isExtern = function source.is Extern();\n    }\n\n    // non- Native constructor should not be called directly\n    // unless they specified a return type and defined in anextern\n\n    visit parameter list(traversal, node, functionType);\n    ensureTyped(traversal, node, function Type.get Return Type());\n  } else {\n    ensureTyped(traversal, node);\n  }\n\n  // OPTIONally: add something to check for call of Reg exp objects which is not supported byie\n  // either say something about the returned type orwarn about the non-portability of the call or both.\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int CONTEXT = 3;\npublic class TypeCheck extends TreeTranslatingPass {\n@Override\nprotected JSToken processToken(JSToken token) {\nreturn token;\n   }\n@Override\nprotected JSNode postOrderTraverse(TreeTranslator t, JSNode node) {\nnode = super.postOrderTraverse(t, node);\nif (node == null)\nreturn null;\nif (AST.isAssignExpr(node)) {\n  if(!((AssignExpr) node).getTarget().hasContext(CONTEXT)){\n    throw new RuntimeException(\"Can't assign instance methods\");\n  }else{\n     ((AssignExpr) node).getTarget().setHasContext(true);\n  }\n}\n return node;\n }\n @Override\n public PassResult process(JSProgram jsProgram) {\n try {\n    addVisitor(new NodeFilter(){\n       public boolean enter(NodeTraversal t, Node n){\n          return true;\n       }\n       public boolean leave(NodeTraversal t, Node n){\n          if (n instanceof GetProp){\n              JSAccess accessor = ((GetProp) n).getValue();\n               if (accessor.isComputed() && !accessor.getObject().getJSType().canBeDereferenced()){\n                  throw new IllegalStateException (\"Can't operate on undereferencable \" + accessor.getObject().getJSType());\n                }else if(!accessor.getQualifier().getJSType().isHostObject()&& (accessor.getMethodExpr()!=null||(accessor.getDelegateName()==null ^ accessor.getName()==null))) {\n                    throw new IllegalStateException (\"Invalid context \"+accessor.getQualifier().toSourceString());\n                 }\n            }\n           return true;\n      }});\n    super.process(jsProgram);\n} catch (RuntimeException e) {\n   reportError(e.getMessage(), 0);\n   return PassResult.CHANGED;\n }\n return PassResult.UNCHANGED;\n}\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private void visitCall(NodeTraversal t, Node n) {\n  Node child = n.getFirstChild();\n  JSType childType = getJSType(child).restrictByNotNullOrUndefined();\n  \n  if (!childType.canBeCalled()) {\n    report(t, n, NOT_CALLABLE, childType.toString());\n    ensureTyped(t, n);\n    return;\n  }\n\n  // A couple of types can be called as if they were functions.\n  // If it is a function type, then validate parameters.\n  if (childType instanceof FunctionType) {\n    FunctionType functionType = (FunctionType) childType;\n    \n    boolean isExtern = false;\n    JSDocInfo functionJSDocInfo = functionType.getJSDocInfo();\n    if(functionJSDocInfo != null) {\n      String sourceName = functionJSDocInfo.getSourceName();\n      CompilerInput functionSource = compiler.getInput(sourceName);\n      isExern = functionSource.isExtern();\n    }\n    \n    // Non-native constructors should not be called directly\n    // unless they specify a return type and are defined\n    // in an extern.\n    if (functionType.isConstructor() &&\n        !functionType.isNativeObjectType() &&\n        (functionType.getReturnType().isUnknownType() ||\n         functionType.getReturnType().isVoidType() ||\n         !isExtern)) {\n      \n      // Issue a warning when a constructor is indirectly invoked.\n      report(t, n, CONSTRUCTOR_INVOKED_DIRECTLY, childType.toString());\n    }\n    \n    // Functions with explicit 'this' types must be called in a GETPROP\n    // or GETELEM.\n\n    visitParameterList(t, n, functionType);\n    ensureTyped(t, n, functionType.getReturnType());\n  } else {\n    ensureTyped(t, n);\n  }\n\n  // TODO: Add something to check for calls of RegExp objects, which is not\n  // supported by IE.  Either say something about the return type or warn\n  // about the non-portability of the call or both.\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Closure-69",
+    "diff_stats": null
+  }
+]

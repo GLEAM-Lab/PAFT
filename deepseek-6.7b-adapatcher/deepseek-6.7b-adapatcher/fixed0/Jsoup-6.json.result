@@ -1,0 +1,130 @@
+[
+  {
+    "patch_code": "static String unescape(String string) {\n    \n    if (!string.contains(\"&\"))\n        return string;\n\n    Matcher m = unescapePattern.matcher(string); // &(#(x|X)?([0-9a-fA-F]+)|[a-zA-Z]+);?\n    StringBuffer accum = new StringBuffer(string.length()); // pity matcher can't use stringbuilder, avoid syncs\n    // todo: replace m.appendReplacement with own impl, so StringBuilder and quoteReplacement not required\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        \n        if (num != null && num.length()>0) { \n            \n            try {\n                \n                int base = m.group(2)!=null ? 16 : 10; // 2 is hex indicator\n                charval = Integer.valueOf(num, base);\n            } catch (NumberFormatException e) {\n            } // skip\n        } else {\n            String name = m.group(1);\n            if (full.containsKey(name))\n                charval = full.get(name);\n        }\n\n        if (charval != -1 ) { // && charval <= 0xFFFF // out of range\n            \n            \n            String c = Character.toString((char) charval);\n            m.appendReplacement(accum, c);\n        } else {\n            m.appendReplacement(accum, m.group(0));\n        }\n    }\n    m.appendTail(accum);\n    return accum.toString();\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.integration.ParseTest::testYahooArticle"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string.contains(\"&\"))\n        return string;\n\n    Matcher m = unescapePattern.matcher(string); // &(#(x|X)?([0-9a-fA-F]+)|[a-zA-Z]+);?\n    StringBuffer accum = new StringBuffer(string.length()); // pity matcher can't use stringbuilder, avoid syncs\n    // todo: replace m.appendReplacement with own impl, so StringBuilder and quoteReplacement not required\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        if (num != null) {\n            try {\n                int base = m.group(2) != null ? 16 : 10; // 2 is hex indicator\n                charval = Integer.valueOf(num, base);\n            } catch (NumberFormatException e) {\n                 continue;\n            } // skip\n        } else {\n            String name = m.group(1);\n            if (full.containsKey(name))\n                charval = full.get(name);\n        }\n\n        if (charval != -1 && charval <= 0xFFFF) { // out of range\n            String c = Character.toString((char) charval);\n            m.appendReplacement(accum, c);\n        } else {\n            m.appendReplacement(accum, m.group(0));\n        }\n    }\n    m.appendTail(accum);\n    return accum.toString();\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.integration.ParseTest::testYahooArticle"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string.contains(\"&\"))\n        return string;\n\n    Matcher m = unescapePattern.matcher(string); // &(#(x|X)?([0-9a-fA-F]+)|[a-zA-Z]+);?\n    StringBuffer accum = new StringBuffer(string.length()); // pity matcher can't use stringbuilder, avoid syncs\n    // todo: replace m.appendReplacement with own impl, so StringBuilder and quoteReplacement not required\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        if (num != null) {\n            try {\n                int base = m.group(2) != null ? 16 : 10; // 2 is hex indicator\n                charval = Integer.valueOf(num, base);\n            } catch (NumberFormatException e) {\n            } // skip\n        } else {\n            String name = m.group(1);\n            if (full.containsKey(name))\n                charval = full.get(name);\n        }\n\n        if (charval != -1 && charval <= 0xFFFF) { // out of range\n            String c = Character.toString((char) charval);\n            m.appendReplacement(accum, c);\n        } else {\n            m.appendReplacement(accum, m.group(0));\n        }\n    }\n    m.appendTail(accum);\n    return accum.toString();\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.integration.ParseTest::testYahooArticle"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.ArrayList;\nimport java.util.*;\npublic class Test{\n    \n     public static void main(String[] args){\n           System.out.println(unescape(\"\"));\n     }\n     \n     public static Map<Character,String> full =new HashMap<>() ;\n         static {\n             full.put('amp','&');\n             full.put('lt','<');\n             full.put('gt', '>');\n             full.put('nbsp',' ');\n             full.put('quot','\\\"');\n              full.put('apos',\"\\'\");\n     };\n  \n\n     public static List<String> ignoreList= Arrays.asList(\"\",\"amp\", \"lt\", \"gt\", \"apos\", \"quot\",\"nbsp\" );\n\n       public static String unescape(String input ) {\n          if (input==null||input.equals(\"\")||ignoreList.contains(input)){\n               return \"\";\n           }\n            String result= input;\n            for (Character key:full.keySet()\n                 ) {\n                  if (result.indexOf(\"&\"+key+\";\")!=-1) {\n                       result = result.replaceAll(\"&\" + key + \";\",full.get(key));\n                  }\n            }\n           \n            return result;\n       }\n     \n     \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string.contains(\"&\"))\n        return string;\n\n    Matcher m = unescapePattern.matcher(string); // &(#(x|X)?([0-9a-fA-F]+)|[a-zA-Z]+);?\n    StringBuffer accum = new StringBuffer(string.length()); // pity matcher can't use stringbuilder, avoid syncs\n    // todo: replace m.appendReplacement with own impl, so StringBuilder and quoteReplacement not required\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        if (num != null) {\n            try {\n                int base = m.group(2) != null ? 16 : 10; // 2 is hex indicator\n                charval = Integer.valueOf(num, base);\n            } catch (NumberFormatException e) {\n                 System.out.println(e);\n                  break;\n            } // skip\n        } else {\n            String name = m.group(1);\n            if (full.containsKey(name))\n                charval = full.get(name);\n        }\n\n        if (charval != -1 || charval > 0xFFFF) { // out of range\n            String c = Character.toString((char) charval);\n            m.appendReplacement(accum, c);\n        } else {\n            m.appendReplacement(accum, m.group(0));\n        }\n    }\n    m.appendTail(accum);\n    return accum.toString();\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.integration.ParseTest::testYahooArticle"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string. contains(\"&\") )\n        return string;\n\n    Matcher m = unescape pattern .matcher(string);\n    StringBuilder\u79ef\u7d2f = new StringBuilder(string.length());\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        if (num != null) {\n            try {\n                int base = m.group(2) != null ? 16 : 10;\n                charval = int. valueOf(num, base);\n            } catch (Number format exception e) {\n            }\n        } else {\n            String name = m.group(1);\n            if ( full. containskey(name))\n                charval = full.get(name);\n        }\n\n        String c = character. string((char) charval);\n        m.appendReplace(\u79ef\u7d2f, c);\n    }\n    m.appendTail(\u79ef\u7d2f);\n    return\u79ef\u7d2f. string();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string. contains(\"&\") )return string;\n\n    Matcher m = unescape pattern. matcher(string);\n    StringBuilder\u79ef\u7d2f = new StringBuilder(string. length());\n\n    while (m.find()) {\n        int charval = -1;\n        String num = m.group(3);\n        if (num != null) {\n            try {\n                int base = m.group(2) != null ? 16 : 10;\n                charval = (int) long. valueOf(num, base);\n            } catch (Number FormatException e) {\n            }\n        } else {\n            String name = m.group(1);\n            if ( full. containsKey(name)) charval = full. get(name);\n        }\n\n        if (charval != -1 && charval > 0x\u524d\u8fdb) {\n            String c = Character. stringify((char) charval);\n            m.appendReplacing(\u79ef\u7d2f, c);\n        } else {\n            m.appendReplacing(\u79ef\u7d2f, m.group(0));\n        }\n    }\n    m.appendTail(\u79ef\u7d2f);\n    return\u79ef\u7d2f. stringify();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static String unescape(String string) {\n    if (!string. contains(\"&\") )\n        return string;\n\n    Matcher m = unescape\u90ae\u4ef6 pattern.matcher(string);\n    StringBuilder sb = new StringBuilder(string.length());\n\n    while (m.find()) {\n        String group0 = m. group(0);\n        String group1 = m. group(1);\n        String group3 = m. group(3);\n\n        int charVal =  -1 ;\n        if group3 !=  null){\n            int base = m. group(2) != null ? 16 : 10 ;\n            charVal = \u6574\u6570. valueOf(group3, base);\n        } else {\n            String name = m. group(1);\n            if full. contains key(name){\n                charVal = full. get(name);\n            }\n        }\n        String charString = Character. stringify((char) charVal);\n        m.appendReplacing(sb, charString);\n    }\n    m.append tails(sb);\n    return sb. stringify();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public class Entities {\n   static String unescape(String string) {\n        if(!string.contains(\"&\")||string==null){\n          return string;\n       }\n      Pattern p = Pattern.compile(\"&#(\\\\d+);\");\n     Matcher m = p.matcher(string);\n     StringBuffer sb = new StringBuffer();\n     while(m.find()){\n         try{\n             int codepoint = Integer.parseInt(m.group(1));\n             if(codepoint >= 0x80){\n                 char ch = (char)codepoint;\n                 m.appendReplacement(sb, \"\"+ch);\n             }else if(codepoint>=128&&codepoint<=57343){\n                 m.appendReplacement(sb,\"\ufffd\");\n             }else{\n                  continue;\n             }\n           }catch(Exception e){\n               m.appendReplacement(sb, \"\ufffd\");\n         }\n     }\n     m.appendTail(sb);\n     return sb.toString();\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static String fixUnescape(String input) {\n    String s = new String(input);\n    \n    final Map<String,Character> map = new HashMap<String,Character>() {{\n        put(\"lt\", '<');  \n        put(\"gt\", '>'); \n        put(\"amp\", '&');\n        put(\"quot\",\"\\\"\");\n        put(\"apos\",\"\\'\");\n    }};\n    for(Map.Entry<String, Character> entry :map.entrySet()){\n        String key = \"&\" + entry.getKey()  + \";\";\n        if(s.indexOf(key) > -1){\n            s = s.replaceAll(key, entry.getValue().toString());\n        }\n    }\n    \n    return s;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-6",
+    "diff_stats": null
+  }
+]

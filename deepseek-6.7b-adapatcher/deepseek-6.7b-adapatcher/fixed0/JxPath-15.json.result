@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "public boolean setPosition(int position) {\n        if (!prepared) {\n            prepared = true;\n            BasicNodeSet nodeSet = (BasicNodeSet) getNodeSet();\n            ArrayList pointers = new ArrayList();\n            \n            List tempList = new LinkedList<>();\n            \n            for (int i = 0; i < contexts.length; i++) {\n                EvalContext ctx = (EvalContext) contexts[i];\n                while (ctx.nextSet()) {\n                    while (ctx.nextNode()) {\n                        \n                        NodePointer ptr = ctx.getCurrentNodePointer();\n                        if (!pointers.contains(ptr)) {\n                            \n                            int lastIndexOfChildInParent = ((Element) ptr.getNode()).getOwnerDocument().getElementsByTagName(\"MAIN\").item(0).getChildNodes().getLength()-1; \n                            int indexOfChild = ((Element) ptr.getNode()).getOwnerDocument().getElementsByTagName(\"MAIN\").item(0).getChildNodes().indexOf(((Element) ptr.getNode()));\n                            \n                            if (lastIndexOfChildInParent == indexOfChild){\n                                nodeSet.add(ptr);\n                                pointers.add(ptr);\n                            } else {\n                                \n                                tempList.add(ptr);\n                                \n                            }\n                        }\n                    }\n                }\n            }\n            \n            Iterator itr2 = tempList.iterator();  \n              \n            while(itr2.hasNext()) {  \n                \n                nodeSet.add((NodePointer) itr2.next());\n                pointers.add(itr2.next());\n            }\n            \n        }\n        \n        return super.setPosition(position);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean setPosition(int position) {\n        if (!prepared) {\n            prepared = true;\n            BasicNodeSet nodeSet = (BasicNodeSet) getNodeSet();\n            TreeMap pointers = new TreeMap(); //using tree map instead of array list\n            Comparator comp = new DefaultComparator();\n            \n            for (int i = 0; i < contexts.length; i++) {\n                EvalContext ctx = (EvalContext) contexts[i];\n                int index=0;\n                while (ctx.nextSet()) {\n                    while (ctx.nextNode()) {\n                        NodePointer ptr = ctx.getCurrentNodePointer();\n                        \n                       if (!pointers.containsKey(ptr)) {\n                            nodeSet.add(index, ptr);\n                           pointers.put(ptr, index);\n                            index++;\n                            \n                        }\n                        \n                        \n                    }\n                }\n            }\n        }\n        return super.setPosition(position);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*;\npublic class UnionContext extends org.apache.commons.jxpath.ri.axes.UnionContext implements Iterator {\n    Vector pointersList;\n    \n    public UnionContext(){\n       pointersList = new Vector(); \n    }\n    @Override\n    public boolean setPosition(int position) {\n        if (!prepared) {\n            prepared = true;\n            org.apache.commons.jxpath.nodeset.BasicNodeSet nodeSet = (org.apache.commons.jxpath.nodeset.BasicNodeSet) getNodeSet();\n            \n            for (int i = 0; i < contexts.length; i++) {\n                EvalContext ctx = (EvalContext) contexts[i];\n                \n                while (ctx.nextSet()) {\n                    \n                    while (ctx.nextNode()) {\n                        \n                        Object ptr = ctx.getCurrentNodePointer().getObject();\n                       \n                        if (!pointersList.contains(ptr)) {\n                            \n                            nodeSet.add((Node) ptr);\n                           \n                            pointersList.add(ptr);\n                        }\n                    }\n                }\n            }\n            \n            Collections.sort(pointersList, new Comparator() {\n               public int compare(Object o1, Object o2) {\n                  int index1 = ((DocumentNavigator)o1).getCursor(),\n                      index2 = ((DocumentNavigator)o2).getCursor();\n                  \n                   return Integer.compare(index1,index2);\n                }\n            });\n             \n            Iterator itr = this.iterator(); \n            \n            while (itr.hasNext()) {\n                \n                DocumentNavigator dn = (DocumentNavigator) itr.next();\n                \n                dn.setPosition(pointersList.indexOf(dn.getCurrentNodePointer().getObject()));\n            }\n            \n            \n        }\n        \n        \n        \n        return super.setPosition(position);\n    }\n  \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean setPosition(int position) {\n        if (!prepared) {\n            prepared = true;\n            BasicNodeSet nodeSet = (BasicNodeSet) getNodeSet();\n            ArrayList<Integer> pointers = new ArrayList<>();\n            for (int i = 0; i < contexts.length; i++) {\n                EvalContext ctx = (EvalContext) contexts[i];\n                int j = 0;\n                while (ctx.nextSet()) {\n                    while (ctx.nextNode()) {\n                        NodePointer ptr = ctx.getCurrentNodePointer();\n                        int indexOfPtr = nodeSet.indexOf(ptr);\n                        if (indexOfPtr == -1 && !pointers.contains(j)) {\n                            nodeSet.add(ptr);\n                            pointers.add(j);\n                        }\n                        j += 1;\n                    }\n                }\n            }\n            \n            Collections.sort(pointers, new Comparator<Integer>(){\n    \t\t\tpublic int compare(Integer o1, Integer o2){\n    \t\t\t\tObject obj1 = nodeSet.get(o1);\n    \t\t\t\tObject obj2 = nodeSet.get(o2);\n    \t\t\t\t\n    \t\t\t\tint docOrder1 = ((BasicNodePointer)obj1).getNode().getNodeNumber(); \n    \t\t\t\tint docOrder2 = ((BasicNodePointer)obj2).getNode().getNodeNumber();\n    \t\t\t\treturn docOrder1 - docOrder2;\n    \t\t\t}\n    \t\t});\n            \n            ArrayList<NodePointer> reSortedList = new ArrayList<>();\n            for (Integer pointer : pointers) {\n                reSortedList.add(nodeSet.get(pointer));\n            }\n            \n            nodeSet.clear();\n            for (NodePointer np : reSortedList) {\n                nodeSet.add(np);\n            }\n        }\n        return super.setPosition(position);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean setPosition(int position) {\n        if (!prepared) {\n            prepared = true;\n            BasicNodeSet nodeSet = (BasicNodeSet) getNodeSet();\n            \n            Vector<NodePointer> pointers = new Vector<>();\n            for (int i = 0; i < contexts.length; i++) {\n                EvalContext ctx = (EvalContext) contexts[i];\n                while (ctx.nextSet()) {\n                    while (ctx.nextNode()) {\n                        NodePointer ptr = ctx.getCurrentNodePointer();\n                        \n                        // Check whether it exists\n                        int idx = pointers.indexOf(ptr);\n                        if (idx == -1){\n                            nodeSet.add(ptr);\n                            pointers.add(ptr);\n                        } else if(idx > -1 && idx != nodeSet.size()-1){ \n                            // Existing but not at end position, then exchange positions\n                            nodeSet.remove(idx);\n                            nodeSet.add(nodeSet.size(), ptr);\n                            \n                        }\n                    }\n                }\n            }\n        }\n        return super.setPosition(position);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean set position(int position) {\n        if !prepared{\n           prepared = true;\n            nodeSet = ( basicnodeSet ) getNodeSet();\n           ArrayList pointee = newArrayList();\n            for (int i = 0; i < contexts. length; i++) {\n                evalcontext context = ( evalcontext ) contexts[i];\n                while (context. nextSet()) {\n                    while (context. nextNode()) {\n                        nodepointer ptr = context. getcurrentNodepointer();\n                        if !pointee. contains( ptr){\n                            nodeSet. add( ptr);\n                            pointee. add( ptr);\n                        }\n                    }\n                }\n            }\n        }\n        return super.set position(position);\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean set position(int position){\n    if (!prepared) {\n       prepared=true;\n        basicnodeSet nodeSet = (\u57fa\u672c nodeSet) getNodeSet();\n       ArrayList poeters = newArrayList();\n        for (int i = 0; i < contexts.length; i++) {\n            eval context = (evaluatecontext) contexts[i];\n            while (context.nextSet()) {\n                while (context.nextNode()) {\n                    nodepointer ptr = context.get current nodepointer();\n                    if (! poeters. contains(pointer)){\n                        nodeSet. add(pointer);\n                        poeters. add(pointer);\n                    }\n                }\n            }\n        }\n    }\nreturn super. set position(position);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public boolean setposition(int position) {\n        if !prepared{\n            Prepare();\n        }\n        return super.setposition(position);\n    }\n    private void Prepare() {\n        if !prepared{\n            basicNodeSet nodeSet = ( basicNodeSet ) getNodeSet();\n           ArrayList pointers = newArrayList();\n            for (int i = 0; i < contexts.length; i++){\n                evalcontext context = ( evalcontext ) contexts[i];\n                while (context.nextSet()) {\n                    while (context.nextNode()) {\n                        nodepointer ptr = context.getcurrentNodepointer();\n                        if !pointers.containsp(tr){\n                            nodeSet.add(tr);\n                            pointers.add(tr);\n                        }\n                    }\n                }\n            }\n            pointers.Sort();\n            for ( int i = 0; i < pointers.size(); i++){\n                setposition(pointers.get(i));\n            }\n        }\n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*;\npublic class Main{\n     public static void main(String[] args){\n          System.out.println(\"bvalue\".compareTo(\"avalue\")); //\u8f93\u51fa -15\n   }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.jxpath.*;\nimport org.w3c.dom.*;\n\npublic class Main{\n    public static void main(String[] args){\n        try {\n            JXPathContext jx = JXPathContextFactory.newInstance().create(Class.forName(\"Main\").getResourceAsStream(\"/document.xml\"), null);\n            System.out.println((String)(jx.getValue(\"/string(/MAIN/B | /MAIN/A)\")));\n        } catch(JXPathException ex) { \n            throw new RuntimeException(ex);\n        } \n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "JxPath-15",
+    "diff_stats": null
+  }
+]

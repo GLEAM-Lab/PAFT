@@ -1,0 +1,147 @@
+[
+  {
+    "patch_code": "protected Timestamp createUnixTimestamp() {\n   TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());\n    final long TWO_TO_32 = 0x100000000L;\n    long time = System.currentTimeMillis() / 1000;\n    if (time >= TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + time);\n    }\n    return new Timestamp(time * 1000);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    final long TWO_TO_32 = 0x100000000L;\n    final long FIFTY_TWO_DAYS =  24 * 60 * 60 * 52L; // 52 weeks\n    if (l >= 0 && l < TWO_TO_32) {\n        return new ZipLong(l);\n    } else {\n       throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest::testGettersSetters"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    final long TWO_TO_32 = 0x100000000L;\n    if (l >= 0xFFFFFFFFL || l < 0) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n    }\n    return new ZipLong(l);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest::testGettersSetters"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    if (l < 0 || l > 0x7fffffffL) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n    }\n    return new ZipLong(l & 0x7fffffffL);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 2,
+      "deleted_lines": 3,
+      "total_changed_lines": 5,
+      "added_tokens": 21,
+      "deleted_tokens": 21,
+      "total_changed_tokens": 42,
+      "edit_distance": 64,
+      "edit_similarity": 75.19,
+      "norm_edit_distance": 0.2481,
+      "norm_edit_distance_pct": 24.81,
+      "buggy_length": 258,
+      "fix_length": 241,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    final long TWO_TO_32 = 0x100000000L;\n    final long OFFSET = 0xFFFFFFFFL + 1;\n    if (l >= TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + (l - OFFSET));\n    }\n    return new ZipLong(l);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest::testGettersSetters"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static Zip longToZip long value) {\n    final long TWO_TO_32 = 0x10000000L;\n    if (value > TWO_TO_32 || value < -TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamp must fit in a 32 bit integers: \" + value);\n    }\n    return new Zip long value);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static Zip longToZip longValue() {\n    final long TWO_TO_32 = 0x10000000L;\n    if (l > TWO_TO_32 || l < -TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamp must fit in a 32 bit\u6574\u6570: \" + l);\n    }\n    return new Zip(l);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static Zip longToZiplong(long l) {\n    final long TWO_TO_32 = 0x10000000L;\n    if (l>= TWO_TO_32 || l < - TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamp must fit in a signed32bit integers: \" + l);\n    }\n    return new Zip long(l);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    final long TWO_TO_32 = 0x100000000L;\n    if (l >= TWO_TO_32 || l < 0) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n    }\n    return new ZipLong(l);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest::testGettersSetters"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static ZipLong unixTimeToZipLong(long l) {\n    final long TWO_TO_32 = 0x100000000L;\n    // Change <= to < as we don't want to handle the case where the timestamp is exactly equal to 2^32 - 1\n    if (l >= TWO_TO_32) {\n        throw new IllegalArgumentException(\"X5455 timestamps must fit in a signed 32 bit integer: \" + l);\n    }\n    return new ZipLong(l);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestampTest::testGettersSetters"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-46",
+    "diff_stats": null
+  }
+]

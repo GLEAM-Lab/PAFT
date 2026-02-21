@@ -1,0 +1,126 @@
+[
+  {
+    "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) throws IOException {\n    ByteArrayOutputStream out = new ByteArrayOutputStream();\n    int b;\n    while ((b = byteData.get()) != -1) {\n        out.write(b);\n    }\n    \n    String html = new String(out.toByteArray(), StandardCharsets.UTF_8);\n    org.jsoup.nodes.Document document = Jsoup.parse(html, baseUri);\n    return document;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "if (!docData.startsWith(\"\\ufeff\") || docData.startsWith(\"\\ufffe\")){ // UTF-16 Byte Order Marker\n                int length = byteData.limit();\n                byte [] bytes = new byte[length];\n                byteData.get(bytes, 0 ,length);\n                docData = new String(bytes, StandardCharsets.UTF_16LE);\n                docData = docData.substring(1);\n                charsetName = \"UTF-16\";  \n        }else if(!docData.startsWith(\"\\uffef\")){// UTF-32 Byte Order Marker\n                int length = byteData.limit();\n                byte [] bytes = new byte[length];\n                byteData.get(bytes, 0 ,length);\n                docData = new String(bytes, StandardCharsets.UTF_32LE);\n                docData = docData.substring(1);\n                charsetName = \"UTF-32\";        \n      }\n               else if (docData.length() > 0 && docData.charAt(0) == 65279) {// uncommon utf encoding which uses BOM\n                byteData.rewind();\n                docData = Charset.forName(defaultCharset).decode(byteData).toString();\n                docData = docData.substring(1);\n                charsetName = defaultCharset;    \n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    ByteBuffer cp = byteData.duplicate();\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.helper.DataUtilTest::discardsSpuriousByteOrderMarkWhenNoCharsetSet"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) throws UnsupportedCharsetException {\n    String docData;\n    Document doc = null;\n    boolean useDefaultEncoding = true;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        ByteBuffer tmpByteBuffer = byteData.duplicate();\n        docData = Charset.forName(defaultCharset).decode(tmpByteBuffer).toString();\n        doc = parser.parseInput(docData, baseUri);\n        \n        Elements metas = doc.select(\"meta[http-equiv=content-type], meta[charset]\");\n        for (Element meta : metas) {\n            if (meta.hasAttr(\"http-equiv\") && meta.attr(\"http-equiv\").equalsIgnoreCase(\"Content-Type\")) {\n                String contentTypeStr = meta.attr(\"content\");\n                \n                int indexOfCharset = contentTypeStr.indexOf(\"charset=\");\n                if (indexOfCharset != -1) {\n                    charsetName = contentTypeStr.substring(indexOfCharset + 8).trim();\n                    useDefaultEncoding = false;\n                    \n                    break;\n                }\n            } else if (meta.hasAttr(\"charset\")) {\n                charsetName = meta.attr(\"charset\");\n                useDefaultEncoding = false;\n                \n                break;\n            }\n        }\n    }\n    \n    if (useDefaultEncoding) {\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n    } else {\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    \n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.startsWith(\"\\uFEFF\")) {\n        byteData.rewind();\n        docData = new String(byteData.array(), StandardCharsets.UTF_8);\n    }\n    \n    doc = parser.parseInput(docData, baseUri);\n    if (!useDefaultEncoding) {\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    \n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        \n        doc = parser.parse(new InputStreamReader(new ByteArrayInputStream(new ByteBuffer[]{byteData})));  \n        \n        Elements metas =  doc.select(\"meta[http-equiv=content-type], meta[charset]\");\n      \n        boolean movedToBody = false;\n        for (Element element : metas){\n          \n          if (element.attributes().get(\"http-equiv\") != null && element.attributes().get(\"http-equiv\").containsIgnoreCase(\"Content-Type\")){\n            \n              if (element.attributes().get(\"content\").contains(\"text/html\")){\n                  if (!element.parentNode().tagName().equals(\"head\")){\n                      ((HtmlTreeBuilder.Tag){element.parent()}.moveTo(doc.body());\n                      movedToBody = true;\n                  }\n              }\n              \n          }else if (element.attributes().get(\"charset\") != null){\n              \n              if (!element.parentNode().tagName().equals(\"head\")){\n                   ((HtmlTreeBuilder.Tag){element.parent()}.moveTo(doc.body());\n                     movedToBody = true;\n                 }\n              }\n          }\n      }\n      \n      \n        \n        if(!movedToBody){\n            Element headOrFirstChildOfHead = doc.select(\"head\").isEmpty() ? doc.body().childNodes().get(0) : doc.select(\"head\").first();\n            ListIterator<Node> iterator = new ArrayList<>(new NodeList(){doc.body().childNodes()}).listIterator();\n            while(iterator.hasNext()){\n                Node node = iterator.next();\n                if((node instanceof org.jsoup.nodes.Document.Element) && ((org.jsoup.nodes.Document.Element) node).tagName().equalsIgnoreCase(\"script\")){\n                    continue;\n                }\n                iterator.previous();\n                iterator.add(headOrFirstChildOfHead);\n                break;\n            }\n        }\n      \n       \n    } else { // specified by content type header (or by user on file load)\n        \n        InputStream inputStream = new ByteArrayInputStream(new ByteBuffer[]{byteData});\n        doc = Jsoup.parse(inputStream, charsetName ,baseUri);\n        \n    }\n    return doc;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "/* MISSING PATCH */",
+    "patch_status": "MISSING_PATCH",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static document load(String url, boolean keepOriginality, boolean limitbly);\nif (! keepOriginality) {\n    document doc = new document();\n    doc. document(). body(). setText(doc. select(\"head\"). text());\n    doc. select(\"head\"). remove();\n    return doc;\n} else {\n    document doc = new document();\n    doc. document(). body(). setText(doc. select(\"head\"). text());\n    doc. select(\"head\"). remove();\nreturn doc;\n}}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static document myPrepare(String url) {\n    document doc = null;\n    try {\n        doc = document.load(url);\n        document head = doc.select(\"head\");\n        document body = doc.select(\"body\");\n        List<element> elements = head.select(\"*\");\n        for (element element : elements) {\n            body.append(element.outer());\n        }\n        head.select(\"*\"). clear();\n    } catch (IOException e) {\n        e.print Stack Trace();\n    } finally {\n        return doc;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "static Document parseByteData(ByteBuffer byteData, String charsetName, String baseUri, Parser parser) {\n    String docData;\n    Document doc = null;\n    if (charsetName == null) { // determine from meta. safe parse as UTF-8\n        // look for <meta http-equiv=\"Content-Type\" content=\"text/html;charset=gb2312\"> or HTML5 <meta charset=\"gb2312\">\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        doc = parser.parseInput(docData, baseUri);\n        Element meta = doc.select(\"meta[http-equiv=content-type], meta[charset]\").first();\n        if (meta != null) { // if not found, will keep utf-8 as best attempt\n            String foundCharset;\n            if (meta.hasAttr(\"http-equiv\")) {\n                foundCharset = getCharsetFromContentType(meta.attr(\"content\"));\n                if (foundCharset == null && meta.hasAttr(\"charset\")) {\n                    try {\n                        if (Charset.isSupported(meta.attr(\"charset\"))) {\n                            foundCharset = meta.attr(\"charset\");\n                        }\n                    } catch (IllegalCharsetNameException e) {\n                        foundCharset = null;\n                    }\n                }\n            } else {\n                foundCharset = meta.attr(\"charset\");\n            }\n\n            if (foundCharset != null && foundCharset.length() != 0 && !foundCharset.equals(defaultCharset)) { // need to re-decode\n                foundCharset = foundCharset.trim().replaceAll(\"[\\\"']\", \"\");\n                charsetName = foundCharset;\n                byteData.rewind();\n                docData = Charset.forName(foundCharset).decode(byteData).toString();\n                doc = null;\n            }\n        }\n    } else { // specified by content type header (or by user on file load)\n        Validate.notEmpty(charsetName, \"Must set charset arg to character set of file to parse. Set to null to attempt to detect from HTML\");\n        docData = Charset.forName(charsetName).decode(byteData).toString();\n    }\n    // UTF-8 BOM indicator. takes precedence over everything else. rarely used. re-decodes incase above decoded incorrectly\n    if (docData.length() > 0 && docData.charAt(0) == 65279) {\n        byteData.rewind();\n        docData = Charset.forName(defaultCharset).decode(byteData).toString();\n        docData = docData.substring(1);\n        charsetName = defaultCharset;\n    }\n    if (doc == null) {\n        doc = parser.parseInput(docData, baseUri);\n        doc.outputSettings().charset(charsetName);\n    }\n    return doc;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jsoup.helper.DataUtilTest::discardsSpuriousByteOrderMarkWhenNoCharsetSet"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static Document getDocumentByUrl(String url) throws IOException{\n    Connection connection=Jsoup.connect(url);\n    Document document=connection.get();\n    return document;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Jsoup-39",
+    "diff_stats": null
+  }
+]

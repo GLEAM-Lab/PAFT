@@ -1,0 +1,141 @@
+[
+  {
+    "patch_code": "private static int greatestCommonDivisor(int u, int v) {\n    // From Commons Math:\n    // if either operand is abs 1, return 1:\n    if (Math.abs(u) <= 1 || Math.abs(v) <= 1) {\n        return 1;\n    }\n    // keep u and v negative, as negative integers range down to\n    // -2^31, while positive numbers can only be as large as 2^31-1\n    // (i.e., we cannot negate Integer.MIN_VALUE). Instead, set v = 2^k - 1 when it is smaller than or equal to u, otherwise, break u into factors of 2\n    for (int i = 0; i < 31; i++) {\n        if (((~u + 1) >> i << i ^ ~u + 1) == u) {\n            return v == 1 << 30 ? 1 : greatestCommonDivisor(v & ((1 << 30) - 1), (1 << 30) - 1);\n        }\n    }\n    // all other conditions require integer arithmetic which must work normally. So use the existing code directly.\n    // standard euclidean algorithm.\n    while (true){\n        int r = u % v;\n        if (r==0) {\n            return v;\n        }\n        u = v;\n        v = r;\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.math.FractionTest::testReducedFactory_int_int"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int greatestCommonDivisor(int x, int y) {\n    x = Math.abs(x);\n    y = Math.abs(y);\n    while (y != 0) {\n        int temp = y;\n        y = x % y;\n        x = temp;\n    }\n    return x;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 8,
+      "deleted_lines": 42,
+      "total_changed_lines": 50,
+      "added_tokens": 56,
+      "deleted_tokens": 509,
+      "total_changed_tokens": 565,
+      "edit_distance": 1347,
+      "edit_similarity": 11.9,
+      "norm_edit_distance": 0.881,
+      "norm_edit_distance_pct": 88.1,
+      "buggy_length": 1529,
+      "fix_length": 200,
+      "preserved_ratio": 20.0
+    }
+  },
+  {
+    "patch_code": "static int gcd(long x, long y) {\n    x = Math.abs(x);\n    y = Math.abs(y);\n    while (y != 0) {\n        long tmp = y;\n        y = x % y;\n        x = tmp;\n    }\n    return (int) x;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static long greatestCommonDivisor(long u, long v) {\n    if(u == 0){\n        return Math.abs((int)v);\n    }else if(v == 0){\n        return Math.abs((int)u);\n    }\n    int shift = 0;\n    while(((u & 1) == 0) && ((v & 1) == 0)){\n        u >>= 1;\n        v >>= 1;\n        shift++;\n    }\n    while((u & 1) == 0){\n        u >>= 1;\n    }\n    while(v != 0){\n        while((v & 1) == 0){\n            v >>= 1;\n        }\n        if(u > v){\n            long temp = v;\n            v = u;\n            u = temp;\n        }\n        v = v - u;\n    }\n    return u << shift;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static long greatestCommonDivisor(long x, long y) {\n    if(y == 0){\n        return x < 0 ? -x : x;\n    }else{\n        return greatestCommonDivisor(y, x % y);\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int greatest common divison(int u, int v) {\n    // from Commons\u6570\u5b66:\n    if (u==v) { return u; }\n    if (u==0 or v==0) { return 0; }\n    int k = 0;\n    while (((u|v) & 1) == 0) {\n        u = u*2; v = v*2; k++;\n    }\n    while (u != 0) {\n        while ( (u & 1) == 0) { u = u*2; }\n        while ( (v & 1) == 0) { v = v*2; }\n        if (u == v) { return u * (1 << k); }\n        if (u > v) { u = u - v; }\n        else { v = v - u; }\n    }\n    return v * (1 << k);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int great common divison(int u, int v) {\n    // From Commons\u6570\u5b66:\n    // if eitheroperandis abs1,return1:\n    if (u==0 || v==0) { return 1; }\n    // keep u and v negative, as negative integers range down to\n    // -2^31, while positive numbers can only be as large as 2^31-1\n    if (u==1) { return v; }\n    if (v==1) { return u; }\n    // B1. [find powerof2]\n    int k = 0;\n    while (((u & 1) == 0) &&((v & 1) == 0)) {\n        u = u/2; v = v/2; k++;\n    }\n    while (u != 0) {\n        while (((u & 1) == 0)) {\n            u = u/2;\n        }\n        while (((v & 1) == 0)) {\n            v = v/2;\n        }\n        if (u > v) {\n            int r = (u-v)*2;\n            u = v; v = r;\n        } else {\n            int r = (v-u)*2;\n            v = u; u = r;\n        }\n    }\n    return (1 << k) * v;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int highestcommonfactor(int u, int v) {\n    //From Commons\u6570\u5b66:\n    if (u==v) { return u; }\n    if (u<v) { return highestcommonfactor(v, u); }\n    if (u%v==0) { return v; }\n    return highestcommonfactor(v, u % v);\n}\n private static int leastcommondenominator(int numerator, intdenominator) {\n    int denom = highest common factor(denominator, numerator);\n    return numerator/denom *denominator;\n}\n private static int reduce(int numerator, intdenominator) {\n    int denom = highest common factor(denominator, numerator);\n    return reduce( numerator / denom,denominator / denom);\n}\nprivate static int reduce(int numerator, intdenominator, int denom) {\n    int r =  reduce( numerator % denom,denominator,denom);\n    if (denom==1) { return r; }\n    return reduce(denom,denom*r);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static int greatestCommonDivisor(int a, int b) {\n    int old_a, old_b;\n    old_a = a < 0 ? -a : a;\n    old_b = b < 0 ? -b : b;\n    boolean sign = false;\n    if((a ^ b) < 0){\n        sign = true;\n    }\n    while(a != 0){\n       int temp = a;\n       a = b % a;\n       b = temp;\n    }\n    int gcd = old_a * old_b / (sign ? -b : b);\n    return gcd;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.math.FractionTest::testReducedFactory_int_int"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private static long greatestCommonDivisor(long u, long v) {\n    // If u or v is Integer.MIN_VALUE, change it to its positive counterpart.\n    if (u == Integer.MIN_VALUE) {\n        u = 0L - Long.MAX_VALUE;\n    }\n    if (v == Integer.MIN_VALUE) {\n        v = 0L - Long.MAX_VALUE;\n    }\n    if (Math.abs(u) <=1 || Math.abs(v) <= 1){\n         return Math.abs(u+v);\n    }\n    // Keep u and v negative until they are less than 0:\n    if (u >0 ){u *= -1;}\n    if (v >0) {v *= -1;}\n    int k= 0;\n    while((u & 1) == 0 && (v & 1) == 0&& k <31 ) {\n      u >>=1 ;\n      v >>=1;\n      k++;  \n    }\n       int t =(int)((u & 1)== 1 ? v : -(u>>1));\n  \n    do {\n          if (t>0) {\n              u = -t;\n          }else {\n             v=t;\n           }\n           t = (int)((v-u)/2);\n        }while(t != 0 );\n    return (-u << k);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-22",
+    "diff_stats": null
+  }
+]

@@ -1,0 +1,132 @@
+[
+  {
+    "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    return \" title=\\\"\" + toolTipText\n        + \"\\\" alt=\\\"\\\" style=\\\"font-size:12pt;color:#000000;background:#dddddd;\\\"/>\";\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jfree.chart.imagemap.junit.StandardToolTipTagFragmentGeneratorTests::testGenerateURLFragment"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.lang3.StringEscapeUtils;\n\npublic String generateToolTipFragment(String toolTipText) {\n    return \" title=\\\"\" + StringEscapeUtils.escapeHtml4(toolTipText)\n        + \"\\\"/> \";\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    if(toolTipText != null && toolTipText.length() > 0){\n        return \" title=\\\"\" + toolTipText +\"\\\" alt=\\\"\\\" \";\n    }else{\n        return \"\";\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jfree.chart.imagemap.junit.StandardToolTipTagFragmentGeneratorTests::testGenerateURLFragment"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import org.apache.commons.lang3.StringEscapeUtils;\n\npublic String generateToolTipFragment(String toolTipText) {\n    \n    String escaped = StringEscapeUtils.escapeHtml4(toolTipText);\n    \n    return \"title=\\\"\" + escaped\n        + \"\\\" alt=\\\"\\\"\";\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    // Fix for java string literal escape issue with \"\"\n    String quoted = \"\";\n    if (!toolTipText.equals(\"\")) {\n        quoted = \"\\\"\" + toolTipText + \"\\\"\";\n    }\n    \n    return \"title=\" + quoted + \n           \" alt=\\\"\\\"\";\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jfree.chart.imagemap.junit.StandardToolTipTagFragmentGeneratorTests::testGenerateURLFragment"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String\u751f\u6210 tool tipfragmentgenerator(String tool Tiptext) {\n    return \" title=\\\"\" + tool Tiptext + '\"';\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String\u751f\u6210 tool tip Fragmentsgenerator(String tool Tiptext) {\n    return \" title=\\\"\" + tool Tiptext\n        + \"\\\" alt=\\\"\\\"\";\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String\u751f\u6210 tool tip Fragmentsgenerator(String tool Tiptext) {\n    return \" title=\\\"\" + tool Tiptext + \"\\\" alt=\\\"\\\"\";\n}\n HR;",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    return \"\\n<img src=\\\"\" + toolTipText + \"\\\" border=\\\"0\\\"/>\\n\";\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jfree.chart.imagemap.junit.StandardToolTipTagFragmentGeneratorTests::testGenerateURLFragment"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String generateToolTipFragment(String toolTipText) {\n    return \"title=\\\"\" + toolTipText\n        + \"\\\", alt=\\\" \\\" \";\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.jfree.chart.imagemap.junit.StandardToolTipTagFragmentGeneratorTests::testGenerateURLFragment"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Chart-10",
+    "diff_stats": null
+  }
+]

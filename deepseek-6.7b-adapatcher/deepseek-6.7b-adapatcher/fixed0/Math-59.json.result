@@ -1,0 +1,173 @@
+[
+  {
+    "patch_code": "public static float max(float a, float b) {\n    if (Float.isNaN(a) || Float.isNaN(b)) {\n        return Float.NaN;\n    } else if ((a > b && !Float.isInfinite(a)) || \n                (!Float.isFinite(b) && a >= b)){\n        return a;\n    }\n    return b;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math.util.FastMathTest::testMinMaxFloat"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static float max(final float a, final float b) {\n    return (a >= b) ? a : (Float.isNaN(a + b) ? Float.NaN : b);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 27,
+      "deleted_tokens": 27,
+      "total_changed_tokens": 54,
+      "edit_distance": 2,
+      "edit_similarity": 98.35,
+      "norm_edit_distance": 0.0165,
+      "norm_edit_distance_pct": 1.65,
+      "buggy_length": 121,
+      "fix_length": 121,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "public static float max(float a, float b) {\n    if (Float.compare(a,b) <= 0){\n        return b;\n    } else {\n        return a;\n    }\n}",
+    "patch_status": "RELEVANT_ERROR",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [
+        "org.apache.commons.math.stat.descriptive.moment.MeanTest::testWeightedConsistency"
+      ],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static float max(final float a, final float b) {\n    if (Float.isNaN(a) || Float.isNaN(b)) {\n        return Float.NaN;\n    } else if (a > b){ \n        return a;\n    }\n        \n    return b;  \n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 7,
+      "deleted_lines": 1,
+      "total_changed_lines": 8,
+      "added_tokens": 39,
+      "deleted_tokens": 27,
+      "total_changed_tokens": 66,
+      "edit_distance": 107,
+      "edit_similarity": 46.5,
+      "norm_edit_distance": 0.535,
+      "norm_edit_distance_pct": 53.5,
+      "buggy_length": 121,
+      "fix_length": 200,
+      "preserved_ratio": 22.22
+    }
+  },
+  {
+    "patch_code": "public static float max(final float a, final float b) {\n    return (a >= b) ? a : (Float.isNaN(a + b) ? Float.NaN : b);\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 1,
+      "deleted_lines": 1,
+      "total_changed_lines": 2,
+      "added_tokens": 27,
+      "deleted_tokens": 27,
+      "total_changed_tokens": 54,
+      "edit_distance": 2,
+      "edit_similarity": 98.35,
+      "norm_edit_distance": 0.0165,
+      "norm_edit_distance_pct": 1.65,
+      "buggy_length": 121,
+      "fix_length": 121,
+      "preserved_ratio": 66.67
+    }
+  },
+  {
+    "patch_code": "/* MISSING PATCH */",
+    "patch_status": "MISSING_PATCH",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static final int floatsCompare = floatsCompare(a, b);\nreturn floatsCompare == 1 ? a : floatsCompare == -1 ? b : floatsCompare == 0 ? a : floatsCompare == 2 ? a : b;",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "/* MISSING PATCH */",
+    "patch_status": "MISSING_PATCH",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static float max(final float a, final float b) {\n    if(a > b){\n        return a;\n    }else{\n        return (Float.isNaN(a + b) || (!Float.isNaN(b)) ) ? b : Float.NaN ;\n    }\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.math.util.FastMathTest::testMinMaxFloat"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public static float max(float a, float b) { \n        if(a != a){ \n            return b; \n        }else if(b != b){ \n             return a; \n         } else{\n        return a > b ? a : b; \n     } \n    } \n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Math-59",
+    "diff_stats": null
+  }
+]

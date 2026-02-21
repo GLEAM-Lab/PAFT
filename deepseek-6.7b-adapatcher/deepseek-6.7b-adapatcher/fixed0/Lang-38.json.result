@@ -1,0 +1,132 @@
+[
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) throws PatternSyntaxException {\n    if (!mTimeZoneForced) {\n        mTimeZoneForced = true;\n    }\n    calendar = (Calendar) calendar.clone();\n    calendar.setTimeZone(mTimeZone);\n    return applyRules(calendar, buf);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "import java.util.*;\nimport java.text.*;\n\nclass Main{\n    \n    static Calendar getCalendarInstanceWithTimezone(String pattern){\n         Calendar cal;\n         SimpleDateFormat sdf = new SimpleDateFormat(pattern);\n         try {\n            cal= Calendar.getInstance();  \n            \n             cal.setTime(sdf.parse(\"2010-07-15 12:10:55\"));\n          } catch (ParseException e) {\n               throw new RuntimeException(e);\n           }\n      return cal;\n    }\n    \n public static void main(String args[]){\n    System.out.println(getCalendarInstanceWithTimezone(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\").getTimeZone());\n }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) {\n    if (mTimeZoneForced && calendar != null) {\n        calendar = (Calendar) calendar.clone();\n        calendar.setTimeZone(mTimeZone);\n    } else if (!mTimeZoneForced && calendar == null) {\n        calendar = Calendar.getInstance();\n    }\n    return applyRules(calendar, buf);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.time.FastDateFormatTest::testLang538"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) {\n    if (mTimeZoneForced) {\n        calendar = (Calendar) calendar.clone();\n        calendar.setTimeZone(mTimeZone);\n    }\n    calendar.getTime();\n    return applyRules(calendar, buf);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.time.FastDateFormatTest::testLang538"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) throws IllegalArgumentException, IndexOutOfBoundsException {\n    if (!this.mTimeZoneForced && null == mLocale || null != calendar.getTimeZone()) {\n      throw new IllegalArgumentException(\"FastDateFormat needs either no specified timezone or the same one as the formatter\");\n    }\n  \n    if (mTimeZoneForced) {\n        calendar = (Calendar) calendar.clone();\n        calendar.setTimeZone(mTimeZone);\n    }\n    \n    return applyRules(calendar, buf);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.time.FastDateFormatTest::testLang538"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder format(Calendar Calendar, StringBuilder sb) {\n    if ( mTimeZoneForce ) {\n        Calendar = ( Calendar ) Calendar.clone();\n        Calendar.setTimeZone( mTimeZone );\n    }\n    return apply rules( Calendar ) ;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public String rushToString(Calendar Calendar) {\n    if (mTimeZoneForced) {\n        Calendar = (Calendar) Calendar.clone();\n        Calendar.setTimeZone(mTimeZone);\n    }\n    return applyRules( Calendar, new StringBuilder()).to string();\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuilder format(Calendar cal, StringBuilder sb) {\n    if (mTimeZoneForced) {\n        cal = (Calendar) cal.clone();\n        cal.setTimeZone(mTimeZone);\n    }\n    return applyRules(cal, sb);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) {\n    if (mTimeZoneForced && !calendar.getTimeZone().equals(mTimeZone)) {\n        calendar = (Calendar) calendar.clone();\n        calendar.setTimeZone(mTimeZone);\n    }\n    return applyRules(calendar, buf);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.time.FastDateFormatTest::testLang538"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public StringBuffer format(Calendar calendar, StringBuffer buf) {\n    if (mTimeZoneForced) {\n        calendar = (Calendar) calendar.clone();\n        calendar.setTimeZone(mTimeZone);\n        calendar.getTime();\n    }\n    return applyRules(calendar, buf);\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.lang3.time.FastDateFormatTest::testLang538"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Lang-38",
+    "diff_stats": null
+  }
+]

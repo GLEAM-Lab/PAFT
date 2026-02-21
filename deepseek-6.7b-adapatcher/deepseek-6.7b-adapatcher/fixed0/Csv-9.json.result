@@ -1,0 +1,154 @@
+[
+  {
+    "patch_code": "<M extends Map<String, String>> M putIn(final M map) {\n    if(headerMapping == null){\n        return null;\n    }\n    for (final Entry<String, Integer> entry : headerMapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        if (col < values.length) {\n            map.put(entry.getKey(), values[col]);\n        }\n    }\n    return map;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "public Map<String, String> toMap() {\n    try{\n        Map<String, String> mappings= new HashMap<>(); \n        for (final Entry<String, Integer> entry : mapping.entrySet()) {\n            final int col = entry.getValue().intValue();\n            if (col < values.length && col>=0){\n                mappings.put(entry.getKey(), values[col]);\n            }\n        }\n     return mappings;\n      }catch(NullPointerException npe){\n        \n          return null;\n       }  \n    }",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M extends Map<String, String>> M putIn(final M map) {\n     if(mapping == null || mapping.isEmpty()){\n         return map;\n     }\n    for (final Entry<String, Integer> entry : mapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        if (col < values.length) {\n            map.put(entry.getKey(), values[col]);\n        }\n    }\n    return map;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 0,
+      "total_changed_lines": 3,
+      "added_tokens": 19,
+      "deleted_tokens": 0,
+      "total_changed_tokens": 19,
+      "edit_distance": 75,
+      "edit_similarity": 79.67,
+      "norm_edit_distance": 0.2033,
+      "norm_edit_distance_pct": 20.33,
+      "buggy_length": 294,
+      "fix_length": 369,
+      "preserved_ratio": 75.0
+    }
+  },
+  {
+    "patch_code": "public class CSVRecord extends AbstractCsvRecord implements Record, Iterable<String> {\n    <M extends Map<String, String>> M putIn(final M map){\n        if (this.headerNames == null) {\n            return map;\n        }\n        for (final Entry<String, Integer> entry : this.mapping.entrySet()) {\n            final int col = entry.getValue().intValue();\n            if (col < values.length) {\n                map.put(entry.getKey(), values[col]);\n            }\n        }\n        return map;\n    }\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M extends Map<String, String>> M putIn(final M map) {\n    if (mapping == null || mapping.size() == 0){\n        return map;\n    }\n    for (final Entry<String, Integer> entry : mapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        if (col < values.length) {\n            map.put(entry.getKey(), values[col]);\n        }\n    }\n    return map;\n}",
+    "patch_status": "PLAUSIBLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": {
+      "hunks": 1,
+      "added_lines": 3,
+      "deleted_lines": 0,
+      "total_changed_lines": 3,
+      "added_tokens": 22,
+      "deleted_tokens": 0,
+      "total_changed_tokens": 22,
+      "edit_distance": 75,
+      "edit_similarity": 79.67,
+      "norm_edit_distance": 0.2033,
+      "norm_edit_distance_pct": 20.33,
+      "buggy_length": 294,
+      "fix_length": 369,
+      "preserved_ratio": 75.0
+    }
+  },
+  {
+    "patch_code": "<M> M putIn( final M map ) {\n    for ( final Entry<String, int[]> entry :mapping. entrySet() ) {\n        final int[] columnmapping = entry.getvalue();\n        for ( final int columnmapping : columnmapping ) {\n            map.put( entry.key(), values[columnmapping -1] );\n        }\n    }\n    return map;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M : java.util.Map> M putIn( final M map ) {\n    for ( final Entry<String, int[]> entry :mapping. entrySet()) {\n        final int[] columnmapping = entry. value() ;\n        final String key = entry. key() ;\n        if columnmapping == null || columnmapping. length == 0){\n            continue;\n        }\n        for ( int columnmappingitem : columnmapping ) {\n            if columnmappingitem > values. length - 1){\n                continue;\n            }\n            map. put( key , values[columnmappingitem] );\n        }\n    }\n    return map;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M> M putIn( final M map) {\n    for ( final Entry<String, int[]> entry :mapping. entrySet()) {\n        final int[] cols = entry. value();\n        final int col = cols[cols. length - 1];\n        if (col < values. length){map. put( entry. key(), values[col];}\n    }\n    return map;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M extends Map<String, String>> M putIn(final M map) {\n    \n    // In case of a csv record having no header\n    if (mapping == null || mapping.size() == 0) {\n        for (int i = 0; i < values.length; i++) {\n             map.put(\"\" + i, values[i]); \n        }\n         return map;  \n    }\n    for (final Entry<String, Integer> entry : mapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        if (col < values.length) {\n            map.put(entry.getKey(), values[col]);\n        }\n    }\n    return map;\n}",
+    "patch_status": "TRIGGER_ERROR",
+    "failing_tests": {
+      "TRIGGER": [
+        "org.apache.commons.csv.CSVRecordTest::testToMapWithNoHeader"
+      ],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "<M extends Map<String, String>> M putIn(final M map) {\n   if (mapping == null || mapping.isEmpty()) {\n       // Return an empty map in this case\n       return (M) new HashMap<>();\n   } \n    for (final Entry<String, Integer> entry : mapping.entrySet()) {\n        final int col = entry.getValue().intValue();\n        if (col < values.length) {\n            map.put(entry.getKey(), values[col]);\n        }\n    }\n    return map;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Csv-9",
+    "diff_stats": null
+  }
+]

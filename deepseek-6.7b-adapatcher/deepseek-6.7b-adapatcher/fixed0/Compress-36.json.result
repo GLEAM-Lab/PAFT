@@ -1,0 +1,122 @@
+[
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    while (deferredBlockStreams.size() > 1) {\n        // In solid compression mode we need to decompress all leading folder'\n        // streams to get access to an entry. We defer this until really needed\n        // so that entire blocks can be skipped without wasting time for decompression.\n        final InputStream stream = deferredBlockStreams.remove(0);\n        \n        if(currentEntry != null && currentEntry.getSize()==0){\n            break;\n        }\n        IOUtils.skip(stream, Long.MAX_VALUE);\n        stream.close();\n    }\n\n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    while (deferredBlockStreams.size() > 1) {\n        // In solid compression mode we need to decompress all leading folder'\n        // streams to get access to an entry. We defer this until really needed\n        // so that entire blocks can be skipped without wasting time for decompression.\n        final InputStream stream = deferredBlockStreams.remove(0);\n        IOUtils.skip(stream, Long.MAX_VALUE);\n        stream.close();\n    }\n\n    if (entry.getMethod() == CompressionMethod.NONE && entry.getCompressedSize()==0){\n        return EmptyInputStream.INSTANCE;\n    }\n        \n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    int i = 0;\n    boolean endOfBlocksFound = false;\n    while (i < deferredBlockStreams.size()) {\n        final InputStream stream = deferredBlockStreams.get(i);\n        \n        if (!endOfBlocksFound && stream instanceof BlockInputStream) {\n            final long skipBytes = ((BlockInputStream) stream).getSkipBytesCount();\n            \n            if (skipBytes == -1L) {\n                // Skip until EOF\n                IOUtils.skipFully(stream);\n            } else if (skipBytes > 0L) {\n                // If skip count isn't zero or EOF, then this isn't just an\n                // artificial block input stream but rather contains real data.\n                endOfBlocksFound = true;\n            }\n        }\n        \n        if (endOfBlocksFound || i + 1 >= deferredBlockStreams.size()) {\n            final InputStream resultStream = deferredBlockStreams.remove(i);\n            \n            if (!endOfBlocksFound && stream != null && resultStream != stream) {\n                stream.close();\n            }\n            \n            return resultStream;\n        }\n        \n        i++;\n    }\n\n    assert(false);\n    return null;\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    ArrayList<InputStream> newList=new ArrayList<>(deferredBlockStreams);\n    for (int i = 0; i < newList.size(); i++) {\n        InputStream stream = newList.get(i);\n        if (stream != null) {\n            IOUtils.skip(stream, Long.MAX_VALUE);\n            stream.close();\n        }\n    }\n    deferredBlockStreams.clear();\n    \n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    while (deferredBlockStreams.size() > 1) {\n        // In solid compression mode we need to decompress all leading folder'\n        // streams to get access to an entry. We defer this until really needed\n        // so that entire blocks can be skipped without wasting time for decompression.\n        final InputStream stream = deferredBlockStreams.remove(0);\n        IOUtils.skip(stream, Long.MAX_VALUE);\n        stream.close();\n    }\n\n    if(entry.getCompressedSize()==0){//Added condition\n        return null;//added return statement\n    }\n    \n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "privateInputStream getcurrentstream() throwssIOException {\n    if (deferrblockstreams.isEmpty()) {\n        thrownewIllegalsStateException(\"No current 7z entry (call getnext entry first).\");\n    }\n    \n    while (deferrblockstreams. size() > 1) {\n        final inputstreamstream = deferrblockstreams. remove(0);\n       IOUtilstutil.skip(stream, long.maxvalue);\n        stream. close();\n    }\n\n    return deferrblockstreams. get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private inputstream getcurrentstream() throwse exception{\n    if (deferrblockstreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getnext entry first).\");\n    }\n    \n    while (deferrblockstreams.size() > 1) {\n        final inputstream stream = deferrblockstreams. remove(0);\n       IOUtilst utils.skip(stream, long.maxvalue);\n        stream.close();\n    }\n\n    return deferrblockstreams. get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private inputstream getcurrentstream() throwIOException {\n    if (deferrblockstreams.isEmpty()) {\n        throw new IllegalstateException(\"no current7z entry callgetnext entry first\");\n    }\n    \n    while (deferrblockstreams. size() > 1) {\n        final inputstream stream = deferrblockstreams. remove(0);\n       IOUtilstesting.skip(stream, longmaxvalue);\n        stream. close();\n    }\n\n    return deferrblockstreams. get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    while (deferredBlockStreams.size() > 1) {\n        // In solid compression mode we need to decompress all leading folder'\n        // streams to get access to an entry. We defer this until really needed\n        // so that entire blocks can be skipped without wasting time for decompression.\n        final InputStream stream = deferredBlockStreams.remove(0);\n        \n        if (entry.getSize() != 0) {\n            IOUtils.skip(stream, Long.MAX_VALUE);\n        }\n        stream.close();\n    }\n\n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  },
+  {
+    "patch_code": "private InputStream getCurrentStream() throws IOException {\n    if (deferredBlockStreams.isEmpty()) {\n        throw new IllegalStateException(\"No current 7z entry (call getNextEntry() first).\");\n    }\n    \n    while (deferredBlockStreams.size() > 1) {\n        // In solid compression mode we need to decompress all leading folder'\n        // streams to get access to an entry. We defer this until really needed\n        // so that entire blocks can be skipped without wasting time for decompression.\n        final InputStream stream = deferredBlockStreams.remove(0);\n        IOUtils.skip(stream, Long.MAX_VALUE);\n        stream.close();\n    }\n\n    Entry entry=entries.peek();\n    long size=entry.getCompressedSize();\n    if (size==0){//additional check\n       IOUtils.skip(deferredBlockStreams.get(0),Long.MAX_VALUE);\n       deferredBlockStreams.get(0).close();\n       deferredBlockStreams.clear();\n       entries.pop();\n    }\n\n    return deferredBlockStreams.get(0);\n}",
+    "patch_status": "UNCOMPILABLE",
+    "failing_tests": {
+      "TRIGGER": [],
+      "RELEVANT": [],
+      "TIMEOUT": []
+    },
+    "val_cnt": 1,
+    "bug_name": "Compress-36",
+    "diff_stats": null
+  }
+]
