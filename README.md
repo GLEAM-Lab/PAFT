@@ -28,7 +28,7 @@ PAFT consists of three main phases:
    ./table7.sh
    
    # Table 8: Comparison on DS-Coder-6.7B for Defects4J. Min@10 (resp. Max@10) selects the plausible patch with the smallest AED (resp. the largest CCR) among the 𝑘=10 candidates.
-   ./table5.sh
+   ./table8.sh
    
    # Table 9: DeepSeek-6.7B ablation study Defects4J results
    ./table9.sh
@@ -237,7 +237,6 @@ This table presents ablation study results on DeepSeek-Coder-6.7B, evaluating di
 - **deepseek-6.7b-paft-w4**: PAFT with 4 LCS weight
 - **deepseek-6.7b-promptloss**: Standard fine-tuning baseline+ Full masking
 - **deepseek-6.7b-trained-diff**: PAFT with - Full masking
-
 - **deepseek-6.7b-sft**: Standard fine-tuning baseline
 
 
