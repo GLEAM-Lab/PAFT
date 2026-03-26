@@ -15,23 +15,23 @@ PAFT consists of three main phases:
 ## Quick Start
 ### View results
    ```bash
-   # Table 1: Defects4J results
-   ./table1.sh
-
-   # Table 2: Human annotation results
+   # Table 2:  Performance of off-the-shelf code models on De-fects4J. Best results in each column are shown in bold.
    ./table2.sh
 
-   # Table 3: Multi-model Defects4J comparison
-   ./table3.sh
+   # Table 3-5: Human annotation results
+   ./table3-5.sh
+
+   # Table 6:  Multi-model Defects4J results comparison
+   ./table6.sh
    
-   # Table 4: HumanEval-Java results
-   ./table4.sh
+   # Table 7: HumanEval-Java results
+   ./table7.sh
    
-   # Table 5: DeepSeek-6.7B training method comparison
+   # Table 8: Comparison on DS-Coder-6.7B for Defects4J. Min@10 (resp. Max@10) selects the plausible patch with the smallest AED (resp. the largest CCR) among the 𝑘=10 candidates.
    ./table5.sh
    
-   # Table 6: DeepSeek-6.7B ablation study Defects4J results
-   ./table6.sh
+   # Table 9: DeepSeek-6.7B ablation study Defects4J results
+   ./table9.sh
    ```
 ###  Run complete training and evaluation pipeline
    ```bash
@@ -119,7 +119,7 @@ PAFT/
 
 ## Reproducing Tables
 
-### Table 1: Performance of Off-the-Shelf Code Models on Defects4J
+### Table 2: Performance of Off-the-Shelf Code Models on Defects4J
 
 This table evaluates the performance of various off-the-shelf code models on the Defects4J benchmark without fine-tuning.
 
@@ -135,12 +135,12 @@ This table evaluates the performance of various off-the-shelf code models on the
 Run the command:
 
 ```bash
-./table1.sh
+./table2.sh
 ```
 
 For details and options, see the script content.
 
-### Table 2: Human Annotation Study Results
+### Table 3-5: Human Annotation Study Results
 
 This table presents results from human annotation studies evaluating the correlation between automatic metrics (CCR, AED, ATCT, ATCL) and human preferences for patch quality.
 
@@ -157,12 +157,12 @@ This table presents results from human annotation studies evaluating the correla
 Run the command:
 
 ```bash
-./table2.sh
+./table3-5.sh
 ```
 
 For details and options, see the script content.
 
-### Table 3: Effectiveness of PAFT on Defects4J
+### Table 6: Effectiveness of PAFT on Defects4J
 
 This table evaluates the effectiveness of PAFT (Preservation-Aware Fine-Tuning) compared to standard fine-tuning (SFT) and base models on Defects4J.
 
@@ -179,12 +179,12 @@ This table evaluates the effectiveness of PAFT (Preservation-Aware Fine-Tuning) 
 Run the command:
 
 ```bash
-./table3.sh
+./table6.sh
 ```
 
 For details and options, see the script content.
 
-### Table 4: Effectiveness of PAFT on HumanEval-Java
+### Table 7: Effectiveness of PAFT on HumanEval-Java
 
 This table evaluates the effectiveness of PAFT on HumanEval-Java dataset, measuring both repair success rate and patch quality metrics.
 
@@ -196,52 +196,55 @@ This table evaluates the effectiveness of PAFT on HumanEval-Java dataset, measur
 Run the command:
 
 ```bash
-./table4.sh
+./table7.sh
 ```
 
 For details and options, see the script content.
 
-### Table 5: Comparison on DeepSeek-Coder-6.7B
+### Table 5: Comparison on DS-Coder-6.7B for Defects4J. Min@10 (resp. Max@10) selects the plausible patch with the smallest AED (resp. the largest CCR) among the 𝑘=10 candidates.
+# Display results for deepseek-6.7b variants (SFT, Prompting, PAFT, RepairLLaMA)
 
 This table compares different training methods on DeepSeek-Coder-6.7B across both Defects4J and HumanEval-Java datasets.
 
 **Training methods compared:**
+- **base checkpoint**: base model
 - **Prompting**: Prompt-only approach without fine-tuning
 - **SFT**: Standard fine-tuning
 - **PAFT**: Preservation-aware fine-tuning (our approach)
 - **RepairLLaMA**: RepairLLaMA fine-tuning method
-- **PARepair-FL**: PARepair-FL fine-tuning method
+- **AdaPatcher**: AdaPatcher fine-tuning method
 
-**Evaluation:**
-- **Defects4J**: Pass@k metrics on Defects4J benchmark
-- **HumanEval-Java**: Pass@k, CCR, AED, ATCT, ATCL on HumanEval-Java dataset
 
 Run the command:
 
 ```bash
-./table5.sh
+./table8.sh
 ```
 
 For details and options, see the script content.
 
-### Table 6: Ablation Study on DeepSeek-Coder-6.7B
+### Table 9: Ablation Study on DeepSeek-Coder-6.7B
 
 This table presents ablation study results on DeepSeek-Coder-6.7B, evaluating different components and variants of PAFT.
 
 **Variants evaluated:**
 - **deepseek-6.7b**: Base model without fine-tuning
-- **deepseek-6.7b-paft**: Full PAFT with LCS-weighted loss
+- **deepseek-6.7b-paft**: Full PAFT with LCS-weighted(2) loss
 - **deepseek-6.7b-promptloss**: Variant with prompt loss only
 - **deepseek-6.7b-trained-curriculum**: Curriculum learning variant
-- **deepseek-6.7b-paft-w0**: PAFT with zero LCS weight (equivalent to SFT)
+- **deepseek-6.7b-paft-w0**: PAFT with 0 LCS weight
+- **deepseek-6.7b-paft-assistantonly**: PAFT with 2 LCS weight and assistantonly
+- **deepseek-6.7b-paft-w4**: PAFT with 4 LCS weight
+- **deepseek-6.7b-promptloss**: Standard fine-tuning baseline+ Full masking
+- **deepseek-6.7b-trained-diff**: PAFT with - Full masking
+
 - **deepseek-6.7b-sft**: Standard fine-tuning baseline
 
-**Evaluation:** Defects4J Pass@k metrics
 
 Run the command:
 
 ```bash
-./table6.sh
+./table9.sh
 ```
 
 For details and options, see the script content.
