@@ -41,6 +41,7 @@ from datasets import load_dataset
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
+    PreTrainedTokenizerFast,
     BitsAndBytesConfig,
     TrainingArguments,
     DataCollatorForLanguageModeling,
@@ -53,6 +54,12 @@ import sys
 import torch.nn as nn
 import wandb
 from difflib import SequenceMatcher
+import random
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 max_len = 2048
 
@@ -60,8 +67,32 @@ model_name = sys.argv[1]
 original_model_name = model_name
 
 include_prompt_in_loss = True
-EPOCH_NUM = 3
+EPOCH_NUM = int(os.environ.get("EPOCH_NUM", "3"))
+# Fixed default for reportable single-seed PAFT/SFT reruns; override with SEED.
+DEFAULT_TRAIN_SEED = 42
+SEED = int(os.environ.get("SEED", str(DEFAULT_TRAIN_SEED)))
+random.seed(SEED)
+if np is not None:
+    np.random.seed(SEED)
+torch.manual_seed(SEED)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(SEED)
 print(f"配置：是否将 prompt 算入 loss: {include_prompt_in_loss}")
+print(f"训练随机种子: {SEED}")
+
+
+def load_training_tokenizer(tokenizer_path: str, source_name: str = ""):
+    marker = f"{tokenizer_path} {source_name}".lower()
+    tokenizer_json = os.path.join(tokenizer_path, "tokenizer.json")
+    if "deepseek" in marker and os.path.exists(tokenizer_json):
+        tokenizer = PreTrainedTokenizerFast(
+            tokenizer_file=tokenizer_json,
+            eos_token="<|EOT|>",
+            pad_token="<|EOT|>",
+        )
+        print("Loaded DeepSeek tokenizer from tokenizer.json with whitespace-preserving fast tokenizer.")
+        return tokenizer
+    return AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True)
 
 # 智能加载模型
 if not os.path.exists(model_name):
@@ -180,6 +211,7 @@ if wandb_run_id:
             "max_len": max_len,
             "learning_rate": 2e-4,
             "num_epochs": EPOCH_NUM,
+            "seed": SEED,
             "batch_size": 1,
             "lora_r": 32,
             "lora_alpha": 16,
@@ -198,6 +230,7 @@ else:
             "max_len": max_len,
             "learning_rate": 2e-4,
             "num_epochs": EPOCH_NUM,
+            "seed": SEED,
             "batch_size": 1,
             "lora_r": 32,
             "lora_alpha": 16,
@@ -228,7 +261,7 @@ base_model.config.use_cache = False
 base_model = prepare_model_for_kbit_training(base_model)
 
 # load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = load_training_tokenizer(model_name, original_model_name)
 tokenizer.pad_token = tokenizer.eos_token
 eos_token_id = tokenizer.eos_token_id
 tokenizer.padding_side = "right"
@@ -455,6 +488,8 @@ training_args = TrainingArguments(
     report_to="wandb",
     logging_first_step=True,
     logging_strategy="steps",
+    seed=SEED,
+    data_seed=SEED,
 )
 
 # data collator
@@ -615,10 +650,9 @@ model.save_pretrained(merged_dir, safe_serialization=True)
 
 print('merge model saved success ...')
 
-tokenizer = AutoTokenizer.from_pretrained(original_model_name, trust_remote_code=True)
+tokenizer = load_training_tokenizer(model_name, original_model_name)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 tokenizer.save_pretrained(merged_dir)
 
 wandb.finish()
-

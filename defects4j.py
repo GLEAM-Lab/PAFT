@@ -4,7 +4,11 @@ import os, sys
 if len(sys.argv) >= 6:
     # 检查是否为API模式（需要在导入torch前判断）
     # 先定义简单的模型配置用于判断
-    _simple_api_models = ['deepseek-v3', 'qwen3-max', 'gpt-4o']
+    _simple_api_models = [
+        'deepseek-v3', 'deepseek-v3-minimal', 'dashscope-deepseek-v3-minimal',
+        'dashscope-deepseek-v3-minimal-v3',
+        'qwen3-max', 'qwen3-max-minimal', 'gpt-4o'
+    ]
     is_api_model = len(sys.argv) >= 2 and sys.argv[1] in _simple_api_models
     
     if not is_api_model:
@@ -18,7 +22,11 @@ import psutil
 from pathlib import Path
 from transformers import pipeline
 from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModelForSeq2SeqLM, BitsAndBytesConfig, AutoTokenizer
-from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
+try:
+    from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
+except ImportError:
+    AutoGPTQForCausalLM = None
+    BaseQuantizeConfig = None
 from peft import PeftModel
 import re
 import requests
@@ -147,7 +155,11 @@ if __name__ == '__main__':
     if len(sys.argv) >= 2:
         model_key = sys.argv[1]
         # 简单的API模型列表用于提前判断
-        _api_models = ['deepseek-v3', 'qwen3-max', 'gpt-4o']
+        _api_models = [
+            'deepseek-v3', 'deepseek-v3-minimal', 'dashscope-deepseek-v3-minimal',
+            'dashscope-deepseek-v3-minimal-v3',
+            'qwen3-max', 'qwen3-max-minimal', 'gpt-4o'
+        ]
         is_api_mode = model_key in _api_models
     else:
         is_api_mode = False
@@ -328,6 +340,27 @@ MODEL_CONFIGS = {
         'api_url': 'https://api.deepseek.com/v1/chat/completions',
         'api_key_env': 'DEEPSEEK_API_KEY',
     },
+    'deepseek-v3-minimal': {
+        'type': 'api',
+        'model_name': 'deepseek-chat',
+        'api_url': 'https://api.deepseek.com/v1/chat/completions',
+        'api_key_env': 'DEEPSEEK_API_KEY',
+        'minimal_change_prompt': True,
+    },
+    'dashscope-deepseek-v3-minimal': {
+        'type': 'api',
+        'model_name': 'deepseek-v3.2',
+        'api_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        'api_key_env': 'DASHSCOPE_API_KEY',
+        'minimal_change_prompt': True,
+    },
+    'dashscope-deepseek-v3-minimal-v3': {
+        'type': 'api',
+        'model_name': 'deepseek-v3',
+        'api_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        'api_key_env': 'DASHSCOPE_API_KEY',
+        'minimal_change_prompt': True,
+    },
     
     # Qwen API 模型
     'qwen3-max': {
@@ -335,6 +368,13 @@ MODEL_CONFIGS = {
         'model_name': 'qwen-max',
         'api_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
         'api_key_env': 'DASHSCOPE_API_KEY',  # 环境变量名称，不是 API Key 本身
+    },
+    'qwen3-max-minimal': {
+        'type': 'api',
+        'model_name': 'qwen-max',
+        'api_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        'api_key_env': 'DASHSCOPE_API_KEY',
+        'minimal_change_prompt': True,
     },
     
     # OpenAI GPT-4o API 模型
@@ -353,8 +393,29 @@ MODEL_CONFIGS = {
     'qwen2.5coder7b': {
         'model_path': 'Qwen/Qwen2.5-Coder-7B-Instruct'
     },
+    'qwen2.5coder14b': {
+        'model_path': '/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-14B-Instruct/snapshots/aedcc2d42b622764e023cf882b6652e646b95671'
+    },
+    'qwen2.5coder14b-paft-tse-20260619-e1': {
+        'model_path': 'merged_models/qwen2.5coder14b-paft-tse-20260619-e1'
+    },
     'qwen2.5coder7b-paft': {
         'model_path': 'merged_models/qwen2.5coder7b-paft'
+    },
+    'qwen2.5coder7b-sft-tse-20260619': {
+        'model_path': 'merged_models/qwen2.5coder7b-sft-tse-20260619'
+    },
+    'qwen2.5coder7b-sft-assistonly-tse-20260619': {
+        'model_path': 'merged_models/qwen2.5coder7b-sft-assistonly-tse-20260619'
+    },
+    'qwen2.5coder7b-paft-v2-assistonly-wnorm-20260619': {
+        'model_path': 'merged_models/qwen2.5coder7b-paft-v2-assistonly-wnorm-20260619'
+    },
+    'qwen2.5coder7b-paft-v2-assistonly-wnorm-w15-20260619': {
+        'model_path': 'merged_models/qwen2.5coder7b-paft-v2-assistonly-wnorm-w15-20260619'
+    },
+    'qwen2.5coder7b-paft-v2-assistonly-wnorm-w125-20260619': {
+        'model_path': 'merged_models/qwen2.5coder7b-paft-v2-assistonly-wnorm-w125-20260619'
     },
     'qwen8b-paft': {
         'model_path': 'merged_models/qwen8b-paft'
@@ -396,6 +457,23 @@ MODEL_CONFIGS = {
    
    
 }
+
+
+def resolve_model_config(model_key):
+    """Resolve explicit configs first, then local trained-model aliases."""
+    if model_key in MODEL_CONFIGS:
+        return MODEL_CONFIGS[model_key]
+
+    candidate_paths = [
+        os.path.join("models", model_key, "codellama_merged"),
+        os.path.join("merged_models", model_key, "codellama_merged"),
+        os.path.join("merged_models", model_key),
+    ]
+    for path in candidate_paths:
+        if os.path.exists(os.path.join(path, "config.json")):
+            return {"model_path": path, "type": "local"}
+
+    return {}
 
 
 def get_prompt_format(model_key):
@@ -547,7 +625,7 @@ def main():
     try:
         # 检查是否为 API 模式
         model_key = sys.argv[1]
-        model_config = MODEL_CONFIGS.get(model_key, {})
+        model_config = resolve_model_config(model_key)
         is_api_mode = model_config.get('type') == 'api'
         
         # 重新提取模式或API模式不需要加载本地模型
@@ -566,7 +644,7 @@ def main():
                 sys.exit(1)
             
             # 加载模型
-            if model_key in MODEL_CONFIGS:
+            if model_config:
                 model, tokenizer = load_vllm_model(model_config)
                 USE_VLLM = True
             else:
@@ -649,6 +727,10 @@ def process_files():
                     print(f"Output path: {fix_name}", flush=True)
                     
                     try:
+                        if os.environ.get("D4J_SKIP_EXISTING_FIX") == "1" and os.path.exists(fix_name):
+                            print(f"Fix文件已存在，跳过: {fix_name}", flush=True)
+                            continue
+
                         # 检查log文件是否存在
                         if os.path.exists(log_file_path):
                             # 如果log文件存在，直接加载并重新提取Java代码
@@ -810,7 +892,8 @@ def cal_api(bug_id, code, title, description, filename):
         print(f"请设置环境变量: export {api_key_env}='your-api-key'")
         return [None, None]
     
-    prompt = f"# {title}\n{description}\n\nThis is an incorrect code ({filename}):\n```java\n{code}\n```\n\nYou are a software engineer. Can you repair the incorrect code? Please provide only the fixed Java code in a ```java code block."
+    change_phrase = " with the minimal change" if model_config.get('minimal_change_prompt') else ""
+    prompt = f"# {title}\n{description}\n\nThis is an incorrect code ({filename}):\n```java\n{code}\n```\n\nYou are a software engineer. Can you repair the incorrect code{change_phrase}? Please provide only the fixed Java code in a ```java code block."
     
     headers = {
         'Authorization': f'Bearer {api_key}',
@@ -826,30 +909,37 @@ def cal_api(bug_id, code, title, description, filename):
         'max_tokens': 2048
     }
     
-    try:
-        print(f"调用 API: {model_key} ({model_name})", flush=True)
-        response = requests.post(api_url, headers=headers, json=payload, timeout=60)
-        response.raise_for_status()
-        
-        result = response.json()
-        full_text = result['choices'][0]['message']['content']
-        print(full_text, flush=True)
-        
-        # 提取 Java 代码
-        ret = extract_first_java_code(full_text)
-        print('code:', ret, flush=True)
-        
-        # 构造完整文本（模拟prompt+response格式）
-        complete_text = f"{prompt}\n\nAssistant:\n{full_text}"
-        
-        return [complete_text, ret]
-        
-    except requests.exceptions.RequestException as e:
-        print(f"{model_key} API 调用失败: {e}")
-        return [None, None]
-    except Exception as e:
-        print(f"{model_key} API 处理错误: {e}")
-        return [None, None]
+    last_error = None
+    for attempt in range(1, 4):
+        try:
+            print(f"调用 API: {model_key} ({model_name}) attempt {attempt}/3", flush=True)
+            response = requests.post(api_url, headers=headers, json=payload, timeout=120)
+            response.raise_for_status()
+
+            result = response.json()
+            full_text = result['choices'][0]['message']['content']
+            print(full_text, flush=True)
+
+            # 提取 Java 代码
+            ret = extract_first_java_code(full_text)
+            print('code:', ret, flush=True)
+
+            # 构造完整文本（模拟prompt+response格式）
+            complete_text = f"{prompt}\n\nAssistant:\n{full_text}"
+
+            return [complete_text, ret]
+
+        except requests.exceptions.RequestException as e:
+            last_error = e
+            print(f"{model_key} API 调用失败 attempt {attempt}/3: {e}", flush=True)
+            time.sleep(2 * attempt)
+        except Exception as e:
+            last_error = e
+            print(f"{model_key} API 处理错误 attempt {attempt}/3: {e}", flush=True)
+            time.sleep(2 * attempt)
+
+    print(f"{model_key} API 多次失败: {last_error}", flush=True)
+    return [None, None]
 
 
 def cal(bug_id, code, title, description, filename):

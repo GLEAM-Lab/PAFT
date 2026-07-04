@@ -1,0 +1,1556 @@
+{
+  "summary": {
+    "arrow": "/home/barty/.cache/huggingface/datasets/Daoguang___multi-swe-bench/default/0.0.0/8bd202138a4ab9987daa77111c76a3e66af9f1c9/multi-swe-bench-java_verified.arrow",
+    "rows": 91,
+    "repo_top10": {
+      "fasterxml/jackson-databind": 49,
+      "fasterxml/jackson-core": 23,
+      "fasterxml/jackson-dataformat-xml": 5,
+      "google/gson": 5,
+      "googlecontainertools/jib": 5,
+      "apache/dubbo": 4
+    },
+    "patch_file_count_distribution": {
+      "1": 30,
+      "2": 31,
+      "3": 17,
+      "4": 8,
+      "5": 2,
+      "8": 2,
+      "12": 1
+    },
+    "test_patch_file_count_distribution": {
+      "1": 65,
+      "2": 25,
+      "3": 1
+    },
+    "fail_to_pass_count_distribution": {
+      "1": 73,
+      "2": 17,
+      "3": 1
+    },
+    "pass_to_pass_count_distribution": {
+      "0": 91
+    },
+    "multi_file_rows": 61,
+    "multi_file_pct": 67.03296703296702,
+    "rows_with_gold_patch": 91,
+    "rows_with_test_patch": 91
+  },
+  "rows": [
+    {
+      "instance_id": "apache__dubbo-10638",
+      "repo": "apache/dubbo",
+      "base_commit": "43d48bd6caf95f61f4e879a5be8b5560a55daee9",
+      "patch_file_count": 2,
+      "patch_files": [
+        "dubbo-common/src/main/java/org/apache/dubbo/common/utils/CompatibleTypeUtils.java",
+        "dubbo-common/src/main/java/org/apache/dubbo/common/utils/PojoUtils.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "dubbo-common/src/test/java/org/apache/dubbo/common/utils/PojoUtilsTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "apache__dubbo-11781",
+      "repo": "apache/dubbo",
+      "base_commit": "16c61c53c6caf8ac5710f85ce7ddb2592da52dc3",
+      "patch_file_count": 1,
+      "patch_files": [
+        "dubbo-common/src/main/java/org/apache/dubbo/common/URLStrParser.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "dubbo-common/src/test/java/org/apache/dubbo/common/URLStrParserTest.java",
+        "dubbo-common/src/test/java/org/apache/dubbo/common/URLTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "apache__dubbo-7041",
+      "repo": "apache/dubbo",
+      "base_commit": "e84cdc217a93f4628415ea0a7d8a9d0090e2c940",
+      "patch_file_count": 1,
+      "patch_files": [
+        "dubbo-common/src/main/java/org/apache/dubbo/common/utils/ReflectUtils.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "dubbo-common/src/test/java/org/apache/dubbo/common/utils/ReflectUtilsTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "apache__dubbo-9187",
+      "repo": "apache/dubbo",
+      "base_commit": "d52dd47682a19b7d644c5be1a9b17e0a16f621e5",
+      "patch_file_count": 8,
+      "patch_files": [
+        "dubbo-common/src/main/java/org/apache/dubbo/common/config/Environment.java",
+        "dubbo-common/src/main/java/org/apache/dubbo/common/extension/DisableInject.java",
+        "dubbo-common/src/main/java/org/apache/dubbo/common/extension/ExtensionLoader.java",
+        "dubbo-common/src/main/java/org/apache/dubbo/common/extension/Inject.java",
+        "dubbo-common/src/main/java/org/apache/dubbo/config/context/ConfigManager.java",
+        "dubbo-configcenter/dubbo-configcenter-zookeeper/src/main/java/org/apache/dubbo/configcenter/support/zookeeper/ZookeeperDynamicConfigurationFactory.java",
+        "dubbo-metadata/dubbo-metadata-report-zookeeper/src/main/java/org/apache/dubbo/metadata/store/zookeeper/ZookeeperMetadataReportFactory.java",
+        "dubbo-registry/dubbo-registry-zookeeper/src/main/java/org/apache/dubbo/registry/zookeeper/ZookeeperRegistryFactory.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "dubbo-common/src/test/java/org/apache/dubbo/common/extension/injection/impl/InjectExtImpl.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1016",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "b472243f565d919b1b4ce6a74ec8e78838162784",
+      "patch_file_count": 3,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/JsonFactory.java",
+        "src/main/java/com/fasterxml/jackson/core/json/UTF8DataInputJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/json/async/NonBlockingJsonParserBase.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/json/JsonFactoryTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1053",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "bb778a0a4d6d492ca0a39d7d0e32b6e44e90e7aa",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/Version.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/VersionTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1133",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "33c2c73e6c8cc9cc2c164a3ceb474f9dcfe513f9",
+      "patch_file_count": 12,
+      "patch_files": [
+        "src/main/java/tools/jackson/core/JsonGenerator.java",
+        "src/main/java/tools/jackson/core/JsonParser.java",
+        "src/main/java/tools/jackson/core/ObjectWriteContext.java",
+        "src/main/java/tools/jackson/core/PrettyPrinter.java",
+        "src/main/java/tools/jackson/core/TokenStreamFactory.java",
+        "src/main/java/tools/jackson/core/base/ParserBase.java",
+        "src/main/java/tools/jackson/core/base/ParserMinimalBase.java",
+        "src/main/java/tools/jackson/core/exc/JacksonIOException.java",
+        "src/main/java/tools/jackson/core/json/ByteSourceJsonBootstrapper.java",
+        "src/main/java/tools/jackson/core/json/ReaderBasedJsonParser.java",
+        "src/main/java/tools/jackson/core/json/UTF8DataInputJsonParser.java",
+        "src/main/java/tools/jackson/core/json/UTF8StreamJsonParser.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/tools/jackson/core/fuzz/Fuzz32208UTF32ParseTest.java",
+        "src/test/java/tools/jackson/core/json/TestDecorators.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1142",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "f1dc3c512d211ae3e14fb59af231caebf037d510",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/Version.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/TestVersions.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1172",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "fb695545312cc2340604e61642f36138152fba93",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/JsonPointer.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/jsonptr/JsonPointer1168Test.java",
+        "src/test/java/com/fasterxml/jackson/core/jsonptr/JsonPointerTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1182",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "d14acac9536939886e432d7145670a9210f54699",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/JsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/util/JsonParserDelegate.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/read/NumberParsingTest.java",
+        "src/test/java/com/fasterxml/jackson/core/util/TestDelegates.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1204",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "2fdbf07978813ff40bea88f9ca9961cece59467c",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/util/RecyclerPool.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/io/BufferRecyclerPoolTest.java",
+        "src/test/java/com/fasterxml/jackson/core/util/JsonBufferRecyclersTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1208",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "f3b4d7603e217424e48d72fb46a7258d61a49550",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/JsonFactory.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/constraints/LargeNameReadTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1263",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "9ed17fc7e9df9203f11ccb17819009ab0a898aa3",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/util/RecyclerPool.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/io/BufferRecyclerPoolTest.java",
+        "src/test/java/com/fasterxml/jackson/core/util/JsonBufferRecyclersTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-1309",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "449ed86748bf672b0a65f13e7f8573298b543384",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/io/NumberInput.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/io/NumberInputTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-150",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "fdcb48c530a91a1cd4a18c3b452048c52de9965c",
+      "patch_file_count": 4,
+      "patch_files": [
+        "pom.xml",
+        "release-notes/VERSION",
+        "src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/util/TextBuffer.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/json/TestNumericValues.java",
+        "src/test/java/com/fasterxml/jackson/core/util/TestTextBuffer.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-174",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "b0f217a849703a453952f93b5999c557c201a4be",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/JsonPointer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/TestJsonPointer.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-183",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "ac6d8e22847c19b2695cbd7d1f418e07a9a3dbb2",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/util/TextBuffer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/util/TestTextBuffer.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-370",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "f42556388bb8ad547a55e4ee7cfb52a99f670186",
+      "patch_file_count": 2,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/json/UTF8DataInputJsonParser.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/read/TrailingCommasTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-380",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "74564bfb7ca768067b5554dc7c4373f43b8be94b",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/filter/FilteringParserDelegate.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/filter/BasicGeneratorFilteringTest.java",
+        "src/test/java/com/fasterxml/jackson/core/filter/BasicParserFilteringTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-566",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "3b20a1c603cb02b7f499ce28b6030577ad63c0f7",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/JsonGenerator.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/json/GeneratorBasicTest.java",
+        "src/test/java/com/fasterxml/jackson/core/main/TestGeneratorObject.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-729",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "4465e7a383b4ca33f9a011e1444d67d7f58fca1c",
+      "patch_file_count": 3,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/filter/FilteringParserDelegate.java",
+        "src/main/java/com/fasterxml/jackson/core/filter/TokenFilter.java",
+        "src/main/java/com/fasterxml/jackson/core/filter/TokenFilterContext.java"
+      ],
+      "test_patch_file_count": 3,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/BaseTest.java",
+        "src/test/java/com/fasterxml/jackson/core/filter/BasicGeneratorFilteringTest.java",
+        "src/test/java/com/fasterxml/jackson/core/filter/BasicParserFilteringTest.java"
+      ],
+      "fail_to_pass_count": 3,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-891",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "287ec3223b039f24d2db99809ae04a333b287435",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/filter/FilteringGeneratorDelegate.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/filter/GeneratorFiltering890Test.java",
+        "src/test/java/com/fasterxml/jackson/core/filter/JsonPointerGeneratorFilteringTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-894",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "928a0f19db7ab880934a58af67fe0dfa94480aa7",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/filter/FilteringGeneratorDelegate.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/filter/GeneratorFiltering890Test.java",
+        "src/test/java/com/fasterxml/jackson/core/filter/JsonPointerGeneratorFilteringTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-922",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "5956b59a77f9599317c7ca7eaa073cb5d5348940",
+      "patch_file_count": 3,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/json/UTF8DataInputJsonParser.java",
+        "src/main/java/com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/base64/Base64Padding912Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-964",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "2b53cce78c6ca037938e6f26d6935c5f9b8c07dd",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/JsonFactory.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/core/constraints/DeeplyNestedContentReadTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-973",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "eb85a336b1baa50b40f7758a24f0e93d814e70a0",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/io/BigDecimalParser.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/failing/PerfBigDecimalParser967.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-core-980",
+      "repo": "fasterxml/jackson-core",
+      "base_commit": "0de50fbc6e9709d0f814fd6e30b6595905f70e63",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/core/StreamReadConstraints.java",
+        "src/main/java/com/fasterxml/jackson/core/base/ParserBase.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/failing/PerfBigDecimalToInteger968.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-1113",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "308ed4ed89b32d119b5994e457597275c6a0af7d",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/DeserializationContext.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/ExceptionFromCustomEnumKeyDeserializerTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-1650",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "e2476e07b2542d9791995d6a01b2da64e3c9128b",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/type/ResolvedRecursiveType.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/type/RecursiveTypeTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/type/TestTypeFactoryWithRecursiveTypes.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-1923",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "5d4eb514820a7cfc7135e4b515dd9531ebdd523a",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION",
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/SubTypeValidator.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/interop/IllegalTypesCheckTest.java",
+        "src/test/java/org/springframework/jacksontest/GrantedAuthority.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-2002",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "5c95315ffbaf6f64bd3a2970a001ecce51c10032",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/introspect/IgnoredFieldPresentInCreatorProperty2001Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-2036",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "bfeb1fa9dc4c889f8027b80abb2f77996efd9b70",
+      "patch_file_count": 2,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/DeserializationFeature.java",
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/StdTypeResolverBuilder.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/jsontype/TestBaseTypeAsDefault.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3371",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "abc6669d974f1f2d3074dbeba1b57b28f0bc065e",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/SettableBeanProperty.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/MergePolymorphicTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3509",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "e7ab4559e75c38eae89adcc74b8c54bd053a049f",
+      "patch_file_count": 3,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/NumberDeserializers.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/StdDeserializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/type/LogicalType.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/convert/CoerceIntToFloatTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3560",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "7f1a3db2ddc48addc3f6bddf065f06eedd0ac370",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/JsonMappingException.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/SettableAnyProperty.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/AnySetterTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3621",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "7690a33de90f0c24f21fdac071f7cc0c5a94b825",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/StdDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/dos/DeepArrayWrappingForDeser3590Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3622",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "6497f1b35ee917b4095d580082ecc4c3f03088ec",
+      "patch_file_count": 4,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/DeserializationFeature.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/StdDeserializer.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/dos/DeepArrayWrappingForDeser3582Test.java",
+        "src/test/java/com/fasterxml/jackson/databind/deser/dos/DeepArrayWrappingForDeser3590Test.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3625",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "bfa257c5eeff27ce82c0a42133bb1637586f0737",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/cfg/CoercionConfigs.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/convert/CoerceIntToFloatTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3626",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "a33b538c44350c1a7894026448916df5926d5516",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/ObjectMapperTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3666",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "960b91c981fed3ea3ce9901e31954b76809ead2f",
+      "patch_file_count": 2,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/FactoryBasedEnumDeserializer.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/EnumCreatorTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreators3.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3701",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "dd733c4c5c48e49c4ee7f0bebce3ff939d0bcf03",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/node/NodeCursor.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/ObjectReaderTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3716",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "0020fcbe578f40810f8e6dea1c89ad48f5e70c15",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/AsDeductionTypeSerializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/StdTypeResolverBuilder.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/jsontype/TestPolymorphicDeduction.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3851",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "cf7c15a3ddf8fa6df5c8961cb57e97e12ee9728a",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/FactoryBasedEnumDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/JsonCreatorModeForEnum3566.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-3860",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "158a68bf0d03eec407922f1c130816c17e1535ef",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/StdNodeBasedDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/convert/TestUpdateViaObjectReader.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4013",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "badad566edcfb91dfb4c2ba7e2d20b23520e6f6c",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/type/TypeParser.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/type/TestTypeFactory.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4015",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "9684204f3073580e711320c3531a95bcaffa63ef",
+      "patch_file_count": 4,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/DeserializationFeature.java",
+        "src/main/java/com/fasterxml/jackson/databind/cfg/CoercionConfigs.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/jdk/LocaleDeser4009Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4048",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "5e94cb1b29a5948737d86f5fe7eaeda318b74910",
+      "patch_file_count": 4,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/MapperFeature.java",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/introspect/Transient3948Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4050",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "4537f09d3419440554c7cf6f2d8130205fc6be6e",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/node/TestConversions.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4072",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "7d112ec1d74fd50c2ea5a71345e0dedf6e8704a9",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/ThrowableDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/exc/CustomExceptionDeser4071Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4087",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "45e6fa63c412bb47e32693f7b0348b8bc7b246af",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/util/BeanUtil.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/interop/OptionalJava8Fallbacks4082Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4131",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "ebf2a82760fda04fdfd20cb1c3f3e7adf9f6b3b2",
+      "patch_file_count": 4,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/JsonNode.java",
+        "src/main/java/com/fasterxml/jackson/databind/node/BaseJsonNode.java",
+        "src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/node/WithPathTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4132",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "042cd3d6f95b86583ffb4cfad0ee1cb251c23285",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/JsonNode.java",
+        "src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/node/ObjectNodeTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/node/WithPathTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4159",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "a1b7557b61cde06fa46a63e3e3cc864afeff8d0e",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/jsontype/deftyping/TestDefaultForEnums.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4186",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "b332a4268d25d69ac4603e008d90701cd62d6e4c",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/ser/filter/CurrentValueDeser4184Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4189",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "866f95fc0198a5b8beb4f25976125697b115e236",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/BaseTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeIdWithJsonIgnore4185Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4219",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "c6fd21152af31357f68de2d6344e99b4aab36d7c",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/BasicDeserializerFactory.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/BeanDeserializerModifier4216Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4228",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "8371ce1cb59441d1d90f505d2ac3936c6ca25dd1",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/filter/NullConversionsForContent4200Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4230",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "73d3bbdbe8d3f5ebd53883bf9bc844d9663a87c0",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/node/MissingValues4229Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4249",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "26f232ad4b13dba7f1e57e447a8e75b1c6ec7c6a",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/ThrowableDeserializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/util/ClassUtil.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/exc/ExceptionDeserializationTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4257",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "810c97939caa752cd15dd56bf2f970a956c9978d",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/ser/RequireSetterForGetter736Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4265",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "51a11bdbafecbb7a7f6784eb13f89123a323e8bb",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/CollectionDeserializer.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/jdk/EmptyArrayBlockingQueueDeserTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKCollectionsDeserTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4304",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "3035c348a827fbe2bb4f14cae8925f1bae05e565",
+      "patch_file_count": 2,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/ClassNameIdResolver.java",
+        "src/main/java/com/fasterxml/jackson/databind/jsontype/impl/TypeNameIdResolver.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/TestJDKSerialization.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4311",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "cc6a1ae3a01a5e68387338a3d25c7ba5aa0f30b9",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/enums/EnumSameName4302Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4320",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "00b24c6786d993e31f433f3b959a443889e69c56",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/CollectionDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/NullsSkip4309Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4325",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "6b738ac6540556ede1cc0d4ea8e268ab7094918f",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/ThrowableDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/exc/ExceptionWithAnySetter4316Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4338",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "93dd44fd9603599ff4b797ae7945a7b9846f4612",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/ser/std/ReferenceTypeSerializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/convert/ConvertingSerializerTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4360",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "23551ecf0240486c87af36b00a41f8eebf51ecfd",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/util/EnumValues.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/enums/EnumWithNullToString4355Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4365",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "18825428cfa704155ec1b4c41aa4d2b42199c866",
+      "patch_file_count": 4,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/AnnotationIntrospector.java",
+        "src/main/java/com/fasterxml/jackson/databind/PropertyName.java",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/AnnotationIntrospectorPair.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/PropertyNameTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4426",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "6493f5fe6573dd78245abe334b761ae67316bb25",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/DelegatingCreatorImplicitNames2543Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4468",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "9d31ec7b804e47979cf3d5fc62a5b5c543708a49",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/FromStringDeserializer.java",
+        "src/main/java/com/fasterxml/jackson/databind/ext/CoreXMLDeserializers.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/ext/MiscJavaXMLTypesReadWriteTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4469",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "7c9e7c1e2acd9c55926b9d2592fc65234d9c3ff7",
+      "patch_file_count": 2,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/impl/FieldProperty.java",
+        "src/main/java/com/fasterxml/jackson/databind/deser/impl/MethodProperty.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/filter/SkipNulls4441Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4486",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "e71e1a227e796abd8a55e8135044133667d6555e",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/std/EnumDeserializer.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/enums/EnumAltIdTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4487",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "a479197ec08b50dfe01521c95d9d9edcef228395",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/type/TypeFactory.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/type/JavaTypeTest.java",
+        "src/test/java/com/fasterxml/jackson/databind/type/TypeFactoryTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4609",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "8a42895d43fca71dde3ab58f699bb0face339f06",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/TwoCreators4602Test.java",
+        "src/test/java/com/fasterxml/jackson/databind/struct/SingleValueAsArrayTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4615",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "475ebbfc89dbb6459af04f3cca7e133f7c9749e8",
+      "patch_file_count": 5,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/databind/AnnotationIntrospector.java",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/AnnotationIntrospectorPair.java",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java",
+        "src/main/java/com/fasterxml/jackson/databind/introspect/PotentialCreator.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/introspect/PrimaryCreatorDetection4584Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-databind-4641",
+      "repo": "fasterxml/jackson-databind",
+      "base_commit": "3ed7f4572534383e54f9fd0d2521131f64283410",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/databind/deser/creators/AnySetterForCreator562Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-dataformat-xml-531",
+      "repo": "fasterxml/jackson-dataformat-xml",
+      "base_commit": "f406e23f5e15efb3d930e826204c06e00a23f8e3",
+      "patch_file_count": 8,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactoryBuilder.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlMapper.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlTagProcessor.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlTagProcessors.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/deser/FromXmlParser.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/deser/XmlTokenStream.java",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/misc/TagEscapeTest.java",
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/stream/XmlTokenStreamTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-dataformat-xml-544",
+      "repo": "fasterxml/jackson-dataformat-xml",
+      "base_commit": "6c03760102474a0e38f0f52cdaef2a88e7133598",
+      "patch_file_count": 1,
+      "patch_files": [
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/misc/XmlTextTest.java",
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/stream/XmlGeneratorTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-dataformat-xml-590",
+      "repo": "fasterxml/jackson-dataformat-xml",
+      "base_commit": "a18b8cd98e94660dcac19bd2cd11f376705d7745",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/JacksonXmlAnnotationIntrospector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/ser/JsonAppend578Test.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-dataformat-xml-638",
+      "repo": "fasterxml/jackson-dataformat-xml",
+      "base_commit": "ac00d648e9b424f4b6c4d7aaaa23abf50adc1b5a",
+      "patch_file_count": 2,
+      "patch_files": [
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/JacksonXmlAnnotationIntrospector.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/ser/SerializationNameMergingTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "fasterxml__jackson-dataformat-xml-644",
+      "repo": "fasterxml/jackson-dataformat-xml",
+      "base_commit": "b782f4b9559ece1b6178cbeafa8acffb0ab9d0f0",
+      "patch_file_count": 3,
+      "patch_files": [
+        "release-notes/CREDITS-2.x",
+        "release-notes/VERSION-2.x",
+        "src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "src/test/java/com/fasterxml/jackson/dataformat/xml/ser/TestSerialization.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "google__gson-1093",
+      "repo": "google/gson",
+      "base_commit": "0aaef0fd1bb1b9729543dc40168adfb829eb75a4",
+      "patch_file_count": 1,
+      "patch_files": [
+        "gson/src/main/java/com/google/gson/stream/JsonWriter.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "gson/src/test/java/com/google/gson/stream/JsonWriterTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "google__gson-1391",
+      "repo": "google/gson",
+      "base_commit": "3f4ac29f9112799a7374a99b18acabd0232ff075",
+      "patch_file_count": 1,
+      "patch_files": [
+        "gson/src/main/java/com/google/gson/internal/$Gson$Types.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "gson/src/test/java/com/google/gson/functional/ReusedTypeVariablesFullyResolveTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "google__gson-1555",
+      "repo": "google/gson",
+      "base_commit": "aa236ec38d39f434c1641aeaef9241aec18affde",
+      "patch_file_count": 2,
+      "patch_files": [
+        "gson/src/main/java/com/google/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactory.java",
+        "gson/src/main/java/com/google/gson/internal/bind/TreeTypeAdapter.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "gson/src/test/java/com/google/gson/functional/JsonAdapterSerializerDeserializerTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "google__gson-1703",
+      "repo": "google/gson",
+      "base_commit": "ceae88bd6667f4263bbe02e6b3710b8a683906a2",
+      "patch_file_count": 1,
+      "patch_files": [
+        "gson/src/main/java/com/google/gson/internal/Streams.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "gson/src/test/java/com/google/gson/functional/ReadersWritersTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "google__gson-1787",
+      "repo": "google/gson",
+      "base_commit": "ceae88bd6667f4263bbe02e6b3710b8a683906a2",
+      "patch_file_count": 4,
+      "patch_files": [
+        "gson/src/main/java/com/google/gson/Gson.java",
+        "gson/src/main/java/com/google/gson/internal/bind/SerializationDelegatingTypeAdapter.java",
+        "gson/src/main/java/com/google/gson/internal/bind/TreeTypeAdapter.java",
+        "gson/src/main/java/com/google/gson/internal/bind/TypeAdapterRuntimeTypeWrapper.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "gson/src/test/java/com/google/gson/functional/TypeAdapterRuntimeTypeWrapperTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "googlecontainertools__jib-2536",
+      "repo": "googlecontainertools/jib",
+      "base_commit": "4fd4650c2a8fcb4b13b60bdd3ff9449235bf02e8",
+      "patch_file_count": 4,
+      "patch_files": [
+        "jib-core/CHANGELOG.md",
+        "jib-core/src/main/java/com/google/cloud/tools/jib/registry/credentials/DockerConfigCredentialRetriever.java",
+        "jib-gradle-plugin/CHANGELOG.md",
+        "jib-maven-plugin/CHANGELOG.md"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "jib-core/src/test/java/com/google/cloud/tools/jib/registry/credentials/DockerConfigCredentialRetrieverTest.java",
+        "jib-core/src/test/resources/core/json/dockerconfig.json"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "googlecontainertools__jib-2542",
+      "repo": "googlecontainertools/jib",
+      "base_commit": "4fd4650c2a8fcb4b13b60bdd3ff9449235bf02e8",
+      "patch_file_count": 1,
+      "patch_files": [
+        "jib-core/src/main/java/com/google/cloud/tools/jib/registry/RegistryEndpointCaller.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "jib-core/src/test/java/com/google/cloud/tools/jib/registry/RegistryEndpointCallerTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "googlecontainertools__jib-2688",
+      "repo": "googlecontainertools/jib",
+      "base_commit": "2cf0cca23e2db5334dcf6285b68d7ddc48a8d850",
+      "patch_file_count": 2,
+      "patch_files": [
+        "jib-maven-plugin/CHANGELOG.md",
+        "jib-maven-plugin/src/main/java/com/google/cloud/tools/jib/maven/MavenProjectProperties.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "jib-maven-plugin/src/test/java/com/google/cloud/tools/jib/maven/MavenProjectPropertiesTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "googlecontainertools__jib-4035",
+      "repo": "googlecontainertools/jib",
+      "base_commit": "934814cc5a2f8d22af8644aabe0d2a2e803818cd",
+      "patch_file_count": 1,
+      "patch_files": [
+        "jib-core/src/main/java/com/google/cloud/tools/jib/registry/RegistryAuthenticator.java"
+      ],
+      "test_patch_file_count": 1,
+      "test_patch_files": [
+        "jib-core/src/test/java/com/google/cloud/tools/jib/registry/RegistryAuthenticatorTest.java"
+      ],
+      "fail_to_pass_count": 1,
+      "pass_to_pass_count": 0
+    },
+    {
+      "instance_id": "googlecontainertools__jib-4144",
+      "repo": "googlecontainertools/jib",
+      "base_commit": "440bd4897c6c427cc9a491128aa76c72378d605b",
+      "patch_file_count": 5,
+      "patch_files": [
+        "docs/google-cloud-build.md",
+        "jib-cli/src/main/java/com/google/cloud/tools/jib/cli/jar/JarFiles.java",
+        "jib-gradle-plugin/README.md",
+        "jib-maven-plugin/README.md",
+        "jib-plugins-common/src/main/java/com/google/cloud/tools/jib/plugins/common/PluginConfigurationProcessor.java"
+      ],
+      "test_patch_file_count": 2,
+      "test_patch_files": [
+        "jib-cli/src/test/java/com/google/cloud/tools/jib/cli/jar/JarFilesTest.java",
+        "jib-plugins-common/src/test/java/com/google/cloud/tools/jib/plugins/common/PluginConfigurationProcessorTest.java"
+      ],
+      "fail_to_pass_count": 2,
+      "pass_to_pass_count": 0
+    }
+  ]
+}

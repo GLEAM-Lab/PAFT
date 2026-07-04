@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "concern": "larger open backbone",
+      "status": "OK",
+      "evidence": "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv: Base/SFT/w1.5/w2 pass@1=20.38/20.24/22.16/23.05; AED=169.17/79.43/61.18/63.53",
+      "caveat": ""
+    },
+    {
+      "concern": "frontier scale-plus-prompt diagnostic",
+      "status": "OK",
+      "evidence": "analysis_outputs/d4j_frontier_api_pass1_metrics_20260621.csv: Qwen3-Max minimal pass@1=31.54, AED=99.38/57.00; DeepSeek-V3 minimal pass@1=45.28, AED=106.18/58.00",
+      "caveat": "Out-of-class reference only; does not claim PAFT beats frontier APIs."
+    },
+    {
+      "concern": "frontier common-plausible caution",
+      "status": "OK",
+      "evidence": "analysis_outputs/qwen3max_minimal_vs_qwen14_paft_common_plausible_metrics.csv: common bugs=57, PAFT AED=72.23/45.00, CCR=75.01; Qwen3-Max minimal AED=76.81/37.00, CCR=82.71",
+      "caveat": "Prevents cross-model AED overclaim; frontier API rows remain out-of-class diagnostics."
+    },
+    {
+      "concern": "mechanism / stable-region edits",
+      "status": "OK",
+      "evidence": "analysis_outputs/tse_existing_backbone_d4j_summary.md: outside_ref avg qwen8b 2.62->1.51, qwen2.5coder7b 2.57->1.32; missed_ref avg 0.47->0.45, 0.39->0.46",
+      "caveat": "Supports a learned preservation/localization prior; not proof of perfect fault localization."
+    },
+    {
+      "concern": "copy-collapse side effect",
+      "status": "OK",
+      "evidence": "analysis_outputs/d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv: Base/SFT/PAFT fixed0 no-op=24.80/42.86/9.43%; PAFT plausible no-op=0",
+      "caveat": ""
+    },
+    {
+      "concern": "near-duplicate leakage",
+      "status": "OK",
+      "evidence": "analysis_outputs/d4j_train_eval_5gram_jaccard_summary_20260621.md: max Jaccard=0.110169, pairs above 0.60=0",
+      "caveat": "Rules out exact/high lexical near duplicates under this normalization, not semantic contamination."
+    },
+    {
+      "concern": "complex/multi-file generator diagnostic",
+      "status": "OK",
+      "evidence": "analysis_outputs/multiswe_java_smoke10_neutral_generator_summary_20260704.csv: SFT/w1.5/w2 file recall=0.86/0.91/0.92; detail buckets=single_file,three_plus_file,two_file; details=analysis_outputs/multiswe_java_smoke10_neutral_generator_details_20260704.csv",
+      "caveat": "Generator-level oracle-context smoke only; not official Multi-SWE harness pass/fail."
+    },
+    {
+      "concern": "system-level APR baseline scope",
+      "status": "OK",
+      "evidence": "paper scope terms=True; analysis_outputs/tse_system_level_reference_scope.md: source note=True; analysis_outputs/system_level_swap_feasibility_20260703.md: feasibility audit=True",
+      "caveat": "Addresses Agentless/AutoCodeRover/RepairAgent as references, not same-class PAFT baselines."
+    },
+    {
+      "concern": "attribution / curriculum scope",
+      "status": "OK",
+      "evidence": "analysis_outputs/d4j_recomputed_metrics_deepseek_variants.csv: full/curriculum/final pass@1=7.41/8.25/10.13; AED=105.01/111.17/80.66; w0/w2/w4 pass@1=7.25/9.14/8.22; paper scope text=True",
+      "caveat": "Sensitivity evidence only; not a complete causal decomposition or repeated-seed variance claim."
+    },
+    {
+      "concern": "cross-language sanity check",
+      "status": "OK",
+      "evidence": "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv: SFT/w1.5/w2 pass@1=43.00/45.00/52.50; pass@5=72.50/85.00/82.50",
+      "caveat": "Use as PAFT-vs-SFT sanity evidence only; Base remains stronger in raw correctness."
+    },
+    {
+      "concern": "fixed-seed reproducibility",
+      "status": "OK",
+      "evidence": "analysis_outputs/tse_fixed_seed_manifest.md: expected seeds present=True; complete artifacts present=True; key launchers present=True; launcher --seed values verified=True",
+      "caveat": ""
+    }
+  ],
+  "ok": true
+}

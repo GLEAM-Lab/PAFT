@@ -11,13 +11,20 @@ import threading
 import traceback
 import subprocess
 import multiprocessing
+import uuid
 from pathlib import Path
 import concurrent.futures as cf
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 import glob
 
-ROOT_PATH = '/data1/tmp/llm4apr_validation/'
-os.environ["JAVA_HOME"] = "/data1/miniconda3/envs/d4j"
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+_validation_namespace = os.environ.get('D4J_VALIDATION_NAMESPACE', '').strip()
+if _validation_namespace:
+    ROOT_PATH = os.path.join(PROJECT_ROOT, 'tmp', 'llm4apr_validation', _validation_namespace) + os.sep
+else:
+    ROOT_PATH = os.path.join(PROJECT_ROOT, 'tmp', 'llm4apr_validation') + os.sep
+EXPECTED_PATCH_COUNT = 10
+os.environ.setdefault("JAVA_HOME", "/data1/miniconda3/envs/d4j")
 os.environ["PATH"] = os.path.join(os.environ["JAVA_HOME"], "bin") + ":" + os.environ["PATH"]
 def clean_tmp_folder(tmp_dir):
     if os.path.isdir(tmp_dir) and tmp_dir.startswith(ROOT_PATH):
@@ -62,8 +69,13 @@ def guess_source_dir(project_dir):
         "",                  # 有可能 org 就直接在根目录
     ]
     for candidate in candidates:
-        full_path = os.path.join(project_dir, candidate, "org")
-        if os.path.exists(full_path):
+        full_path = os.path.join(project_dir, candidate)
+        if os.path.isdir(full_path) and (
+            os.path.isdir(os.path.join(full_path, "org")) or
+            os.path.isdir(os.path.join(full_path, "com")) or
+            os.path.isdir(os.path.join(full_path, "java")) or
+            any(name.endswith(".java") for name in os.listdir(full_path))
+        ):
             return candidate
     return None
 def checkout_defects4j_project(current_bug, project_dir):
@@ -109,9 +121,9 @@ def monitor_memory(pid, interval, stop_event, max_memory_event):
     max_memory_event[0] = max_memory / (1024 ** 3)
 
 
-def command_with_timeout(cmd, timeout=90):
+def command_with_timeout(cmd, timeout=90, cwd=None):
     max_memory_event = [None]
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
     stop_event = threading.Event()
     monitor_thread = threading.Thread(target=monitor_memory, args=(process.pid, 1, stop_event, max_memory_event))
     try:
@@ -133,28 +145,24 @@ def command_with_timeout(cmd, timeout=90):
 
 
 def defects4j_test_suite(project_dir, timeout=1000):
-    os.chdir(project_dir)
-    out, err = command_with_timeout(["defects4j", "test", "-r"], timeout)
+    out, err = command_with_timeout(["defects4j", "test", "-r"], timeout, cwd=project_dir)
     if "Compilation failed" in str(out):
         print("[FAIL] Compile tests for ", project_dir)
     return out, err
 
 
 def defects4j_export_trigger(project_dir, timeout=90):
-    os.chdir(project_dir)
-    out, err = command_with_timeout(["defects4j", "export", "-p", "tests.trigger"], timeout)
+    out, err = command_with_timeout(["defects4j", "export", "-p", "tests.trigger"], timeout, cwd=project_dir)
     return out, err
 
 
 def defects4j_export_relevant(project_dir, timeout=90):
-    os.chdir(project_dir)
-    out, err = command_with_timeout(["defects4j", "export", "-p", "tests.relevant"], timeout)
+    out, err = command_with_timeout(["defects4j", "export", "-p", "tests.relevant"], timeout, cwd=project_dir)
     return out, err
 
 
 def defects4j_test_one(project_dir, test_case, timeout=100):
-    os.chdir(project_dir)
-    out, err = command_with_timeout(["defects4j", "test", "-t", test_case], timeout)
+    out, err = command_with_timeout(["defects4j", "test", "-t", test_case], timeout, cwd=project_dir)
     return out, err
 
 
@@ -260,7 +268,7 @@ class ValInfo():
         with open(config_path, 'r') as f:
             config_info = json.load(f)
 
-        self.val_result_path = os.path.join('defects4j/results/', config_info['model_id'])
+        self.val_result_path = os.path.join(PROJECT_ROOT, 'defects4j', 'results', config_info['model_id'])
         checkout_defects4j_project(self.curr_bug, self.proj_dir)
 
     def init_extract_project_info(self):
@@ -493,6 +501,8 @@ class PatchValidation():
 
 def get_result_paths(fixed_dir, json_file):
     base_path = os.path.join(fixed_dir, json_file)
+    if not os.path.isabs(base_path):
+        base_path = os.path.join(PROJECT_ROOT, base_path)
     log_path = f"{base_path}.judgelog"
     result_path = f"{base_path}.result"
     return log_path, result_path
@@ -519,8 +529,10 @@ def save_validation_result(log_path, result_path, results, log_content):
     print(f"[DEBUG] - Result: {result_path}")
     
     try:
-        with open(result_path, 'w') as f:
+        tmp_result_path = f"{result_path}.tmp.{os.getpid()}.{uuid.uuid4().hex}"
+        with open(tmp_result_path, 'w') as f:
             json.dump(results, f, indent=2)
+        os.replace(tmp_result_path, result_path)
         print(f"[DEBUG] Successfully saved result file")
     except Exception as e:
         print(f"[ERROR] Failed to save result file: {str(e)}")
@@ -529,8 +541,10 @@ def save_validation_result(log_path, result_path, results, log_content):
         raise
         
     try:
-        with open(log_path, 'w') as f:
+        tmp_log_path = f"{log_path}.tmp.{os.getpid()}.{uuid.uuid4().hex}"
+        with open(tmp_log_path, 'w') as f:
             f.write(log_content)
+        os.replace(tmp_log_path, log_path)
         print(f"[DEBUG] Successfully saved log file")
     except Exception as e:
         print(f"[ERROR] Failed to save log file: {str(e)}")
@@ -572,7 +586,22 @@ def validate_patches_per_bug(candidate_patch):
     val_time = ValTime(time.time())
     val_info = ValInfo(candidate_patch)
     if not val_info.check_init_success():
-        return
+        patch_results = []
+        for curr_patch_code in patches:
+            patch_results.append({
+                'patch_code': curr_patch_code,
+                'patch_status': 'INIT_ERROR',
+                'failing_tests': {
+                    'TRIGGER': [],
+                    'RELEVANT': [],
+                    'TIMEOUT': [],
+                },
+                'val_cnt': 0,
+                'bug_name': bug_name,
+                'diff_stats': None,
+            })
+        save_validation_result(log_path, result_path, patch_results, '\n'.join(validation_log))
+        return patch_results
     val_time.set_init_time(time.time())
     
     patch_results = []
@@ -618,9 +647,7 @@ def validate_patches_per_bug(candidate_patch):
     # 确保所有结果都被保存到 validated.jsonl
     val_info.save_validation_results(done=True)
     
-    # 恢复到原始工作目录再保存结果文件
-    os.chdir(original_cwd)
-    print(f"[DEBUG] Restored working directory to: {os.getcwd()}")
+    print(f"[DEBUG] Current working directory before save: {os.getcwd()}")
     
     # 保存验证结果和日志
     save_validation_result(log_path, result_path, patch_results, '\n'.join(validation_log))
@@ -628,9 +655,10 @@ def validate_patches_per_bug(candidate_patch):
     
 
 class ValidationStats:
-    def __init__(self):
+    def __init__(self, expected_patch_count=EXPECTED_PATCH_COUNT):
         self.total_bugs = 0
         self.bug_results = {}
+        self.expected_patch_count = expected_patch_count
         # PLAUSIBLE 补丁的详细统计（只统计可行补丁）
         self.diff_stats = {
             'patch_count': 0,
@@ -709,7 +737,7 @@ class ValidationStats:
                     print(f"[WARNING] PLAUSIBLE patch missing diff_stats")
 
     def get_success_rate(self):
-        """计算pass@1、pass@5和pass@10的成功率（只计算有完整10个候选补丁的bug）
+        """计算pass@1、pass@5和pass@10的成功率（只计算有完整候选补丁的bug）
         
         使用无偏估计公式：pass@k = 1 - C(n-c, k) / C(n, k)
         其中 n=总补丁数, c=正确补丁数, k=采样数
@@ -729,8 +757,7 @@ class ValidationStats:
             # 统计总补丁数和正确补丁数
             n = len(patches)
             
-            # 只计算有完整10个候选补丁的bug
-            if n != 10:
+            if n != self.expected_patch_count:
                 continue
             
             c = sum(1 for p in patches if p is not None and p.get('patch_status') == 'PLAUSIBLE')
@@ -738,8 +765,8 @@ class ValidationStats:
             
             # 计算 pass@k
             pass1_sum += self._calc_pass_at_k(n, c, 1)
-            pass5_sum += self._calc_pass_at_k(n, c, 5)
-            pass10_sum += self._calc_pass_at_k(n, c, 10)
+            pass5_sum += self._calc_pass_at_k(n, c, min(5, n))
+            pass10_sum += self._calc_pass_at_k(n, c, min(10, n))
         
         pass1_rate = (pass1_sum / valid_bugs) * 100 if valid_bugs > 0 else 0
         pass5_rate = (pass5_sum / valid_bugs) * 100 if valid_bugs > 0 else 0
@@ -758,9 +785,8 @@ class ValidationStats:
         Returns:
             pass@k 的值 (0.0 到 1.0)
         """
-        # n 现在固定为 10，k 最大为 10
-        assert n == 10, f"Expected n=10, got n={n}"
-        assert k <= 10, f"k should not exceed 10, got k={k}"
+        assert n == self.expected_patch_count, f"Expected n={self.expected_patch_count}, got n={n}"
+        assert k <= n, f"k should not exceed n={n}, got k={k}"
         
         if c == 0:
             # 没有正确补丁
@@ -790,9 +816,8 @@ class ValidationStats:
             if patches is None:
                 continue
             
-            # 只计算有完整10个候选补丁的bug
             n = len(patches)
-            if n != 10:
+            if n != self.expected_patch_count:
                 continue
             
             # 找到所有plausible patches
@@ -848,8 +873,8 @@ class ValidationStats:
         
         return result
 
-def load_previous_results(model_id):
-    results_dir = f'defects4j/results/{model_id}'
+def load_previous_results(model_id, expected_patch_count=EXPECTED_PATCH_COUNT):
+    results_dir = os.path.join(PROJECT_ROOT, 'defects4j', 'results', str(model_id))
     previous_results = {}
     
     bug_dates = {}
@@ -884,8 +909,8 @@ def load_previous_results(model_id):
             print(f"[WARNING] Failed to load previous results from {result_file}: {e}")
             continue
         
-        # 处理结果（只包含恰好10个补丁的bug）
-        if results and len(results) == 10:
+        # 处理结果（只包含恰好 expected_patch_count 个补丁的 bug）
+        if results and len(results) == expected_patch_count:
             previous_results[bug_id] = results
             
             plausible_found = False
@@ -910,7 +935,7 @@ def load_previous_results(model_id):
                     'total_patches': len(results)
                 })
         elif results:
-            print(f"[WARNING] Skipping {bug_id} - has {len(results)} patches (expected 10)")
+            print(f"[WARNING] Skipping {bug_id} - has {len(results)} patches (expected {expected_patch_count})")
     
     print("\n[PREVIOUS VALIDATION SUMMARY]")
     print("=" * 100)
@@ -930,10 +955,14 @@ def load_previous_results(model_id):
     return previous_results
 
 def validate_defects4j(model_id, n_generations):
-    stats = ValidationStats()
+    expected_patch_count = n_generations
+    stats = ValidationStats(expected_patch_count=expected_patch_count)
     candidate_patches = {}
+    os.makedirs(ROOT_PATH, exist_ok=True)
+    with open(os.path.join(ROOT_PATH, 'config.json'), 'w') as f:
+        json.dump({'model_id': model_id}, f)
     
-    previous_results = load_previous_results(model_id)
+    previous_results = load_previous_results(model_id, expected_patch_count=expected_patch_count)
     print(f"[INFO] Loaded {len(previous_results)} previously validated bugs")
     
     for bug_id, results in previous_results.items():
@@ -951,7 +980,7 @@ def validate_defects4j(model_id, n_generations):
     print_diff_statistics_summary(stats.diff_stats, "PLAUSIBLE Patches", stats.raw_values)
     
     for i in range(n_generations):
-        fix_dir = os.path.join('defects4j/results', str(model_id), f'fixed{i}')
+        fix_dir = os.path.join(PROJECT_ROOT, 'defects4j', 'results', str(model_id), f'fixed{i}')
         if not os.path.exists(fix_dir):
             print(f"Warning: {fix_dir} does not exist")
             continue
@@ -986,13 +1015,13 @@ def validate_defects4j(model_id, n_generations):
     filtered_candidates = {}
     skipped_bugs = []
     for bug_id, patch_info in candidate_patches.items():
-        if len(patch_info['patches']) == 10:  # 严格要求10个补丁
+        if len(patch_info['patches']) == expected_patch_count:
             filtered_candidates[bug_id] = patch_info
         else:
             skipped_bugs.append((bug_id, len(patch_info['patches'])))
     
     if skipped_bugs:
-        print("\n[SKIPPED BUGS] (not exactly 10 patches)")
+        print(f"\n[SKIPPED BUGS] (not exactly {expected_patch_count} patches)")
         print(f"{'Bug ID':20} | {'Patch Count':12}")
         print("-" * 35)
         for bug_id, count in sorted(skipped_bugs):
@@ -1000,14 +1029,15 @@ def validate_defects4j(model_id, n_generations):
         print(f"\nTotal skipped: {len(skipped_bugs)} bugs")
     
     remaining_bugs = len(filtered_candidates)
-    print(f"\n[INFO] Found {remaining_bugs} new bugs with exactly 10 patches to validate")
+    print(f"\n[INFO] Found {remaining_bugs} new bugs with exactly {expected_patch_count} patches to validate")
     print(f"[INFO] Total bugs (including previous): {len(previous_results) + remaining_bugs}")
     
     if remaining_bugs == 0:
         print("[INFO] No new bugs to validate")
         return
 
-    max_workers = min(multiprocessing.cpu_count(), 4)
+    requested_workers = int(os.environ.get('D4J_VALIDATION_WORKERS', '8'))
+    max_workers = min(multiprocessing.cpu_count(), requested_workers)
     print(f"[INFO] Using {max_workers} workers for parallel validation")
     
     validated_count = 0
@@ -1091,7 +1121,7 @@ def load_and_compare_results(model_id1, model_id2, min_patches=1):
     
     bug_lengths = {}
     for bug_id in filtered_results1.keys() | filtered_results2.keys():
-        json_file = os.path.join('defects4j/results', model_id1, 'fixed0', f'{bug_id}.json')
+        json_file = os.path.join(PROJECT_ROOT, 'defects4j', 'results', model_id1, 'fixed0', f'{bug_id}.json')
         try:
             with open(json_file, 'r') as f:
                 patch_info = json.load(f)
@@ -1505,7 +1535,7 @@ def print_diff_statistics_summary(stats_dict, title, raw_values=None):
 def recalculate_diff_stats(model_id):
     """重新计算所有已验证patch的diff统计，保存到.result文件"""
     print(f"[INFO] 重新计算 {model_id} 的统计信息")
-    results_dir = os.path.join('defects4j/results', model_id)
+    results_dir = os.path.join(PROJECT_ROOT, 'defects4j', 'results', model_id)
     fixed0_dir = os.path.join(results_dir, 'fixed0')
     
     if not os.path.exists(fixed0_dir):
@@ -1590,6 +1620,7 @@ if __name__ == '__main__':
     parser.add_argument('--compare', type=str, default=None, help='对比另一个模型的结果')
     parser.add_argument('--min_patches', type=int, default=10, help='对比时最小patch数量要求（默认10）')
     args = parser.parse_args()
+    EXPECTED_PATCH_COUNT = args.n_generations
     
     if args.compare:
         # 对比模式
@@ -1607,9 +1638,9 @@ if __name__ == '__main__':
         recalculate_diff_stats(args.model_id)
         
         # 2. 重新计算Pass@k
-        stats = ValidationStats()
-        previous_results = load_previous_results(args.model_id)
-        print(f"\n[INFO] Loaded {len(previous_results)} bugs with exactly 10 patches")
+        stats = ValidationStats(expected_patch_count=args.n_generations)
+        previous_results = load_previous_results(args.model_id, expected_patch_count=args.n_generations)
+        print(f"\n[INFO] Loaded {len(previous_results)} bugs with exactly {EXPECTED_PATCH_COUNT} patches")
         
         for bug_id, results in previous_results.items():
             stats.update(bug_id, results)

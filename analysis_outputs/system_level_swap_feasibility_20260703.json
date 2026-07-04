@@ -1,0 +1,916 @@
+{
+  "datasets": [
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/Daoguang___multi-swe-bench/default/0.0.0/8bd202138a4ab9987daa77111c76a3e66af9f1c9/multi-swe-bench-java_verified.arrow",
+      "rows": 91,
+      "columns": [
+        "repo",
+        "pull_number",
+        "instance_id",
+        "issue_numbers",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "version"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {
+        "java": 91
+      },
+      "repo_top10": {
+        "fasterxml/jackson-databind": 49,
+        "fasterxml/jackson-core": 23,
+        "fasterxml/jackson-dataformat-xml": 5,
+        "google/gson": 5,
+        "googlecontainertools/jib": 5,
+        "apache/dubbo": 4
+      },
+      "sample_id": "apache__dubbo-10638",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench/default/0.0.0/7074ef12ea2a6f70a228943c1336553333c22786/swe-bench-dev.arrow",
+      "rows": 225,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "pvlib/pvlib-python": 63,
+        "pydicom/pydicom": 56,
+        "sqlfluff/sqlfluff": 50,
+        "pylint-dev/astroid": 31,
+        "pyvista/pyvista": 16,
+        "marshmallow-code/marshmallow": 9
+      },
+      "sample_id": "sqlfluff__sqlfluff-4764",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench/default/0.0.0/7074ef12ea2a6f70a228943c1336553333c22786/swe-bench-test.arrow",
+      "rows": 2294,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 850,
+        "sympy/sympy": 386,
+        "scikit-learn/scikit-learn": 229,
+        "sphinx-doc/sphinx": 187,
+        "matplotlib/matplotlib": 184,
+        "pytest-dev/pytest": 119,
+        "pydata/xarray": 110,
+        "astropy/astropy": 95,
+        "pylint-dev/pylint": 57,
+        "psf/requests": 44
+      },
+      "sample_id": "astropy__astropy-11693",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench/default/0.0.0/7074ef12ea2a6f70a228943c1336553333c22786/swe-bench-train.arrow",
+      "rows": 19008,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "pandas-dev/pandas": 5049,
+        "Qiskit/qiskit": 1406,
+        "huggingface/transformers": 1058,
+        "mesonbuild/meson": 954,
+        "numpy/numpy": 937,
+        "googleapis/google-cloud-python": 926,
+        "pantsbuild/pants": 900,
+        "conan-io/conan": 855,
+        "ipython/ipython": 850,
+        "pypa/pip": 686
+      },
+      "sample_id": "DataDog__integrations-core-10093",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench_lite/default/0.0.0/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/swe-bench_lite-dev.arrow",
+      "rows": 23,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "sqlfluff/sqlfluff": 5,
+        "pvlib/pvlib-python": 5,
+        "pylint-dev/astroid": 5,
+        "pydicom/pydicom": 5,
+        "marshmallow-code/marshmallow": 2,
+        "pyvista/pyvista": 1
+      },
+      "sample_id": "sqlfluff__sqlfluff-1625",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench_lite/default/0.0.0/69611d31007e1c6731db8bd5b5c3f2d33f5bab6e/swe-bench_lite-test.arrow",
+      "rows": 300,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 114,
+        "sympy/sympy": 77,
+        "matplotlib/matplotlib": 23,
+        "scikit-learn/scikit-learn": 23,
+        "pytest-dev/pytest": 17,
+        "sphinx-doc/sphinx": 16,
+        "astropy/astropy": 6,
+        "psf/requests": 6,
+        "pylint-dev/pylint": 6,
+        "pydata/xarray": 5
+      },
+      "sample_id": "astropy__astropy-12907",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench_multilingual/default/0.0.0/2b7aced941b4873e9cad3e76abbae93f481d1beb/swe-bench_multilingual-test.arrow",
+      "rows": 300,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "preactjs/preact": 17,
+        "projectlombok/lombok": 17,
+        "rubocop/rubocop": 16,
+        "caddyserver/caddy": 14,
+        "laravel/framework": 13,
+        "fluent/fluentd": 12,
+        "redis/redis": 12,
+        "fmtlib/fmt": 11,
+        "briannesbitt/carbon": 10,
+        "php-cs-fixer/php-cs-fixer": 10
+      },
+      "sample_id": "apache__druid-13704",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/SWE-bench___swe-bench_verified/default/0.0.0/91aa3ed51b709be6457e12d00300a6a596d4c6a3/swe-bench_verified-test.arrow",
+      "rows": 500,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit",
+        "difficulty"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 231,
+        "sympy/sympy": 75,
+        "sphinx-doc/sphinx": 44,
+        "matplotlib/matplotlib": 34,
+        "scikit-learn/scikit-learn": 32,
+        "astropy/astropy": 22,
+        "pydata/xarray": 22,
+        "pytest-dev/pytest": 19,
+        "pylint-dev/pylint": 10,
+        "psf/requests": 8
+      },
+      "sample_id": "astropy__astropy-12907",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench/default/0.0.0/e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6/swe-bench-dev.arrow",
+      "rows": 225,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "pvlib/pvlib-python": 63,
+        "pydicom/pydicom": 56,
+        "sqlfluff/sqlfluff": 50,
+        "pylint-dev/astroid": 31,
+        "pyvista/pyvista": 16,
+        "marshmallow-code/marshmallow": 9
+      },
+      "sample_id": "sqlfluff__sqlfluff-4764",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench/default/0.0.0/e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6/swe-bench-test.arrow",
+      "rows": 2294,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 850,
+        "sympy/sympy": 386,
+        "scikit-learn/scikit-learn": 229,
+        "sphinx-doc/sphinx": 187,
+        "matplotlib/matplotlib": 184,
+        "pytest-dev/pytest": 119,
+        "pydata/xarray": 110,
+        "astropy/astropy": 95,
+        "pylint-dev/pylint": 57,
+        "psf/requests": 44
+      },
+      "sample_id": "astropy__astropy-11693",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench/default/0.0.0/e48e2bd1e9fecd5bbd641e9414ac59da9f2e69f6/swe-bench-train.arrow",
+      "rows": 19008,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "pandas-dev/pandas": 5049,
+        "Qiskit/qiskit": 1406,
+        "huggingface/transformers": 1058,
+        "mesonbuild/meson": 954,
+        "numpy/numpy": 937,
+        "googleapis/google-cloud-python": 926,
+        "pantsbuild/pants": 900,
+        "conan-io/conan": 855,
+        "ipython/ipython": 850,
+        "pypa/pip": 686
+      },
+      "sample_id": "DataDog__integrations-core-10093",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench_lite/default/0.0.0/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/swe-bench_lite-dev.arrow",
+      "rows": 23,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "sqlfluff/sqlfluff": 5,
+        "pvlib/pvlib-python": 5,
+        "pylint-dev/astroid": 5,
+        "pydicom/pydicom": 5,
+        "marshmallow-code/marshmallow": 2,
+        "pyvista/pyvista": 1
+      },
+      "sample_id": "sqlfluff__sqlfluff-1625",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench_lite/default/0.0.0/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/swe-bench_lite-test.arrow",
+      "rows": 300,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 114,
+        "sympy/sympy": 77,
+        "matplotlib/matplotlib": 23,
+        "scikit-learn/scikit-learn": 23,
+        "pytest-dev/pytest": 17,
+        "sphinx-doc/sphinx": 16,
+        "astropy/astropy": 6,
+        "psf/requests": 6,
+        "pylint-dev/pylint": 6,
+        "pydata/xarray": 5
+      },
+      "sample_id": "astropy__astropy-12907",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench_multimodal/default/0.0.0/aa2db68940196b6b59ae3f577faa0c25157bdd50/swe-bench_multimodal-dev.arrow",
+      "rows": 102,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "image_assets",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "Automattic/wp-calypso": 37,
+        "chartjs/Chart.js": 24,
+        "processing/p5.js": 16,
+        "markedjs/marked": 14,
+        "diegomura/react-pdf": 11
+      },
+      "sample_id": "chartjs__Chart.js-10301",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench_multimodal/default/0.0.0/aa2db68940196b6b59ae3f577faa0c25157bdd50/swe-bench_multimodal-test.arrow",
+      "rows": 510,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "image_assets",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "carbon-design-system/carbon": 133,
+        "openlayers/openlayers": 79,
+        "GoogleChrome/lighthouse": 54,
+        "bpmn-io/bpmn-js": 54,
+        "highlightjs/highlight.js": 39,
+        "alibaba-fusion/next": 39,
+        "PrismJS/prism": 38,
+        "quarto-dev/quarto-cli": 24,
+        "grommet/grommet": 20,
+        "prettier/prettier": 13
+      },
+      "sample_id": "grommet__grommet-6282",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    },
+    {
+      "path": "/home/barty/.cache/huggingface/datasets/princeton-nlp___swe-bench_verified/default/0.0.0/c104f840cc67f8b6eec6f759ebc8b2693d585d4a/swe-bench_verified-test.arrow",
+      "rows": 500,
+      "columns": [
+        "repo",
+        "instance_id",
+        "base_commit",
+        "patch",
+        "test_patch",
+        "problem_statement",
+        "hints_text",
+        "created_at",
+        "version",
+        "FAIL_TO_PASS",
+        "PASS_TO_PASS",
+        "environment_setup_commit",
+        "difficulty"
+      ],
+      "patch_like_columns": [
+        "patch",
+        "test_patch"
+      ],
+      "test_like_columns": [
+        "test_patch"
+      ],
+      "language_counts": {},
+      "repo_top10": {
+        "django/django": 231,
+        "sympy/sympy": 75,
+        "sphinx-doc/sphinx": 44,
+        "matplotlib/matplotlib": 34,
+        "scikit-learn/scikit-learn": 32,
+        "astropy/astropy": 22,
+        "pydata/xarray": 22,
+        "pytest-dev/pytest": 19,
+        "pylint-dev/pylint": 10,
+        "psf/requests": 8
+      },
+      "sample_id": "astropy__astropy-12907",
+      "has_gold_patch": true,
+      "has_test_patch": true,
+      "has_problem_statement": true
+    }
+  ],
+  "agentless": {
+    "path": "/home/barty/research/Agentless",
+    "exists": true,
+    "readme": "/home/barty/research/Agentless/README_swebench.md",
+    "markers": {
+      "supports_lite_verified": true,
+      "uses_openai_api": true,
+      "has_localization": true,
+      "has_retrieval": true,
+      "has_repair_samples": true,
+      "has_patch_selection": true
+    },
+    "key_files": {
+      "agentless/fl/localize.py": true,
+      "agentless/fl/retrieve.py": true,
+      "agentless/repair/repair.py": true,
+      "agentless/repair/rerank.py": true,
+      "agentless/test/run_tests.py": true
+    }
+  },
+  "kgcompass": {
+    "path": "/home/barty/GLEAM-Lab/KGCompass",
+    "exists": true,
+    "summary_files_count": 175,
+    "summaries_sample": [
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r1_c20_t0/summary.json",
+        "evaluated": 268,
+        "passed_regression": null,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r2_c20_t1/summary.json",
+        "evaluated": 268,
+        "passed_regression": null,
+        "round_tag": "r2_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r3_c20_t1/summary.json",
+        "evaluated": 268,
+        "passed_regression": null,
+        "round_tag": "r3_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r4_c10_t0/summary.json",
+        "evaluated": 266,
+        "passed_regression": null,
+        "round_tag": "r4_c10_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r5_c10_t1/summary.json",
+        "evaluated": 268,
+        "passed_regression": null,
+        "round_tag": "r5_c10_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/glm5/r6_c10_t1/summary.json",
+        "evaluated": 269,
+        "passed_regression": null,
+        "round_tag": "r6_c10_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r1_c20_t0/summary.json",
+        "evaluated": 215,
+        "passed_regression": null,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r2_c20_t1/summary.json",
+        "evaluated": 222,
+        "passed_regression": null,
+        "round_tag": "r2_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r3_c20_t1/summary.json",
+        "evaluated": 220,
+        "passed_regression": null,
+        "round_tag": "r3_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r4_c10_t0/summary.json",
+        "evaluated": 222,
+        "passed_regression": null,
+        "round_tag": "r4_c10_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r5_c10_t1/summary.json",
+        "evaluated": 216,
+        "passed_regression": null,
+        "round_tag": "r5_c10_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/generated_patch_eval_verified_20260329_final/qwen3codernext/r6_c10_t1/summary.json",
+        "evaluated": 217,
+        "passed_regression": null,
+        "round_tag": "r6_c10_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_glm5_verified_temp0_pair/KG_10p10_top20/r1_c20_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_glm5_verified_temp0_pair/noKG_top20/r1_c20_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500/local_qwen3coder30b/selected/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/KG_5p5_top10/local_deepseekcoder_v2_lite/r4_c10_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/KG_5p5_top10/local_qwen3coder30b/r4_c10_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/KG_top20/local_deepseekcoder_v2_lite/r1_c20_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/KG_top20/local_qwen3coder30b/r1_c20_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/noKG_top10/local_deepseekcoder_v2_lite/r4_c10_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/official_local_open_verified_full500_temp0_pair/noKG_top10/local_qwen3coder30b/r4_c10_t0/summary.json",
+        "evaluated": null,
+        "passed_regression": null,
+        "round_tag": null
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r1_c20_t0/summary.json",
+        "evaluated": 494,
+        "passed_regression": 120,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r2_c20_t1/summary.json",
+        "evaluated": 496,
+        "passed_regression": 118,
+        "round_tag": "r2_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r3_c20_t1/summary.json",
+        "evaluated": 496,
+        "passed_regression": 114,
+        "round_tag": "r3_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/qwen3codernext/r1_c20_t0/summary.json",
+        "evaluated": 467,
+        "passed_regression": 84,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/qwen3codernext/r2_c20_t1/summary.json",
+        "evaluated": 467,
+        "passed_regression": 77,
+        "round_tag": "r2_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/qwen3codernext/r3_c20_t1/summary.json",
+        "evaluated": 468,
+        "passed_regression": 80,
+        "round_tag": "r3_c20_t1"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_subset100_v33_subset100_r1/glm5/r1_c20_t0/summary.json",
+        "evaluated": 100,
+        "passed_regression": 20,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_subset100_v33_subset100_r1/qwen3codernext/r1_c20_t0/summary.json",
+        "evaluated": 93,
+        "passed_regression": 17,
+        "round_tag": "r1_c20_t0"
+      },
+      {
+        "path": "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_subset100_v34_subset100_r1/glm5/r1_c20_t0/summary.json",
+        "evaluated": 100,
+        "passed_regression": 20,
+        "round_tag": "r1_c20_t0"
+      }
+    ],
+    "agentless_project_structure_count": 1604,
+    "patch_output_count": 167,
+    "patch_outputs_sample": [
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_glm5_verified_temp0_pair/KG_10p10_top20/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_glm5_verified_temp0_pair/noKG_top20/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r2_c20_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r3_c20_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r5_c10_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/r6_c10_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500/local_qwen3coder30b/selected/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/KG_5p5_top10/local_deepseekcoder_v2_lite/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/KG_5p5_top10/local_qwen3coder30b/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/KG_top20/local_deepseekcoder_v2_lite/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/KG_top20/local_qwen3coder30b/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/noKG_top10/local_deepseekcoder_v2_lite/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/predictions_local_open_verified_full500_temp0_pair/noKG_top10/local_qwen3coder30b/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r1_c20_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r2_c20_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r3_c20_t1/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/glm5/r4_c10_t0/predictions.jsonl",
+      "/home/barty/GLEAM-Lab/KGCompass/regression_patch_eval_verified_20260329_final/qwen3codernext/r1_c20_t0/predictions.jsonl"
+    ]
+  },
+  "multiswe_java": {
+    "path": "/home/barty/.cache/huggingface/datasets/Daoguang___multi-swe-bench/default/0.0.0/8bd202138a4ab9987daa77111c76a3e66af9f1c9/multi-swe-bench-java_verified.arrow",
+    "rows": 91,
+    "rows_with_gold_patch": 91,
+    "rows_with_test_patch": 91,
+    "multi_file_rows": 61,
+    "multi_file_pct": 67.03296703296702,
+    "patch_file_count_distribution": {
+      "1": 30,
+      "2": 31,
+      "3": 17,
+      "4": 8,
+      "5": 2,
+      "8": 2,
+      "12": 1
+    },
+    "test_patch_file_count_distribution": {
+      "1": 65,
+      "2": 25,
+      "3": 1
+    },
+    "repo_top10": {
+      "fasterxml/jackson-databind": 49,
+      "fasterxml/jackson-core": 23,
+      "fasterxml/jackson-dataformat-xml": 5,
+      "google/gson": 5,
+      "googlecontainertools/jib": 5,
+      "apache/dubbo": 4
+    }
+  }
+}

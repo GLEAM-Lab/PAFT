@@ -10,6 +10,8 @@ ENV/
 .venv
 
 # Model files
+models/
+tokenizers/
 model/
 merged_models/
 *.safetensors
@@ -18,8 +20,13 @@ merged_models/
 *.pth
 
 # Data and results
+/data/
+/defects4j/
+/evalrepair-java/
 defects4j/results/
 evalrepair-java-res/
+*.zip
+*.tar.zst
 *.log
 *.judgelog
 
@@ -35,9 +42,26 @@ evalrepair-java-res/
 Thumbs.db
 
 # Logs
-logs/
+/logs/
 tmp/
+wandb/
 *.log
+
+# Public artifact hygiene
+analysis_outputs/remote_recovery*/
+analysis_outputs/experiment_logs/
+tse-paper/
+ase-paper/
+*.docx
+rebuttal*.md
+*-rebuttal-sample.md
+scripts/local_run_nocurr_fixed0.sh
+books.db
+now
+now2
+wget-log*
+paper.pdf
+1ms-helper
 
 # Jupyter
 .ipynb_checkpoints/
@@ -63,4 +87,7 @@ buildNumber.properties
 # Environment variables
 .env
 .env.local
+.run_secrets/
 
+# Windows metadata copied from downloads
+*:Zone.Identifier

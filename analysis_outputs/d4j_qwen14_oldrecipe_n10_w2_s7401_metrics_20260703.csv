@@ -1,0 +1,2 @@
+model,result_files,normalized_bugs,padded_bugs,truncated_bugs,missing_dataset,pass@1,pass@5,pass@10,plausible_bugs,plausible_patches,avg_aed,med_aed,avg_ccr,med_ccr,cached_avg_aed,cached_med_aed,cached_avg_ccr,cached_med_ccr,stale_aed_count,stale_ccr_count,no_op_all,no_op_all_pct,no_op_plausible
+qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7401,371,371,0,0,0,23.045822102425884,24.625636418089254,25.067385444743934,93,855,63.52748538011696,34.0,79.91281551428739,88.88888888888889,63.52748538011696,34.0,79.91318128654976,88.89,0,0,171,4.609164420485175,10

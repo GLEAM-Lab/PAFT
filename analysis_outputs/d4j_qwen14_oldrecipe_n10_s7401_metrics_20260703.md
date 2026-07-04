@@ -1,0 +1,6 @@
+| model | normalized_bugs | padded_bugs | truncated_bugs | pass@1 | pass@5 | pass@10 | plausible_patches | avg_aed | med_aed | avg_ccr | med_ccr | stale_aed_count | stale_ccr_count | no_op_all_pct | no_op_plausible |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| qwen2.5coder14b-d4j-n10-s7401 | 371 | 0 | 0 | 20.38 | 21.01 | 21.02 | 756 | 169.17 | 123.00 | 70.70 | 78.26 | 0 | 0 | 0.54 | 10 |
+| qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7401 | 371 | 0 | 0 | 20.24 | 22.78 | 23.72 | 751 | 79.43 | 34.00 | 74.85 | 83.33 | 0 | 0 | 1.43 | 10 |
+| qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620-d4j-n10-s7401 | 371 | 0 | 0 | 22.16 | 24.13 | 24.80 | 822 | 61.18 | 26.00 | 80.49 | 88.89 | 0 | 0 | 2.70 | 10 |
+| qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7401 | 371 | 0 | 0 | 23.05 | 24.63 | 25.07 | 855 | 63.53 | 34.00 | 79.91 | 88.89 | 0 | 0 | 4.61 | 10 |
