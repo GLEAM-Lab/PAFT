@@ -26,6 +26,15 @@ updated accordingly.
 
 ## Anomalies to reconcile
 
+> Update 2026-07-07: items 1 and 2 are RESOLVED by author decision — the manuscript's
+> Table 5 RepairLLaMA and AdaPatcher rows now use the same recompute-from-text pipeline
+> as all other rows (RepairLLaMA AED/CCR 173.3/126.0, 47.1/36.4; AdaPatcher CCR 68.6/75.0).
+> Also verified: the "2,378 training snippets" figure = 3,092 fenced code blocks from the
+> 1,535 pairs (incl. intermediate blocks) deduplicated per side with the leakage-check
+> tokenization; 742 = 371 bugs x (buggy + developer fix). See also
+> `tse_copy_rate_20260707.md` for the output-side token-level copy-rate analysis
+> (Base 72.9/80.2, SFT 77.7/82.9, PAFT 81.6/87.1 on own plausible sets).
+
 1. **AdaPatcher (T5)**: pass@1/AED reproduce exactly (5.90 / 112.38 / 61.0, dir
    `deepseek-6.7b-adapatcher`, nested one level), but CCR recomputes to **68.57 / 75.0**,
    not the printed **79.3 / 87.5**. The printed CCR matches neither the cached
