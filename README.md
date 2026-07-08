@@ -43,6 +43,19 @@ The fixed-seed evidence used for the journal revision is summarized in:
 - `analysis_outputs/tse_current_evidence_summary.md`
 - `analysis_outputs/tse_evidence_artifact_check.md`
 
+Statistical analyses added for the revision (paired bootstrap + McNemar,
+common-plausible-subset AED/CCR, alignment coverage), plus the mapping between
+result directories and manuscript table rows:
+
+- `analysis_outputs/tse_d4j_significance_common_plausible_20260706.md`
+  (reproduce: `pip install Levenshtein` then
+  `python scripts/tse_d4j_significance_common_plausible.py --root .`)
+- `analysis_outputs/tse_alignment_coverage_20260706.md`
+  (reproduce: `pip install transformers sentencepiece` then
+  `python scripts/tse_alignment_coverage.py --trainset data/trainset`)
+- `analysis_outputs/tse_run_identity_mapping_20260706.md`
+  (directory-to-table mapping and open metric anomalies to reconcile)
+
 The local paper-readiness gate, which expects the separate `tse-paper/`
 manuscript checkout to exist next to the artifact files, is:
 
