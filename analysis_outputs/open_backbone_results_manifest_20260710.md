@@ -39,12 +39,20 @@ Archive: `d4j_qwen3_8b_paper_results_20260710.tar.zst`
 
 | Result directory | Bugs | pass@1/5/10 | Avg./Med. AED | Avg./Med. CCR |
 |---|---:|---:|---:|---:|
-| `qwen3-8b` | 370 | 9.65/19.15/23.51 | 190.73/100.00 | 64.29/66.67 |
+| `qwen3-8b` | 371 | 9.62/19.09/23.45 | 190.73/100.00 | 64.29/66.67 |
 | `qwen8b-sft` | 371 | 10.16/22.94/29.92 | 101.77/58.00 | 72.85/81.58 |
 | `qwen8b-paft` | 371 | 13.02/25.27/30.46 | 68.57/30.00 | 76.41/85.71 |
 
-The original Base run has 370 validated bugs; its reported metrics use those
-370 available results. The similarly named Qwen3-8B directories inside the
+The original Base run stored generations for 370 of the 371 bugs; Chart-4 is
+missing. A faithful regeneration attempt (same weights, prompt template, and
+decoding configuration; raw outputs archived under
+`defects4j/results/qwen3-8b-chart4-regeneration-logs/` in this bundle) fails
+extraction on every draw: on this bug the model consistently enters an extended
+reasoning preamble and exhausts the 1,024-token budget before emitting a
+complete fenced code block (30/30 draws across ten candidate slots with three
+attempts each). Chart-4 is therefore counted as a failed bug (0/10 plausible),
+and the Base metrics above use the full 371-bug denominator; the AED/CCR
+statistics are unchanged because they are computed over plausible patches. The similarly named Qwen3-8B directories inside the
 older `defects4j.tar.zst` are later re-runs (17.84/11.73/11.00 pass@1) and do
 not support the paper row. Extract this archive into a clean directory; do not
 overlay it onto an extracted copy of `defects4j.tar.zst`.
@@ -55,7 +63,7 @@ overlay it onto an extracted copy of `defects4j.tar.zst`.
 |---|---:|---|
 | `d4j_qwen25_7b_paper_results_20260710.tar.zst` | 4,458 | `43ab00c264a21bb85f67e2eb851be3fdf7efcc34dc5d2f31e50eada88dbe4535` |
 | `d4j_qwen25_14b_paper_results_20260710.tar.zst` | 34,152 | `0f5957385bb8808e711523db0acd86e9710a29538434d2f2733d83b6acff0066` |
-| `d4j_qwen3_8b_paper_results_20260710.tar.zst` | 4,454 | `11e5fcdb1456da643743cad6b0d5ba11492df9838af80127840007dd48e2e692` |
+| `d4j_qwen3_8b_paper_results_20260710.tar.zst` | 4,464 | `0346e095170eb2ea09d13a15c7a728c14e4f78f575ea7653d740153ac09b37b2` |
 
 Example clean extraction:
 

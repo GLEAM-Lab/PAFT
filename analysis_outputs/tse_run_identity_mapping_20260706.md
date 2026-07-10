@@ -14,8 +14,11 @@
 >    rows under the shared n=10 protocol. For Qwen3-8B the archived directories are
 >    later re-runs. The paper's original Qwen3-8B Base/SFT/PAFT directories are now
 >    published separately in `d4j_qwen3_8b_paper_results_20260710.tar.zst`; extracting
->    that bundle in a clean directory reproduces 9.65/10.16/13.02 pass@1. The original
->    Base run contains 370 validated bugs, while SFT/PAFT contain 371.
+>    that bundle in a clean directory reproduces the paper rows. The original Base run
+>    stored generations for 370 bugs; the missing bug (Chart-4) reproducibly fails
+>    extraction under the original protocol (regeneration logs archived in the bundle)
+>    and is counted as a failed bug, so the Base row uses the 371-bug denominator
+>    (pass@1 9.62).
 > 6 (deepseek-v3 / qwen3-max / deepseek-6.7b-prompting / qwen3-8b-paft): the missing
 >    validation results were completed on 2026-07-10 by re-running the released
 >    validation harness on the already-archived generations; these directories now
