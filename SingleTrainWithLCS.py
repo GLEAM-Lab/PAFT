@@ -276,20 +276,23 @@ if 'llama3' in original_model_name.lower():
 # ========== LCS 计算函数 ==========
 def compute_lcs_tokens(buggy_tokens: List[int], fixed_tokens: List[int]) -> set:
     """
-    计算 buggy code 和 fixed code 的 LCS（最长公共子序列）
-    
+    计算 buggy code 与 fixed code 之间的对齐 token 位置（匹配块并集）。
+
+    命名说明：函数名中的 "lcs" 是历史沿用。实际算法是 difflib.SequenceMatcher
+    的 Ratcliff/Obershelp 风格匹配（递归取最长连续匹配块），并非严格意义上的
+    最长公共子序列（LCS）；论文正文对此描述为 Ratcliff/Obershelp-style matching。
+
     Args:
         buggy_tokens: buggy code 的 token IDs
         fixed_tokens: fixed code 的 token IDs
-    
+
     Returns:
-        set: fixed code 中属于 LCS 的 token 位置集合（0-based）
+        set: fixed code 中落在匹配块内的 token 位置集合（0-based）
     """
     if not buggy_tokens or not fixed_tokens:
         return set()
-    
-    # 使用 SequenceMatcher 计算 LCS
-    # SequenceMatcher 基于 Ratcliff/Obershelp 算法，效率高且准确
+
+    # Ratcliff/Obershelp 风格匹配（difflib.SequenceMatcher，默认设置）
     matcher = SequenceMatcher(None, buggy_tokens, fixed_tokens)
     
     # 获取所有匹配块（LCS 片段）

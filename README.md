@@ -35,18 +35,44 @@ python calc_java.py <model-name> rejudge
 python stats_diff_java.py -m <model-name>
 ```
 
+## Trainer Correction (2026-07-10)
+
+The previously committed `SingleTrainWithLCS.py` was a stale copy whose data
+collator pre-shifted the preservation-weight vector; it did not match the
+implementation used to train the released checkpoints. The file has been
+corrected: the collator now attaches loss weights aligned with `input_ids`, and
+the single causal shift happens in `compute_loss` alongside the labels.
+`tests/test_loss_weight_alignment.py` verifies the exact loss contribution of
+every target token (span boundaries, isolated aligned tokens, consecutive
+edits, prompt masking, padding, truncation):
+
+```bash
+python -m unittest tests/test_loss_weight_alignment.py -v
+```
+
+Terminology note: identifiers containing `lcs` (e.g. `compute_lcs_tokens`,
+`LCS_WEIGHT`) are historical. The alignment algorithm is Ratcliff/Obershelp-style
+matching via Python's `difflib.SequenceMatcher`, not a true longest common
+subsequence; the paper describes it accordingly.
+
 ## TSE Revision Evidence
 
 The fixed-seed evidence used for the journal revision is summarized in:
 
 - `analysis_outputs/tse_fixed_seed_manifest.md`
-- `analysis_outputs/tse_current_evidence_summary.md`
 - `analysis_outputs/tse_evidence_artifact_check.md`
 
 Statistical analyses added for the revision (paired bootstrap + McNemar,
 common-plausible-subset AED/CCR, alignment coverage), plus the mapping between
 result directories and manuscript table rows:
 
+- `analysis_outputs/tse_d4j_master_metrics_20260710.md`
+  (canonical current Defects4J per-directory metrics, incl. the directories
+  completed to 371/371 on 2026-07-10; reproduce:
+  `python scripts/compute_d4j_master_metrics.py`)
+- `analysis_outputs/tse_semantic_correctness_annotation_20260710.md`
+  (blind two-annotator semantic-correctness assessment of all 265 first
+  plausible DS-Coder-6.7B patches)
 - `analysis_outputs/tse_d4j_significance_common_plausible_20260706.md`
   (reproduce: `pip install Levenshtein` then
   `python scripts/tse_d4j_significance_common_plausible.py --root .`)
@@ -54,14 +80,8 @@ result directories and manuscript table rows:
   (reproduce: `pip install transformers sentencepiece` then
   `python scripts/tse_alignment_coverage.py --trainset data/trainset`)
 - `analysis_outputs/tse_run_identity_mapping_20260706.md`
-  (directory-to-table mapping and open metric anomalies to reconcile)
-
-The local paper-readiness gate, which expects the separate `tse-paper/`
-manuscript checkout to exist next to the artifact files, is:
-
-```bash
-scripts/check_tse_ready.sh
-```
+  (directory-to-table mapping; see the dated addendum at the top for
+  resolutions of the previously open anomalies)
 
 ## Environment Notes
 

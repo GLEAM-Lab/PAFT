@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Table 3-5: Human annotation results
+# Human annotation tables: metric-vs-human agreement (Round I/II)
 # Display human annotation files and evaluation results
 
 set -e

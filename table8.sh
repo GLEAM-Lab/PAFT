@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Table 5: Table 8:  Comparison on DS-Coder-6.7B for Defects4J. Min@10 (resp. Max@10) selects the plausible patch with the smallest AED (resp. the largest CCR) among the 𝑘=10 candidates.
+# Baseline comparison table (tab:repairllama-compare): DS-Coder-6.7B generator-level baselines on Defects4J
 # Display results for deepseek-6.7b variants (SFT, Prompting, PAFT, RepairLLaMA)
 set -e
 

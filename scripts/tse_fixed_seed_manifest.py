@@ -24,7 +24,7 @@ SEEDS: tuple[SeedRecord, ...] = (
         benchmark="Defects4J",
         setting="Qwen2.5-Coder-14B n=10 main larger-backbone diagnostic",
         seed=7401,
-        status="complete/reportable",
+        status="complete/reported (main text)",
         artifacts=(
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.md",
@@ -32,9 +32,8 @@ SEEDS: tuple[SeedRecord, ...] = (
             "analysis_outputs/logs/run_d4j_qwen14_sft_n10_gpu0_after_base_20260703.sh",
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_remaining_n10_gpu1_20260703.sh",
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_w2_n10_gpu1_20260703.sh",
-            "analysis_outputs/logs/watch_validate_d4j_qwen14_oldrecipe_n10_all_20260703.sh",
         ),
-        note="Positive fixed-seed Base/SFT/PAFT comparison; use as the main larger-open-backbone table.",
+        note="Fixed-seed Base/SFT/PAFT comparison reported in the main larger-open-backbone table.",
         seed_artifacts=(
             "analysis_outputs/logs/run_d4j_qwen14_base_n10_gpu0_20260703.sh",
             "analysis_outputs/logs/run_d4j_qwen14_sft_n10_gpu0_after_base_20260703.sh",
@@ -44,9 +43,9 @@ SEEDS: tuple[SeedRecord, ...] = (
     ),
     SeedRecord(
         benchmark="Defects4J",
-        setting="Qwen2.5-Coder-14B n=10 stress seed",
+        setting="Qwen2.5-Coder-14B n=10 second decoding seed",
         seed=7402,
-        status="complete/internal stress",
+        status="complete/reported (appendix)",
         artifacts=(
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.csv",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.md",
@@ -55,7 +54,7 @@ SEEDS: tuple[SeedRecord, ...] = (
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_w2_n10_seed7402_gpu0_20260704.sh",
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_w15_n10_seed7402_gpu0_after_w2_20260704.sh",
         ),
-        note="Stress/sensitivity seed; Base is unusually weak, so do not replace seed7401.",
+        note="Second complete decoding seed, reported in the appendix seed-sensitivity analysis; the base model is substantially weaker under this seed and the SFT-vs-PAFT ordering reverses at w_align=2.0.",
         seed_artifacts=(
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_n10_seed7402_gpu1_20260704.sh",
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_sft_n10_seed7402_gpu1_20260704.sh",
@@ -73,7 +72,6 @@ SEEDS: tuple[SeedRecord, ...] = (
             "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.md",
             "analysis_outputs/logs/run_quixbugs_qwen14_oldrecipe_seed7106_generate_gpu1_20260703.sh",
             "analysis_outputs/logs/run_quixbugs_qwen14_w2_seed7106_gpu0_20260704.sh",
-            "analysis_outputs/logs/watch_quixbugs_qwen14_seed7106_evaluate_after_hejava_20260703.sh",
         ),
         note="PAFT improves over SFT, but Base remains strongest in raw pass@1; use with narrow framing.",
         seed_artifacts=(

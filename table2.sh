@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Table 1: Defects4J dataset results
+# RQ1 off-the-shelf table (tab:defects4j-noft): Defects4J results for off-the-shelf models
 # View results for multiple models using test_d4j.py
 
 set -e

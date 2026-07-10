@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Table 4: HumanEval-Java dataset results
+# HumanEval-Java supplementary results
 # View results for multiple models using calc_java.py and stats_diff_java.py
 
 set -e

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Table 3: Multi-model Defects4J results comparison
+# Same-backbone table (tab:defects4j-tool): Base/SFT/PAFT Defects4J comparison
 # View results for qwen3-8b, opencoder8b, deepseek-6.7b and their variants (paft, sft) using test_d4j.py
 
 set -e

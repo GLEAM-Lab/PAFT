@@ -33,7 +33,7 @@ set -e
 #   - Local model path (e.g., "model/deepseek-coder-6.7b")
 BASE_MODEL="model/deepseek-coder-6.7b"  # Base model (HuggingFace name or local path under model/ directory)
 TRAINED_MODEL_NAME="deepseek-6.7b-paft"  # Trained model name
-TRAIN_DATASET="data/trainset/deepseek_llm_diff.json"  # Training dataset path
+TRAIN_DATASET="data/trainset/ds_llm_sorted_by_diff.json"  # actual training input (prompt <|EOT|> response <|EOT|> format, sorted by line-diff size)
 
 # Inference configuration
 NUM_PROCESSES=4  # Number of parallel processes (adjust according to GPU count)

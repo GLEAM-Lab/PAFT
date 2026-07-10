@@ -1,0 +1,1857 @@
+[
+ {
+  "pid": "P001",
+  "bug": "JacksonDatabind-108",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P002",
+  "bug": "Math-94",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P003",
+  "bug": "Compress-5",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P004",
+  "bug": "Cli-37",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P005",
+  "bug": "Cli-23",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P006",
+  "bug": "Lang-28",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P007",
+  "bug": "Math-3",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P008",
+  "bug": "Csv-2",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P009",
+  "bug": "Cli-35",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P010",
+  "bug": "Jsoup-45",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P011",
+  "bug": "JacksonDatabind-12",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P012",
+  "bug": "Jsoup-43",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P013",
+  "bug": "Time-15",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P014",
+  "bug": "Jsoup-41",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P015",
+  "bug": "Closure-61",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P016",
+  "bug": "Jsoup-51",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P017",
+  "bug": "Closure-101",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P018",
+  "bug": "Jsoup-34",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P019",
+  "bug": "Csv-4",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P020",
+  "bug": "Math-34",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P021",
+  "bug": "Gson-11",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P022",
+  "bug": "JacksonCore-4",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P023",
+  "bug": "Lang-51",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P024",
+  "bug": "Chart-1",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P025",
+  "bug": "Lang-33",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P026",
+  "bug": "Csv-1",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P027",
+  "bug": "JacksonDatabind-99",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P028",
+  "bug": "Lang-22",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P029",
+  "bug": "Math-27",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P030",
+  "bug": "Chart-8",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P031",
+  "bug": "Math-42",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P032",
+  "bug": "Chart-24",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P033",
+  "bug": "Cli-17",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P034",
+  "bug": "JacksonCore-5",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P035",
+  "bug": "Lang-59",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P036",
+  "bug": "JxPath-8",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P037",
+  "bug": "Lang-43",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P038",
+  "bug": "Csv-9",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P039",
+  "bug": "JacksonDatabind-70",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P040",
+  "bug": "Closure-62",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P041",
+  "bug": "Cli-17",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P042",
+  "bug": "Closure-62",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P043",
+  "bug": "Closure-57",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P044",
+  "bug": "Chart-11",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P045",
+  "bug": "Jsoup-88",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P046",
+  "bug": "Cli-5",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P047",
+  "bug": "Jsoup-77",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P048",
+  "bug": "Jsoup-85",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P049",
+  "bug": "Codec-7",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P050",
+  "bug": "JacksonDatabind-34",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P051",
+  "bug": "JacksonDatabind-99",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P052",
+  "bug": "JacksonDatabind-34",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P053",
+  "bug": "JacksonDatabind-57",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P054",
+  "bug": "Jsoup-84",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P055",
+  "bug": "Math-82",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P056",
+  "bug": "Jsoup-1",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P057",
+  "bug": "Jsoup-88",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P058",
+  "bug": "JacksonCore-5",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P059",
+  "bug": "Math-27",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P060",
+  "bug": "Compress-46",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P061",
+  "bug": "Compress-37",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P062",
+  "bug": "Csv-6",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P063",
+  "bug": "JacksonDatabind-74",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P064",
+  "bug": "Compress-35",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P065",
+  "bug": "Compress-13",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P066",
+  "bug": "Jsoup-85",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P067",
+  "bug": "Math-2",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P068",
+  "bug": "Jsoup-59",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P069",
+  "bug": "JacksonCore-25",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P070",
+  "bug": "Cli-23",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P071",
+  "bug": "Compress-13",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P072",
+  "bug": "Cli-37",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P073",
+  "bug": "Compress-45",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P074",
+  "bug": "Math-69",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P075",
+  "bug": "Csv-4",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P076",
+  "bug": "Jsoup-75",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P077",
+  "bug": "JacksonDatabind-70",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P078",
+  "bug": "Lang-59",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P079",
+  "bug": "Chart-20",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P080",
+  "bug": "Csv-6",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P081",
+  "bug": "Chart-24",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P082",
+  "bug": "Mockito-29",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P083",
+  "bug": "Mockito-34",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P084",
+  "bug": "Jsoup-40",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P085",
+  "bug": "Chart-1",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P086",
+  "bug": "Csv-4",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P087",
+  "bug": "JacksonDatabind-74",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P088",
+  "bug": "Collections-26",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P089",
+  "bug": "Compress-21",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P090",
+  "bug": "Chart-7",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P091",
+  "bug": "Compress-15",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P092",
+  "bug": "Cli-28",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P093",
+  "bug": "JacksonCore-6",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P094",
+  "bug": "Math-3",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P095",
+  "bug": "Closure-122",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P096",
+  "bug": "JacksonDatabind-74",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P097",
+  "bug": "Compress-19",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P098",
+  "bug": "Chart-11",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P099",
+  "bug": "Lang-21",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P100",
+  "bug": "Gson-15",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P101",
+  "bug": "Lang-45",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P102",
+  "bug": "Math-101",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P103",
+  "bug": "Chart-1",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P104",
+  "bug": "Math-82",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P105",
+  "bug": "Compress-44",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P106",
+  "bug": "Jsoup-59",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P107",
+  "bug": "JacksonCore-5",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P108",
+  "bug": "Compress-11",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P109",
+  "bug": "Cli-19",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P110",
+  "bug": "Cli-37",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P111",
+  "bug": "Math-2",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P112",
+  "bug": "Gson-17",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P113",
+  "bug": "Lang-33",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P114",
+  "bug": "Math-53",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P115",
+  "bug": "JacksonDatabind-12",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P116",
+  "bug": "Jsoup-57",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P117",
+  "bug": "Jsoup-86",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P118",
+  "bug": "Math-101",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P119",
+  "bug": "Jsoup-84",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P120",
+  "bug": "Lang-22",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P121",
+  "bug": "JacksonCore-25",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P122",
+  "bug": "Lang-52",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P123",
+  "bug": "Csv-9",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P124",
+  "bug": "Cli-40",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P125",
+  "bug": "Compress-35",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P126",
+  "bug": "Chart-4",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P127",
+  "bug": "JacksonDatabind-94",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P128",
+  "bug": "Compress-26",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P129",
+  "bug": "Math-41",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P130",
+  "bug": "Jsoup-85",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P131",
+  "bug": "Jsoup-88",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P132",
+  "bug": "Jsoup-77",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P133",
+  "bug": "Compress-5",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P134",
+  "bug": "Mockito-38",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P135",
+  "bug": "Jsoup-45",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P136",
+  "bug": "Jsoup-54",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P137",
+  "bug": "Jsoup-72",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P138",
+  "bug": "Lang-51",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P139",
+  "bug": "Mockito-12",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P140",
+  "bug": "Gson-17",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P141",
+  "bug": "Gson-6",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P142",
+  "bug": "Gson-6",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P143",
+  "bug": "Gson-15",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P144",
+  "bug": "JacksonDatabind-34",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P145",
+  "bug": "Math-30",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P146",
+  "bug": "Lang-14",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P147",
+  "bug": "JacksonCore-25",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P148",
+  "bug": "JacksonDatabind-70",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P149",
+  "bug": "JacksonCore-4",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P150",
+  "bug": "JacksonDatabind-42",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P151",
+  "bug": "Compress-38",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P152",
+  "bug": "Jsoup-57",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P153",
+  "bug": "Cli-35",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P154",
+  "bug": "Math-59",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P155",
+  "bug": "Lang-45",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P156",
+  "bug": "Jsoup-57",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P157",
+  "bug": "Math-72",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P158",
+  "bug": "Math-102",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P159",
+  "bug": "Compress-46",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P160",
+  "bug": "Cli-26",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P161",
+  "bug": "Cli-33",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P162",
+  "bug": "Lang-14",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P163",
+  "bug": "Closure-13",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P164",
+  "bug": "Cli-40",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P165",
+  "bug": "Lang-52",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P166",
+  "bug": "Lang-28",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P167",
+  "bug": "Math-94",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P168",
+  "bug": "Lang-51",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P169",
+  "bug": "Compress-15",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P170",
+  "bug": "JacksonDatabind-57",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P171",
+  "bug": "Codec-18",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P172",
+  "bug": "Lang-10",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P173",
+  "bug": "Jsoup-90",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P174",
+  "bug": "JacksonDatabind-46",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P175",
+  "bug": "JacksonDatabind-46",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P176",
+  "bug": "Math-34",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P177",
+  "bug": "Codec-7",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P178",
+  "bug": "Mockito-29",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P179",
+  "bug": "Cli-28",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P180",
+  "bug": "Lang-45",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P181",
+  "bug": "Chart-7",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P182",
+  "bug": "Jsoup-51",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P183",
+  "bug": "Codec-17",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P184",
+  "bug": "Compress-13",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P185",
+  "bug": "JacksonDatabind-33",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P186",
+  "bug": "Collections-26",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P187",
+  "bug": "Math-89",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P188",
+  "bug": "JacksonDatabind-43",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P189",
+  "bug": "Jsoup-80",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P190",
+  "bug": "Jsoup-43",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P191",
+  "bug": "Compress-38",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P192",
+  "bug": "Math-53",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P193",
+  "bug": "JacksonDatabind-57",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P194",
+  "bug": "Chart-20",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P195",
+  "bug": "Jsoup-77",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P196",
+  "bug": "Chart-20",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P197",
+  "bug": "JacksonDatabind-5",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P198",
+  "bug": "Codec-18",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P199",
+  "bug": "Closure-57",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P200",
+  "bug": "JacksonDatabind-99",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P201",
+  "bug": "Lang-52",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P202",
+  "bug": "Codec-7",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P203",
+  "bug": "Math-57",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P204",
+  "bug": "Math-69",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P205",
+  "bug": "Chart-24",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P206",
+  "bug": "Lang-22",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P207",
+  "bug": "Compress-11",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P208",
+  "bug": "Compress-21",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P209",
+  "bug": "Csv-6",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P210",
+  "bug": "JxPath-22",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P211",
+  "bug": "JacksonDatabind-5",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P212",
+  "bug": "Collections-26",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P213",
+  "bug": "Cli-5",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P214",
+  "bug": "JxPath-8",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P215",
+  "bug": "Lang-43",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P216",
+  "bug": "Math-41",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P217",
+  "bug": "Closure-57",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P218",
+  "bug": "Math-75",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P219",
+  "bug": "Codec-18",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P220",
+  "bug": "Compress-37",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P221",
+  "bug": "Compress-24",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P222",
+  "bug": "Math-59",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P223",
+  "bug": "Compress-44",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P224",
+  "bug": "Closure-107",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P225",
+  "bug": "Csv-1",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P226",
+  "bug": "Math-57",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P227",
+  "bug": "JacksonDatabind-108",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P228",
+  "bug": "Lang-37",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P229",
+  "bug": "Closure-128",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P230",
+  "bug": "Gson-15",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P231",
+  "bug": "Cli-5",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P232",
+  "bug": "JacksonDatabind-12",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P233",
+  "bug": "JacksonCore-6",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P234",
+  "bug": "Compress-5",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P235",
+  "bug": "Chart-11",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P236",
+  "bug": "Jsoup-48",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P237",
+  "bug": "JacksonDatabind-108",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P238",
+  "bug": "Math-95",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P239",
+  "bug": "Math-102",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P240",
+  "bug": "Math-97",
+  "method": "PAFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P241",
+  "bug": "Jsoup-70",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P242",
+  "bug": "Gson-11",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P243",
+  "bug": "Lang-14",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P244",
+  "bug": "Closure-101",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P245",
+  "bug": "Time-15",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P246",
+  "bug": "Codec-17",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P247",
+  "bug": "Jsoup-41",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P248",
+  "bug": "Lang-33",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P249",
+  "bug": "Cli-26",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P250",
+  "bug": "Math-30",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P251",
+  "bug": "Jsoup-70",
+  "method": "SFT",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P252",
+  "bug": "Jsoup-84",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P253",
+  "bug": "Jsoup-59",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P254",
+  "bug": "Compress-26",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P255",
+  "bug": "Cli-28",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P256",
+  "bug": "Closure-92",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P257",
+  "bug": "JacksonDatabind-97",
+  "method": "PAFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P258",
+  "bug": "JacksonDatabind-49",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P259",
+  "bug": "Jsoup-45",
+  "method": "Base",
+  "annotator1": "overfit",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P260",
+  "bug": "Lang-59",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P261",
+  "bug": "JacksonDatabind-24",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P262",
+  "bug": "Jsoup-51",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P263",
+  "bug": "Lang-21",
+  "method": "SFT",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ },
+ {
+  "pid": "P264",
+  "bug": "Closure-101",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "overfit"
+ },
+ {
+  "pid": "P265",
+  "bug": "Jsoup-75",
+  "method": "Base",
+  "annotator1": "correct",
+  "annotator2": "correct"
+ }
+]

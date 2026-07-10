@@ -1,5 +1,32 @@
 # Run-Identity Mapping: Artifact Directories vs Paper Tables (2026-07-06)
 
+> **Addendum 2026-07-10 — status of the previously open anomalies.**
+> 1/2 (AdaPatcher, RepairLLaMA metric source): resolved on 2026-07-07; all baseline rows
+>    use the uniform recompute-from-text pipeline. RepairLLaMA remains evaluated on its
+>    released 316/371 generations, now disclosed with explicit per-row bug counts in the
+>    manuscript.
+> 3/4 ("- Full masking", `deepseek-6.7b-sft`): resolved; the ablation table was
+>    deduplicated and these directories belong to earlier exploratory variants that no
+>    current table row uses (see `table9.sh` for the current row mapping).
+> 5 (Qwen3-8B / OpenCoder-8B): two separate causes. For OpenCoder-8B the archived
+>    directories DO back the paper rows — the earlier mismatch was an estimator
+>    difference (n=1 first-candidate vs n=10 pooled); the manuscript now reports all
+>    rows under the shared n=10 protocol. For Qwen3-8B the archived directories are
+>    later re-runs; the paper's original Qwen3-8B runs will be re-archived by the
+>    authors (repository-version gap, not a numerical error).
+> 6 (deepseek-v3 / qwen3-max / deepseek-6.7b-prompting / qwen3-8b-paft): the missing
+>    validation results were completed on 2026-07-10 by re-running the released
+>    validation harness on the already-archived generations; these directories now
+>    cover 371/371 bugs and the manuscript reports the full-set numbers (see
+>    `tse_d4j_master_metrics_20260710.md`).
+> Training-data pinning: the actual DS-Coder training input
+>    `data/trainset/ds_llm_sorted_by_diff.json` (prompt `<|EOT|>` response format,
+>    sorted by line-diff size) is now committed, and `pipeline_deepseek-6.7b.sh`
+>    points to it. The previously committed trainer was a stale copy whose collator
+>    pre-shifted the weight vector; it did not match the implementation used to train
+>    the released checkpoints and was corrected with per-token unit tests
+>    (`tests/test_loss_weight_alignment.py`).
+
 Recomputed from `defects4j/results/<model>/fixed0/*.json.result` (first-candidate lists,
 10 candidates per bug) with the normalization of `scripts/recompute_d4j_metrics.py`
 (AED = char Levenshtein on stripped text; CCR = SequenceMatcher over stripped lines).
