@@ -416,15 +416,19 @@ class LCSWeightedDataCollator(DataCollatorForLanguageModeling):
                 batch['labels'][i, :prompt_len] = -100
         
         # 将权重转换为 tensor 并附加到 batch
-        # 需要与 labels 对齐（shift 后的长度）
+        # 注意：DataCollatorForLanguageModeling (mlm=False) 返回的 labels 与 input_ids 同位
+        # （labels[t] = input_ids[t]，仅 padding 置为 -100），collator 内部不做因果移位。
+        # 因此这里按原位附加权重：loss_weights[i, t] = 目标 token x_t 的权重；
+        # 因果移位统一在 compute_loss 中与 labels 一起完成（shift_weights = loss_weights[..., 1:]）。
+        # 历史版本在此处额外做了一次 weights[t+1] 预移位（双重移位），导致每个目标 token
+        # 实际得到的是其后一个 token 的权重（对齐区间整体前移一位）；现已修正并配套单元测试
+        # tests/test_loss_weight_alignment.py 逐 token 验证。
         max_len_in_batch = batch['labels'].shape[1]
         weight_tensor = torch.ones_like(batch['labels'], dtype=torch.float32)
-        
+
         for i, weights in enumerate(loss_weights_list):
-            # weights 对应 input_ids，labels 是 shift 后的（labels[t] = input_ids[t+1]）
-            # 所以 weight_tensor[i, t] 对应 input_ids[i, t+1] 的权重
-            for t in range(min(len(weights) - 1, max_len_in_batch)):
-                weight_tensor[i, t] = weights[t + 1]  # shift 对齐
+            for t in range(min(len(weights), max_len_in_batch)):
+                weight_tensor[i, t] = weights[t]
         
         batch['prompt_lengths'] = torch.tensor(prompt_lengths, dtype=torch.long)
         batch['loss_weights'] = weight_tensor
