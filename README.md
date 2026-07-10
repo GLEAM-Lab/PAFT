@@ -76,7 +76,7 @@ result directories and manuscript table rows:
 - `analysis_outputs/tse_semantic_correctness_annotation_20260710.md`
   (blind two-annotator semantic-correctness assessment of all 265 first
   plausible DS-Coder-6.7B patches)
-- `analysis_outputs/tse_d4j_significance_common_plausible_20260706.md`
+- `analysis_outputs/tse_d4j_significance_common_plausible_20260710.md`
   (reproduce: `pip install Levenshtein` then
   `python scripts/tse_d4j_significance_common_plausible.py --root .`)
 - `analysis_outputs/tse_alignment_coverage_20260706.md`

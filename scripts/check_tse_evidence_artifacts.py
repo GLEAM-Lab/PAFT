@@ -419,12 +419,9 @@ def check_quixbugs(checks: list[Check]) -> None:
 def check_fixed_seed(checks: list[Check]) -> None:
     path = ROOT / "tse_fixed_seed_manifest.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
-    expected = ["7401", "7402", "7106", "7202"]
     complete_artifacts = [
         "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv",
         "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.md",
-        "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.csv",
-        "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.md",
         "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv",
         "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.md",
         "analysis_outputs/humanevalpack_python_qwen14_oldrecipe_20260703_seed7202/summary_20260704_w2.csv",

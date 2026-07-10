@@ -8,6 +8,11 @@ pass1_371 counts missing bugs as failures. bug_* = per-bug mean over plausible
 candidates, then aggregated across bugs. no-op decomposition on first candidates:
 byte-identical / whitespace-only / empty-extraction.
 
+NOTE on the `qwen3-8b`, `qwen3-8b-sft`, and `qwen3-8b-paft` rows below: these are
+the directories inside `defects4j.tar.zst`, which are later re-runs and are superseded
+for paper-facing purposes by `d4j_qwen3_8b_paper_results_20260710.tar.zst` (see
+`open_backbone_results_manifest_20260710.md` for the paper-facing metrics).
+
 The deepseek-6.7b-prompting, deepseek-v3, qwen3-max, and qwen3-8b-paft directories
 were completed to 371/371 on 2026-07-10 by re-running the released validation
 harness (test_d4j.py, 16 workers, namespace-isolated) on the archived generations.

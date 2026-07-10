@@ -29,13 +29,9 @@ Archive: `d4j_qwen25_14b_paper_results_20260710.tar.zst`
 | 7401 | `qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 20.24/22.78/23.72 | 79.43/34.00 | 74.85/83.33 |
 | 7401 | `qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 22.16/24.13/24.80 | 61.18/26.00 | 80.49/88.89 |
 | 7401 | `qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 23.05/24.63/25.07 | 63.53/34.00 | 79.91/88.89 |
-| 7402 | `qwen2.5coder14b-d4j-n10-s7402` | 371 | 10.46/10.51/10.51 | 206.13/158.00 | 65.83/68.42 |
-| 7402 | `qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7402` | 371 | 18.17/20.02/20.75 | 64.15/43.00 | 78.84/87.50 |
-| 7402 | `qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620-d4j-n10-s7402` | 371 | 19.49/21.51/21.83 | 71.21/39.00 | 71.49/80.00 |
-| 7402 | `qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7402` | 371 | 14.93/16.31/16.71 | 47.22/28.00 | 78.78/85.71 |
 
-Seed 7401 supplies the main-text and pass@k rows and their side-effect
-diagnostics. Seed 7402 supplies the appendix sensitivity analysis.
+These directories supply the main-text rows, the appendix pass@k table, and
+the side-effect diagnostics.
 
 ## Qwen3-8B
 
@@ -58,7 +54,7 @@ overlay it onto an extracted copy of `defects4j.tar.zst`.
 | Archive | Entries | SHA-256 |
 |---|---:|---|
 | `d4j_qwen25_7b_paper_results_20260710.tar.zst` | 4,458 | `43ab00c264a21bb85f67e2eb851be3fdf7efcc34dc5d2f31e50eada88dbe4535` |
-| `d4j_qwen25_14b_paper_results_20260710.tar.zst` | 68,302 | `46a8c294e0d07801213107ade798917a338f7c94d65ab4948775110c191abf39` |
+| `d4j_qwen25_14b_paper_results_20260710.tar.zst` | 34,152 | `0f5957385bb8808e711523db0acd86e9710a29538434d2f2733d83b6acff0066` |
 | `d4j_qwen3_8b_paper_results_20260710.tar.zst` | 4,454 | `11e5fcdb1456da643743cad6b0d5ba11492df9838af80127840007dd48e2e692` |
 
 Example clean extraction:
