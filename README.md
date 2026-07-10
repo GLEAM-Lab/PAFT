@@ -11,12 +11,15 @@ program repair.
   `calc_java.py`, and `stats_diff_java.py`.
 - Benchmark-facing assets and scripts for Defects4J and HumanEval-Java:
   `defects4j/`, `evalrepair-java/`, and `table*.sh`.
-- TSE revision evidence and audit summaries under `analysis_outputs/`.
+- TSE revision evidence, audit summaries, and the closed-model result bundle
+  under `analysis_outputs/`.
 - Reproduction and audit utilities under `scripts/`.
 
-Large model weights, tokenizer snapshots, generated logs, and full raw result
-directories are intentionally excluded from Git. The scripts expect those assets
-to be downloaded or regenerated locally.
+Large model weights, tokenizer snapshots, generated logs, and most full raw
+result directories are intentionally excluded from Git. The complete
+minimal-prompt results for the two closed models evaluated in the paper are
+provided as a compressed Git LFS artifact; other omitted assets must be
+downloaded or regenerated locally.
 
 ## Key Reproduction Commands
 
@@ -82,6 +85,14 @@ result directories and manuscript table rows:
 - `analysis_outputs/tse_run_identity_mapping_20260706.md`
   (directory-to-table mapping; see the dated addendum at the top for
   resolutions of the previously open anomalies)
+
+### Closed-Model Minimal-Prompt Results
+
+`analysis_outputs/frontier_minimal_results_20260710.tar.zst` contains all
+generation and Defects4J validation files for the 371-bug Qwen3-Max and
+DeepSeek-V3 minimal-prompt runs. See
+`analysis_outputs/frontier_minimal_results_manifest_20260710.md` for model
+names, checksums, result counts, metrics, and extraction instructions.
 
 ## Environment Notes
 
