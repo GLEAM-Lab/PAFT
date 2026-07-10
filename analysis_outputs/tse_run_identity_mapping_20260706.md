@@ -12,8 +12,10 @@
 >    directories DO back the paper rows — the earlier mismatch was an estimator
 >    difference (n=1 first-candidate vs n=10 pooled); the manuscript now reports all
 >    rows under the shared n=10 protocol. For Qwen3-8B the archived directories are
->    later re-runs; the paper's original Qwen3-8B runs will be re-archived by the
->    authors (repository-version gap, not a numerical error).
+>    later re-runs. The paper's original Qwen3-8B Base/SFT/PAFT directories are now
+>    published separately in `d4j_qwen3_8b_paper_results_20260710.tar.zst`; extracting
+>    that bundle in a clean directory reproduces 9.65/10.16/13.02 pass@1. The original
+>    Base run contains 370 validated bugs, while SFT/PAFT contain 371.
 > 6 (deepseek-v3 / qwen3-max / deepseek-6.7b-prompting / qwen3-8b-paft): the missing
 >    validation results were completed on 2026-07-10 by re-running the released
 >    validation harness on the already-archived generations; these directories now
@@ -76,10 +78,11 @@ updated accordingly.
    configuration differs from `deepseek-6.7b-paft-assistantonly`.
 4. **`deepseek-6.7b-sft`** ("+ Fine-tuning" in table9.sh's older mapping): 260/371 bugs,
    pass@1 6.08 over evaluated bugs; not used by any current table row.
-5. **Qwen3-8B / OpenCoder-8B**: the archived dirs do NOT reproduce Table 3
-   (e.g., `qwen3-8b` base pass@1 recomputes to 17.84 vs 9.65 in the paper;
-   `opencoder8b-paft` has 1-10 candidates per bug). The paper's rows for these backbones
-   appear to come from runs absent from the public archive — consider adding them.
+5. **Qwen3-8B / OpenCoder-8B**: the `qwen3-8b*` directories inside the original
+   `defects4j.tar.zst` are later re-runs and do not reproduce the paper row (e.g., Base
+   recomputes to 17.84 rather than 9.65). The paper-facing Qwen3-8B runs are now in the
+   separate `d4j_qwen3_8b_paper_results_20260710.tar.zst` bundle. OpenCoder-8B is
+   resolved as described in the addendum above.
 6. **deepseek-v3 / qwen3-max**: 333 and 264 bugs with results; recomputed pass@1 39.19 and
    30.38 vs paper 40.6 and 30.4 (denominator/subset to document).
 

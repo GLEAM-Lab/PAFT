@@ -11,15 +11,15 @@ program repair.
   `calc_java.py`, and `stats_diff_java.py`.
 - Benchmark-facing assets and scripts for Defects4J and HumanEval-Java:
   `defects4j/`, `evalrepair-java/`, and `table*.sh`.
-- TSE revision evidence, audit summaries, and the closed-model result bundle
+- TSE revision evidence, audit summaries, and paper-facing raw result bundles
   under `analysis_outputs/`.
 - Reproduction and audit utilities under `scripts/`.
 
-Large model weights, tokenizer snapshots, generated logs, and most full raw
-result directories are intentionally excluded from Git. The complete
-minimal-prompt results for the two closed models evaluated in the paper are
-provided as a compressed Git LFS artifact; other omitted assets must be
-downloaded or regenerated locally.
+Large model weights, tokenizer snapshots, and most exploratory result
+directories are intentionally excluded from Git. Compressed Git LFS artifacts
+provide the paper-facing Defects4J generations for Qwen2.5-Coder-7B/14B,
+Qwen3-8B, and the two closed-model minimal-prompt diagnostics. Other omitted
+assets must be downloaded or regenerated locally.
 
 ## Key Reproduction Commands
 
@@ -85,6 +85,19 @@ result directories and manuscript table rows:
 - `analysis_outputs/tse_run_identity_mapping_20260706.md`
   (directory-to-table mapping; see the dated addendum at the top for
   resolutions of the previously open anomalies)
+
+### Open-Backbone Defects4J Results
+
+The following Git LFS archives contain the raw generations and validation
+records behind the Qwen rows reported in the paper:
+
+- `analysis_outputs/d4j_qwen25_7b_paper_results_20260710.tar.zst`
+- `analysis_outputs/d4j_qwen25_14b_paper_results_20260710.tar.zst`
+- `analysis_outputs/d4j_qwen3_8b_paper_results_20260710.tar.zst`
+
+See `analysis_outputs/open_backbone_results_manifest_20260710.md` for exact
+directory-to-row mappings, checksums, result counts, metrics, extraction
+instructions, and the Qwen3-8B run-identity warning.
 
 ### Closed-Model Minimal-Prompt Results
 

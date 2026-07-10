@@ -26,6 +26,8 @@ SEEDS: tuple[SeedRecord, ...] = (
         seed=7401,
         status="complete/reported (main text)",
         artifacts=(
+            "analysis_outputs/d4j_qwen25_14b_paper_results_20260710.tar.zst",
+            "analysis_outputs/open_backbone_results_manifest_20260710.md",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.md",
             "analysis_outputs/logs/run_d4j_qwen14_base_n10_gpu0_20260703.sh",
@@ -47,6 +49,8 @@ SEEDS: tuple[SeedRecord, ...] = (
         seed=7402,
         status="complete/reported (appendix)",
         artifacts=(
+            "analysis_outputs/d4j_qwen25_14b_paper_results_20260710.tar.zst",
+            "analysis_outputs/open_backbone_results_manifest_20260710.md",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.csv",
             "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7402_metrics_20260704.md",
             "analysis_outputs/logs/run_d4j_qwen14_oldrecipe_n10_seed7402_gpu1_20260704.sh",
