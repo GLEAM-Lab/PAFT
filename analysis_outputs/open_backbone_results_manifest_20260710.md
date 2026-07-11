@@ -84,3 +84,36 @@ python scripts/recompute_d4j_metrics.py \
   --root /tmp/paft-paper-results \
   --models qwen2.5coder7b qwen2.5coder7b-sft-tse-20260619 qwen2.5coder7b-paft
 ```
+
+
+## Addendum (2026-07-11): why the later Qwen3-8B re-runs diverge
+
+Byte-level comparison of the stored prompts and logs shows the gap is a
+harness/prompt-version difference, not stochastic run variation. Fingerprints
+over 60 sampled logs per directory:
+
+| fingerprint | paper base / sft / paft | re-run base | re-run sft / paft |
+|---|---|---|---|
+| Qwen system turn ("You are Qwen, created by Alibaba Cloud ...") | 100% / 100% / 100% | 0% | 0% / 0% |
+| final request sentence ("You are a software engineer. Can you repair the incorrect Java code?") | 100% / 100% / 100% | 0% | 100% / 100% |
+| "This is an incorrect Java code" phrasing | 100% / 100% / 100% | 0% (says "incorrect code") | 0% / 0% |
+| `<|im_start|>assistant` marker present in .log | 100% / 100% / 100% | 0% | 0% / 100% |
+
+Reading:
+
+- The paper-facing runs share one serialization across Base/SFT/PAFT (the user
+  turn is byte-identical across the three settings on 40/40 sampled bugs), so
+  the within-block comparison in the manuscript is fair.
+- The later re-runs come from a newer harness draft with a changed prompt (the
+  system turn was dropped and the request wording changed), and the re-run set
+  is also internally heterogeneous: the re-run Base prompts lack the final
+  repair-request sentence entirely, while the re-run SFT/PAFT prompts include
+  it, and the log formats differ within the set. The re-run numbers
+  (17.84/11.73/11.00) are therefore comparable neither to the paper rows nor to
+  each other; the Base jump mainly reflects the different prompt.
+- The SFT/PAFT adapters were trained under the original serialization, so the
+  changed re-run serialization additionally introduces a train/inference
+  template mismatch for those two rows.
+
+The paper-facing bundle `d4j_qwen3_8b_paper_results_20260710.tar.zst` remains
+the canonical source for the manuscript's Qwen3-8B rows.
