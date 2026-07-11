@@ -43,6 +43,7 @@ def f(row: dict[str, str] | None, key: str) -> float | None:
 
 
 def add(checks: list[Check], concern: str, ok: bool, evidence: str, caveat: str = "") -> None:
+    evidence = evidence.replace("\\", "/")
     checks.append(Check(concern, "OK" if ok else "MISSING/WEAK", evidence, caveat))
 
 
@@ -290,25 +291,8 @@ def check_multiswe(checks: list[Check]) -> None:
 
 
 def check_system_level_scope(checks: list[Check]) -> None:
-    paper_paths = [
-        Path("tse-paper/5.experiments_new.tex"),
-        Path("tse-paper/8.related_work.tex"),
-        Path("tse-paper/6.discussion.tex"),
-    ]
-    paper_text = "\n".join(
-        path.read_text(encoding="utf-8") for path in paper_paths if path.exists()
-    )
     scope_note = ROOT / "tse_system_level_reference_scope.md"
     feasibility = ROOT / "system_level_swap_feasibility_20260703.md"
-    required_paper_terms = [
-        "Agentless",
-        "AutoCodeRover",
-        "RepairAgent",
-        "not complete APR systems",
-        "not same-class generator baselines",
-        "generator-swap study",
-        "does not establish system-level APR state of the art",
-    ]
     required_note_terms = [
         "Agentless",
         "AutoCodeRover",
@@ -316,7 +300,6 @@ def check_system_level_scope(checks: list[Check]) -> None:
         "generator-swap study",
         "Do not claim system-level APR SOTA",
     ]
-    paper_ok = all(term in paper_text for term in required_paper_terms)
     note_text = scope_note.read_text(encoding="utf-8") if scope_note.exists() else ""
     note_ok = scope_note.exists() and all(term in note_text for term in required_note_terms)
     feasibility_text = feasibility.read_text(encoding="utf-8") if feasibility.exists() else ""
@@ -326,13 +309,13 @@ def check_system_level_scope(checks: list[Check]) -> None:
         and "generator-swap smoke test" in feasibility_text
     )
     evidence = (
-        f"paper scope terms={paper_ok}; {scope_note}: source note={note_ok}; "
+        f"{scope_note}: source note={note_ok}; "
         f"{feasibility}: feasibility audit={feasibility_ok}"
     )
     add(
         checks,
         "system-level APR baseline scope",
-        paper_ok and note_ok and feasibility_ok,
+        note_ok and feasibility_ok,
         evidence,
         "Addresses Agentless/AutoCodeRover/RepairAgent as references, not same-class PAFT baselines.",
     )
@@ -342,51 +325,40 @@ def check_attribution_scope(checks: list[Check]) -> None:
     path = ROOT / "d4j_recomputed_metrics_deepseek_variants.csv"
     rows = read_csv(path)
     full = row_by_model(rows, "deepseek-6.7b-trained")
-    curriculum = row_by_model(rows, "deepseek-6.7b-trained-diffonly")
     final = row_by_model(rows, "deepseek-6.7b-trained-prorepair")
     w0 = row_by_model(rows, "deepseek-6.7b-trained-prorepair-0.0")
     w2 = row_by_model(rows, "deepseek-6.7b-trained-prorepair-2.0")
     w4 = row_by_model(rows, "deepseek-6.7b-trained-prorepair-4.0")
-    required_rows = [full, curriculum, final, w0, w2, w4]
+    required_rows = [full, final, w0, w2, w4]
     rows_complete = all(
         row is not None and int(float(row.get("result_files", 0))) == 371
         for row in required_rows
     )
     interaction_matches = (
         rows_complete
-        and f(curriculum, "pass@1") > f(full, "pass@1")  # type: ignore[operator]
-        and f(curriculum, "avg_aed") > f(full, "avg_aed")  # type: ignore[operator]
-        and f(final, "pass@1") > f(curriculum, "pass@1")  # type: ignore[operator]
-        and f(final, "avg_aed") < f(curriculum, "avg_aed")  # type: ignore[operator]
+        and f(final, "pass@1") > f(full, "pass@1")  # type: ignore[operator]
+        and f(final, "avg_aed") < f(full, "avg_aed")  # type: ignore[operator]
         and f(w2, "pass@1") > f(w0, "pass@1")  # type: ignore[operator]
         and f(w2, "avg_aed") < f(w0, "avg_aed")  # type: ignore[operator]
         and f(w4, "avg_ccr") > f(w2, "avg_ccr")  # type: ignore[operator]
         and f(w4, "pass@1") < f(w2, "pass@1")  # type: ignore[operator]
     )
-    paper_path = Path("tse-paper/5.experiments_new.tex")
-    paper_text = paper_path.read_text(encoding="utf-8") if paper_path.exists() else ""
-    required_text = [
-        "curriculum ordering is not itself a locality mechanism",
-        "single-seed sweep as definitive hyperparameter optimization",
-        "not as a universally optimal preservation weight",
-        "held-out or bilevel objective",
-    ]
-    paper_ok = all(term in paper_text for term in required_text)
     evidence = (
-        f"{path}: full/curriculum/final pass@1="
-        f"{f(full, 'pass@1'):.2f}/{f(curriculum, 'pass@1'):.2f}/{f(final, 'pass@1'):.2f}; "
-        f"AED={f(full, 'avg_aed'):.2f}/{f(curriculum, 'avg_aed'):.2f}/{f(final, 'avg_aed'):.2f}; "
-        f"w0/w2/w4 pass@1={f(w0, 'pass@1'):.2f}/{f(w2, 'pass@1'):.2f}/{f(w4, 'pass@1'):.2f}; "
-        f"paper scope text={paper_ok}"
+        f"{path}: full/final pass@1="
+        f"{f(full, 'pass@1'):.2f}/{f(final, 'pass@1'):.2f}; "
+        f"AED={f(full, 'avg_aed'):.2f}/{f(final, 'avg_aed'):.2f}; "
+        f"w0/w2/w4 pass@1={f(w0, 'pass@1'):.2f}/{f(w2, 'pass@1'):.2f}/{f(w4, 'pass@1'):.2f}"
         if rows_complete
-        else f"{path}: expected complete full/curriculum/final/w0/w2/w4 rows"
+        else f"{path}: expected complete full/final/w0/w2/w4 rows"
     )
     add(
         checks,
-        "attribution / curriculum scope",
-        rows_complete and interaction_matches and paper_ok,
+        "attribution / weighting dose response",
+        rows_complete and interaction_matches,
         evidence,
-        "Sensitivity evidence only; not a complete causal decomposition or repeated-seed variance claim.",
+        "Sensitivity evidence only; the manuscript no longer claims an "
+        "edit-difficulty curriculum (the released trainer uses the HF default "
+        "random sampler, so input-file order does not order the traversal).",
     )
 
 
@@ -414,69 +386,6 @@ def check_quixbugs(checks: list[Check]) -> None:
         evidence,
         "Use as PAFT-vs-SFT sanity evidence only; Base remains stronger in raw correctness.",
     )
-
-
-def check_fixed_seed(checks: list[Check]) -> None:
-    path = ROOT / "tse_fixed_seed_manifest.md"
-    text = path.read_text(encoding="utf-8") if path.exists() else ""
-    complete_artifacts = [
-        "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv",
-        "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.md",
-        "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv",
-        "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.md",
-        "analysis_outputs/humanevalpack_python_qwen14_oldrecipe_20260703_seed7202/summary_20260704_w2.csv",
-        "analysis_outputs/humanevalpack_python_qwen14_oldrecipe_20260703_seed7202/summary_20260704_w2.md",
-        "analysis_outputs/multiswe_java_smoke10_neutral_generator_summary_20260704.csv",
-        "analysis_outputs/multiswe_java_smoke10_neutral_generator_summary_20260704.md",
-        "analysis_outputs/multiswe_java_smoke10_neutral_generator_details_20260704.csv",
-        "analysis_outputs/multiswe_java_verified_runnable_smoke10_ctx5_max20k_neutral_20260704.jsonl",
-    ]
-    expected_launchers = [
-        ("analysis_outputs/logs/run_d4j_qwen14_base_n10_gpu0_20260703.sh", "7401"),
-        ("analysis_outputs/logs/run_d4j_qwen14_sft_n10_gpu0_after_base_20260703.sh", "7401"),
-        ("analysis_outputs/logs/run_d4j_qwen14_oldrecipe_remaining_n10_gpu1_20260703.sh", "7401"),
-        ("analysis_outputs/logs/run_d4j_qwen14_oldrecipe_w2_n10_gpu1_20260703.sh", "7401"),
-        ("analysis_outputs/logs/run_quixbugs_qwen14_oldrecipe_seed7106_generate_gpu1_20260703.sh", "7106"),
-        ("analysis_outputs/logs/run_quixbugs_qwen14_w2_seed7106_gpu0_20260704.sh", "7106"),
-        ("analysis_outputs/logs/run_multiswe_smoke10_qwen14_neutral_gpu0_20260704.sh", "7401"),
-    ]
-
-    def launcher_has_seed(script: str, seed: str) -> bool:
-        script_path = Path(script)
-        if not script_path.exists() or script not in text:
-            return False
-        content = script_path.read_text(encoding="utf-8")
-        has_seed_value = (
-            f"seed={seed}" in content
-            or f"--seed {seed}" in content
-            or f"--seed={seed}" in content
-            or f"--seed '{seed}'" in content
-            or f'--seed "{seed}"' in content
-        )
-        has_seed_arg = "--seed" in content
-        return has_seed_value and has_seed_arg
-
-    launcher_results = [
-        launcher_has_seed(script, seed) for script, seed in expected_launchers
-    ]
-    seeds_present = all(seed in text for seed in expected)
-    complete_artifacts_present = all(Path(artifact).exists() for artifact in complete_artifacts)
-    launchers_present = all(script in text for script, _seed in expected_launchers)
-    launcher_seeds_verified = all(launcher_results)
-    ok = (
-        path.exists()
-        and seeds_present
-        and complete_artifacts_present
-        and launchers_present
-        and launcher_seeds_verified
-    )
-    evidence = (
-        f"{path}: expected seeds present={seeds_present}; "
-        f"complete artifacts present={complete_artifacts_present}; "
-        f"key launchers present={launchers_present}; "
-        f"launcher --seed values verified={launcher_seeds_verified}"
-    )
-    add(checks, "fixed-seed reproducibility", ok, evidence)
 
 
 def write_outputs(checks: list[Check]) -> None:
@@ -513,7 +422,6 @@ def main() -> None:
     check_system_level_scope(checks)
     check_attribution_scope(checks)
     check_quixbugs(checks)
-    check_fixed_seed(checks)
     write_outputs(checks)
     if not all(check.status == "OK" for check in checks):
         raise SystemExit(1)

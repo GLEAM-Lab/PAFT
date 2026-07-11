@@ -135,7 +135,7 @@ def main():
   # 使用完整模型路径
   python merge_adapter.py \\
     --base_model codellama/CodeLlama-7b-Instruct-hf \\
-    --adapter_path trained_models/trained_model_codellama_7b_curriculum \\
+    --adapter_path trained_models/trained_model_codellama_7b_paft \\
     --output_path merged_models/codellama-7b-merged
         """
     )

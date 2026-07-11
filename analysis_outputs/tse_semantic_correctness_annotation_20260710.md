@@ -24,3 +24,19 @@ Reproduce:
   (+ `scripts/correctness_annotation_rows.json`, blinding seed 42)
 - merged labels: `scripts/correctness_annotation_labels_20260710.json`
 - statistics: `scripts/compute_correctness_annotation_stats.py`
+
+
+## Matched-subset consensus-correct rates (added 2026-07-10)
+
+Rates computed on faults solved by both compared settings (consensus = both
+annotators label "correct"), from `correctness_annotation_merged.json`:
+
+| comparison | common faults | consensus-correct |
+|---|---|---|
+| PAFT vs. SFT  | 69 | PAFT 42/69 (60.9%) vs. SFT 33/69 (47.8%) |
+| PAFT vs. Base | 52 | PAFT 33/52 (63.5%) vs. Base 29/52 (55.8%) |
+| SFT vs. Base  | 52 | SFT 23/52 (44.2%) vs. Base 27/52 (51.9%) |
+| all three     | 41 | Base 23/41 (56.1%), SFT 21/41 (51.2%), PAFT 26/41 (63.4%) |
+
+PAFT stays ahead on every matched subset that includes it, so the full-set
+ordering (57.1% > 48.6% > 41.1%) is not an artifact of the differing solved sets.

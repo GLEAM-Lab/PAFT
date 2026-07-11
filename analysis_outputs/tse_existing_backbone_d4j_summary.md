@@ -46,4 +46,4 @@ Interpretation: PAFT reduces edits outside reference-changed regions on both bac
 
 `qwen3-8b-trained-noprompt` is another historical variant with stale cached diff statistics: `test_d4j.py` reports Avg./Med. AED as `5.18/0.00`, but a fresh recomputation from stored `patch_code` gives `76.85/35.00` with zero plausible no-op patches. If this variant is used, recompute and rewrite the cached diff stats first, and map its exact training role. The cleaner Qwen3-8B pair remains `qwen8b-sft` vs `qwen8b-paft`.
 
-The old DS-Coder standard SFT row in the paper (`6.1` pass@1, `93.5` AED) has not yet been mapped to a clean current result directory. Current DeepSeek directories map clearly to Base, full masking, curriculum / `w_align=1`, `w_align` sweep variants, and final PAFT, but not that exact standard SFT row.
+The old DS-Coder standard SFT row in the paper (`6.1` pass@1, `93.5` AED) has not yet been mapped to a clean current result directory. Current DeepSeek directories map clearly to Base, full-sequence loss, `w_align=1` (the run formerly labeled curriculum), `w_align` sweep variants, and final PAFT, but not that exact standard SFT row.

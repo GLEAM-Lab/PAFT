@@ -25,8 +25,8 @@
 >    cover 371/371 bugs and the manuscript reports the full-set numbers (see
 >    `tse_d4j_master_metrics_20260710.md`).
 > Training-data pinning: the actual DS-Coder training input
->    `data/trainset/ds_llm_sorted_by_diff.json` (prompt `<|EOT|>` response format,
->    sorted by line-diff size) is now committed, and `pipeline_deepseek-6.7b.sh`
+>    `data/trainset/deepseek_llm_train.json` (prompt `<|EOT|>` response format,
+>    sorted by line-diff size, which does not affect training -- see the 2026-07-10 addendum) is committed as of 2026-07-10 (an earlier version of this note said it was already committed, but `/data/` was gitignored and the file had never reached the remote; it is now force-added), and `pipeline_deepseek-6.7b.sh`
 >    points to it. The previously committed trainer was a stale copy whose collator
 >    pre-shifted the weight vector; it did not match the implementation used to train
 >    the released checkpoints and was corrected with per-token unit tests
@@ -45,15 +45,15 @@ pass@1 = mean over bugs of c/10. "Paper" values from TSE manuscript Tables 3/5/6
 | deepseek-6.7b-promptloss | \Sft (T3/T5), "+ SFT" (T6) | 7.41 / 105.01 / 61.0 / 71.39 | 7.40 / 105.00 / 61.0 / 71.40 |
 | deepseek-6.7b-paft | PAFT (T3/T5/T6) | 10.13 / 80.66 / 42.0 / 76.34 | 10.13 / 80.66 / 42.0 / 76.34 |
 | deepseek-6.7b-prompting | Prompting (T5); 308/371 bugs evaluated | 8.25 / 148.61 / 104.5 / 72.17 | 8.3 / 148.6 / 104.5 / 72.2 |
-| deepseek-6.7b-trained-curriculum | "+ Curriculum" AND "PAFT (w=1.0)" (T6) | 8.25 / — / — / 68.29 | 8.3 / 111.2 / — / 68.3 |
+| deepseek-6.7b-trained-curriculum | formerly "+ Curriculum" (T6); no longer reported -- see 2026-07-10 addendum | 8.25 / — / — / 68.29 | 8.3 / 111.2 / — / 68.3 |
 | deepseek-6.7b-paft-assistantonly | "PAFT (assistant-only, w=2.0)" (T6) | 9.76 / 112.18 / 78.5 / 75.07 | 9.8 / 112.2 / — / 75.1 |
 | deepseek-6.7b-paft-0.0 | "PAFT (w=0.0)" (T6) | 7.25 / 120.15 / 82.0 / 75.76 | 7.3 / 120.2 / — / 75.8 |
 | deepseek-6.7b-paft-4.0 | "PAFT (w=4.0)" (T6) | 8.22 / 106.93 / 58.0 / 77.80 | 8.2 / 106.9 / — / 77.8 |
 
 Key consequence (confirmed by the author, 2026-07-07): the reported \Sft baseline is the
 `promptloss` run, i.e. SFT with full-sequence masking (include_prompt_in_loss=True), so
-\Sft and PAFT share the masking convention; "+ Curriculum" == "PAFT (w=1.0)" is the same
-run listed under two labels (expected under this reading). The manuscript's Sec. 3.2 was
+\Sft and PAFT share the masking convention; "+ Curriculum" == "PAFT (w=1.0)" was the same
+run listed under two labels. As of 2026-07-10 the manuscript no longer claims a curriculum at all (see addendum below) and this run is no longer reported. Sec. 3.2 was
 updated accordingly.
 
 ## Anomalies to reconcile
@@ -93,11 +93,11 @@ updated accordingly.
 
 - `SingleTrainWithLCS.py` selects `BUGGY_END_MARKER = "```\n<|EOT|>"` for any model whose
   name lacks "qwen"/"llama3", but:
-  - `deepseek_llm_diff.json` contains no `<|EOT|>` at all (uses `### Response:`), so the
+  - `deepseek_llm_pairs_alt_format.json` contains no `<|EOT|>` at all (uses `### Response:`), so the
     response split (`split_indices`) fails on it;
-  - `deepseek_llm_diff_fillme.json` has the `<|EOT|>` separators but uses the marker
+  - `deepseek_llm_pairs_fillme_format.json` has the `<|EOT|>` separators but uses the marker
     "This is a buggy code with <FILL_ME> placeholder:", so the buggy-code extraction fails;
-  - `opencoder_llm.json` is in `<|im_start|>/<|im_end|>` format, which the name-based
+  - `opencoder_llm_train.json` is in `<|im_start|>/<|im_end|>` format, which the name-based
     selection would not match for "opencoder8b".
   The script/data combination that actually produced the released checkpoints should be
   pinned (exact script version + data file + invocation per backbone).
@@ -112,3 +112,32 @@ updated accordingly.
   coverage of I_align over fixed-code tokens per backbone tokenizer on the 1,535 training
   pairs (mean ~77%, median ~86%, IQR 63-96%). Requires `transformers` + `sentencepiece`
   (OpenCoder needs trust_remote_code).
+
+
+## Addendum (2026-07-10): curriculum claims removed from the manuscript
+
+`SingleTrainWithLCS.py` loads the training data as a map-style Hugging Face
+`Dataset` and overrides only `compute_loss`; it does not override
+`get_train_dataloader` or the sampler and does not set `group_by_length`. The HF
+`Trainer` therefore uses its default (seeded) random sampler: every epoch is a
+random permutation, and sorting the input JSON by line-diff size does not produce
+an ordered easy-to-hard traversal. Consequently:
+
+- The manuscript no longer describes or claims an edit-difficulty curriculum
+  anywhere (Sections 3, 4, RQ4, and the appendix were revised on 2026-07-10).
+- `deepseek-6.7b-trained-curriculum` is reinterpreted as an independent
+  `w_align = 1.0` full-sequence-loss training run whose input file happened to be
+  sorted (i.e., a second stdft-configuration run under a different effective
+  example order); it is no longer reported in the ablation table. Its recomputed
+  metrics remain in `tse_d4j_master_metrics_20260710.md` (pass@1 8.25 vs. 7.41 for
+  `deepseek-6.7b-promptloss`, an indication of run-to-run training variability
+  under identical configuration).
+- Training-data files were renamed on 2026-07-10 to avoid implying an ordering
+  mechanism or a diff-based data format:
+  `ds_llm_sorted_by_diff.json -> deepseek_llm_train.json` (actual DS-Coder input),
+  `qwen_llm_diff.json -> qwen_llm_train.json`,
+  `opencoder_llm.json -> opencoder_llm_train.json`,
+  `deepseek_llm_diff.json -> deepseek_llm_pairs_alt_format.json` (alternative
+  serialization of the same 1,535 pairs; input of the 5-gram contamination check),
+  `deepseek_llm_diff_fillme.json -> deepseek_llm_pairs_fillme_format.json` (unused
+  FILL_ME-style serialization). See `data/trainset/README.md`.

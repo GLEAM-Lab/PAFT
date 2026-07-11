@@ -70,10 +70,10 @@ def coverage(tok, buggy, fixed, resp):
     return matched / len(tf), (matched / len(tr) if tr else 0.0), len(tf)
 
 CONFIGS = [
-    ("DS-Coder-6.7B", "deepseek_llm_diff.json", "ds", "deepseek-ai/deepseek-coder-6.7b-instruct", False),
-    ("Qwen2.5-Coder", "qwen_llm_diff.json", "im", "Qwen/Qwen2.5-Coder-7B-Instruct", False),
-    ("Qwen3-8B", "qwen_llm_diff.json", "im", "Qwen/Qwen3-8B", False),
-    ("OpenCoder-8B", "opencoder_llm.json", "im", "infly/OpenCoder-8B-Instruct", True),
+    ("DS-Coder-6.7B", "deepseek_llm_pairs_alt_format.json", "ds", "deepseek-ai/deepseek-coder-6.7b-instruct", False),
+    ("Qwen2.5-Coder", "qwen_llm_train.json", "im", "Qwen/Qwen2.5-Coder-7B-Instruct", False),
+    ("Qwen3-8B", "qwen_llm_train.json", "im", "Qwen/Qwen3-8B", False),
+    ("OpenCoder-8B", "opencoder_llm_train.json", "im", "infly/OpenCoder-8B-Instruct", True),
 ]
 
 lines = ["| backbone tokenizer | instances | mean cov | median | p25 | p75 | >90% | mean share of response |",

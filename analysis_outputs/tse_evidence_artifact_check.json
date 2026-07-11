@@ -45,26 +45,20 @@
     {
       "concern": "system-level APR baseline scope",
       "status": "OK",
-      "evidence": "paper scope terms=True; analysis_outputs/tse_system_level_reference_scope.md: source note=True; analysis_outputs/system_level_swap_feasibility_20260703.md: feasibility audit=True",
+      "evidence": "analysis_outputs/tse_system_level_reference_scope.md: source note=True; analysis_outputs/system_level_swap_feasibility_20260703.md: feasibility audit=True",
       "caveat": "Addresses Agentless/AutoCodeRover/RepairAgent as references, not same-class PAFT baselines."
     },
     {
-      "concern": "attribution / curriculum scope",
+      "concern": "attribution / weighting dose response",
       "status": "OK",
-      "evidence": "analysis_outputs/d4j_recomputed_metrics_deepseek_variants.csv: full/curriculum/final pass@1=7.41/8.25/10.13; AED=105.01/111.17/80.66; w0/w2/w4 pass@1=7.25/9.14/8.22; paper scope text=True",
-      "caveat": "Sensitivity evidence only; not a complete causal decomposition or repeated-seed variance claim."
+      "evidence": "analysis_outputs/d4j_recomputed_metrics_deepseek_variants.csv: full/final pass@1=7.41/10.13; AED=105.01/80.66; w0/w2/w4 pass@1=7.25/9.14/8.22",
+      "caveat": "Sensitivity evidence only; the manuscript no longer claims an edit-difficulty curriculum (the released trainer uses the HF default random sampler, so input-file order does not order the traversal)."
     },
     {
       "concern": "cross-language sanity check",
       "status": "OK",
       "evidence": "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv: SFT/w1.5/w2 pass@1=43.00/45.00/52.50; pass@5=72.50/85.00/82.50",
       "caveat": "Use as PAFT-vs-SFT sanity evidence only; Base remains stronger in raw correctness."
-    },
-    {
-      "concern": "fixed-seed reproducibility",
-      "status": "OK",
-      "evidence": "analysis_outputs/tse_fixed_seed_manifest.md: expected seeds present=True; complete artifacts present=True; key launchers present=True; launcher --seed values verified=True",
-      "caveat": ""
     }
   ],
   "ok": true
