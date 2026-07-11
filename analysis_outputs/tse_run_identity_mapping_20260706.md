@@ -26,7 +26,7 @@
 >    `tse_d4j_master_metrics_20260710.md`).
 > Training-data pinning: the actual DS-Coder training input
 >    `data/trainset/deepseek_llm_train.json` (prompt `<|EOT|>` response format,
->    sorted by line-diff size, which does not affect training -- see the 2026-07-10 addendum) is committed as of 2026-07-10 (an earlier version of this note said it was already committed, but `/data/` was gitignored and the file had never reached the remote; it is now force-added), and `pipeline_deepseek-6.7b.sh`
+>    sorted by line-diff size, which does not affect training -- see the 2026-07-10 addendum) is committed as of 2026-07-10 (experiments ran locally; `/data/` is gitignored, so the file is force-added), and `pipeline_deepseek-6.7b.sh`
 >    points to it. The previously committed trainer was a stale copy whose collator
 >    pre-shifted the weight vector; it did not match the implementation used to train
 >    the released checkpoints and was corrected with per-token unit tests
