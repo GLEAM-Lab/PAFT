@@ -37,3 +37,21 @@ Reproduce: scripts/compute_d4j_master_metrics.py
 |opencoder8b-paft|371|9.95|9.95|10.24|78.79|45.0|78.06|85.71|94.81|61.61|75.21|80.28|6.2|5.55|29.51|12|3|0|0|523.86|
 |deepseek-v3|371|39.35|39.35|39.08|154.37|74.5|76.56|83.33|203.83|97.65|75.69|81.91|6.58|5.95|40.41|8|2|0|0|273.68|
 |qwen3-max|371|28.79|28.79|26.95|118.82|74.0|75.76|82.35|136.88|98.67|72.3|78.93|7.28|5.98|35.0|1|2|0|0|196.53|
+
+## Addendum (2026-07-11): assistant-only w=1 factorial cell
+
+New training run completing the loss-scope x weighting factorial
+(`SingleTrainWithLCS.py`, INCLUDE_PROMPT_IN_LOSS=0, LCS_WEIGHT=1.0, SEED=42,
+same data/config as the other ablation rows; served via the run's merged
+model, see the run-identity addendum):
+
+|model|n|pass1_371|avg_aed|med_aed|avg_ccr|med_ccr|
+|---|---|---|---|---|---|---|
+|dscoder67b_assistantonly_w1_s42_20260711|371|6.55|121.47|86.0|71.62|75.0|
+
+Nine faults produced no extractable code block in any draw (12 attempts per
+stored candidate) and count as failed; 18 further candidate slots that never
+yielded a code block are stored with the raw failed-draw text and validate as
+UNCOMPILABLE. Raw archive:
+`analysis_outputs/d4j_dscoder67b_assistantonly_w1_results_20260711.tar.zst`
+(8,449 entries, sha256 eb5b34d3924fcf8034d206d316b5ce782700ccfdcf817ec453b9e38424f9a416).

@@ -141,3 +141,17 @@ an ordered easy-to-hard traversal. Consequently:
   serialization of the same 1,535 pairs; input of the 5-gram contamination check),
   `deepseek_llm_diff_fillme.json -> deepseek_llm_pairs_fillme_format.json` (unused
   FILL_ME-style serialization). See `data/trainset/README.md`.
+
+
+## Addendum (2026-07-11): assistant-only w=1 run and merged-model serving
+
+- New row `dscoder67b_assistantonly_w1_s42_20260711` (Table 7 factorial cell):
+  trained with the released `SingleTrainWithLCS.py` (INCLUDE_PROMPT_IN_LOSS=0,
+  LCS_WEIGHT=1.0, SEED=42), generated and validated with the released harness
+  under the paper protocol.
+- Serving pitfall (documented for reproducers): the trainer tokenizes with a
+  whitespace-preserving fast tokenizer and exports a merged model with the
+  matching tokenizer. Serving the LoRA adapter over the stock base tokenizer
+  produces garbage decodes (byte-symbol text); always serve the exported
+  merged model. A first, discarded evaluation of this run hit exactly that
+  mismatch; its artifacts are not part of any reported number.
