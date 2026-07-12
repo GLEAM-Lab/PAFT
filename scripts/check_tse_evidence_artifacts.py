@@ -219,8 +219,8 @@ def check_noop(checks: list[Check]) -> None:
     path = ROOT / "d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv"
     rows = read_csv(path)
     base = row_by_model(rows, "deepseek-6.7b")
-    sft = row_by_model(rows, "deepseek-6.7b-trained-noprompt")
-    paft = row_by_model(rows, "deepseek-6.7b-trained-prorepair")
+    sft = row_by_model(rows, "deepseek-6.7b-promptloss")
+    paft = row_by_model(rows, "deepseek-6.7b-paft")
     ok = (
         all(row and int(float(row["result_files"])) == 371 for row in [base, sft, paft])
         and f(paft, "no_op_fixed0_pct") is not None

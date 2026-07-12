@@ -1,6 +1,6 @@
 # TSE Evidence Artifact Check
 
-Overall status: **OK**
+Overall status: **MISSING/WEAK**
 
 | Concern | Status | Evidence | Caveat |
 |---|---|---|---|
@@ -8,7 +8,7 @@ Overall status: **OK**
 | frontier scale-plus-prompt diagnostic | OK | analysis_outputs/d4j_frontier_api_pass1_metrics_20260621.csv: Qwen3-Max minimal pass@1=31.54, AED=99.38/57.00; DeepSeek-V3 minimal pass@1=45.28, AED=106.18/58.00 | Out-of-class reference only; does not claim PAFT beats frontier APIs. |
 | frontier common-plausible caution | OK | analysis_outputs/qwen3max_minimal_vs_qwen14_paft_common_plausible_metrics.csv: common bugs=57, PAFT AED=72.23/45.00, CCR=75.01; Qwen3-Max minimal AED=76.81/37.00, CCR=82.71 | Prevents cross-model AED overclaim; frontier API rows remain out-of-class diagnostics. |
 | mechanism / stable-region edits | OK | analysis_outputs/tse_existing_backbone_d4j_summary.md: outside_ref avg qwen8b 2.62->1.51, qwen2.5coder7b 2.57->1.32; missed_ref avg 0.47->0.45, 0.39->0.46 | Supports a learned preservation/localization prior; not proof of perfect fault localization. |
-| copy-collapse side effect | OK | analysis_outputs/d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv: Base/SFT/PAFT fixed0 no-op=24.80/42.86/9.43%; PAFT plausible no-op=0 |  |
+| copy-collapse side effect | MISSING/WEAK | analysis_outputs/d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv: Base/SFT/PAFT fixed0 no-op=24.80/2.16/9.43%; PAFT plausible no-op=0 |  |
 | near-duplicate leakage | OK | analysis_outputs/d4j_train_eval_5gram_jaccard_summary_20260621.md: max Jaccard=0.110169, pairs above 0.60=0 | Rules out exact/high lexical near duplicates under this normalization, not semantic contamination. |
 | complex/multi-file generator diagnostic | OK | analysis_outputs/multiswe_java_smoke10_neutral_generator_summary_20260704.csv: SFT/w1.5/w2 file recall=0.86/0.91/0.92; detail buckets=single_file,three_plus_file,two_file; details=analysis_outputs/multiswe_java_smoke10_neutral_generator_details_20260704.csv | Generator-level oracle-context smoke only; not official Multi-SWE harness pass/fail. |
 | system-level APR baseline scope | OK | analysis_outputs/tse_system_level_reference_scope.md: source note=True; analysis_outputs/system_level_swap_feasibility_20260703.md: feasibility audit=True | Addresses Agentless/AutoCodeRover/RepairAgent as references, not same-class PAFT baselines. |

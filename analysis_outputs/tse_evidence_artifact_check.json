@@ -26,8 +26,8 @@
     },
     {
       "concern": "copy-collapse side effect",
-      "status": "OK",
-      "evidence": "analysis_outputs/d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv: Base/SFT/PAFT fixed0 no-op=24.80/42.86/9.43%; PAFT plausible no-op=0",
+      "status": "MISSING/WEAK",
+      "evidence": "analysis_outputs/d4j_deepseek67b_current_complete_371_pass10_noop_20260701.csv: Base/SFT/PAFT fixed0 no-op=24.80/2.16/9.43%; PAFT plausible no-op=0",
       "caveat": ""
     },
     {
@@ -61,5 +61,5 @@
       "caveat": "Use as PAFT-vs-SFT sanity evidence only; Base remains stronger in raw correctness."
     }
   ],
-  "ok": true
+  "ok": false
 }
