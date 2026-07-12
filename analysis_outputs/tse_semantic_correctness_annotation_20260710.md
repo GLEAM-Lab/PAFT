@@ -2,7 +2,7 @@
 
 Every first plausible Defects4J patch of the DS-Coder-6.7B Base / SFT(promptloss) / PAFT
 settings (265 patches: 72 / 95 / 98) was independently judged by two experienced
-annotators, blind to the generating method (rows shuffled with seed 42), against the
+annotators, blind to the generating method (rows shuffled deterministically for blinding), against the
 developer fix as semantic reference, with a three-way label
 (correct / suspected test-suite overfitting / cannot judge).
 
@@ -21,7 +21,7 @@ Base 35 (9.43%), SFT 39 (10.51%), PAFT 56 (15.09%).
 
 Reproduce:
 - item construction: `scripts/make_correctness_annotation_xlsx.py`
-  (+ `scripts/correctness_annotation_rows.json`, blinding seed 42)
+  (+ `scripts/correctness_annotation_rows.json`, deterministic blinding shuffle)
 - merged labels: `scripts/correctness_annotation_labels_20260710.json`
 - statistics: `scripts/compute_correctness_annotation_stats.py`
 

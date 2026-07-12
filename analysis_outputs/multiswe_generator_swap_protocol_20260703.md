@@ -8,7 +8,6 @@ This note defines a future system-level smoke test for responding to the multi-f
 - Preferred smoke subset: `analysis_outputs/multiswe_java_verified_stratified_smoke12_20260703.jsonl`.
 - Subset composition: 4 single-file, 4 two-file, and 4 three-or-more-file repairs.
 - Compared generators: Qwen2.5-Coder-14B Base, SFT old-recipe, PAFT old-recipe `w=1.5`, and PAFT old-recipe `w=2.0`.
-- Fixed seed: 7401 unless a future script records a replacement seed.
 
 ## Controlled Pipeline
 

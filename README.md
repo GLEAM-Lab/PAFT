@@ -60,9 +60,8 @@ subsequence; the paper describes it accordingly.
 
 ## TSE Revision Evidence
 
-The fixed-seed evidence used for the journal revision is summarized in:
+The evidence used for the journal revision is summarized in:
 
-- `analysis_outputs/tse_fixed_seed_manifest.md`
 - `analysis_outputs/tse_evidence_artifact_check.md`
 
 Statistical analyses added for the revision (paired bootstrap + McNemar,

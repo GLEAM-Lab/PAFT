@@ -8,7 +8,7 @@
 #   w_align = 0.0 variant                                == deepseek-6.7b-paft-0.0/deepseek-6.7b-trained-prorepair-0.0
 #   w_align = 4.0 variant                                == deepseek-6.7b-paft-4.0/deepseek-6.7b-trained-prorepair-4.0
 #   assistant-only loss variant (w_align = 2.0)          == deepseek-6.7b-paft-assistantonly
-#   assistant-only loss, uniform weights (w_align = 1.0) == dscoder67b_assistantonly_w1_s42_20260711 (archive in analysis_outputs)
+#   assistant-only loss, uniform weights (w_align = 1.0) == dscoder67b_assistantonly_w1_20260711 (archive in analysis_outputs)
 # Directories deepseek-6.7b-sft and deepseek-6.7b-trained-diff belong to earlier
 # exploratory variants that are no longer reported in the table.
 # deepseek-6.7b-trained-curriculum is no longer reported either: the manuscript no

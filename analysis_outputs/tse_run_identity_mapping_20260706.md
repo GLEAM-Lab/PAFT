@@ -105,7 +105,7 @@ updated accordingly.
 ## New analyses added alongside this note
 
 - `tse_d4j_significance_common_plausible_20260706.md` (+ script
-  `scripts/tse_d4j_significance_common_plausible.py`): paired bootstrap (10k, seed
+  `scripts/tse_d4j_significance_common_plausible.py`): paired bootstrap (10k resamples,
   20260706) + exact McNemar for PAFT vs Base/SFT/Prompting/RepairLLaMA/AdaPatcher, and
   first-plausible common-plausible-subset AED/CCR. Requires `pip install Levenshtein`.
 - `tse_alignment_coverage_20260706.md` (+ script `scripts/tse_alignment_coverage.py`):
@@ -119,7 +119,7 @@ updated accordingly.
 `SingleTrainWithLCS.py` loads the training data as a map-style Hugging Face
 `Dataset` and overrides only `compute_loss`; it does not override
 `get_train_dataloader` or the sampler and does not set `group_by_length`. The HF
-`Trainer` therefore uses its default (seeded) random sampler: every epoch is a
+`Trainer` therefore uses its default random sampler: every epoch is a
 random permutation, and sorting the input JSON by line-diff size does not produce
 an ordered easy-to-hard traversal. Consequently:
 
@@ -145,9 +145,9 @@ an ordered easy-to-hard traversal. Consequently:
 
 ## Addendum (2026-07-11): assistant-only w=1 run and merged-model serving
 
-- New row `dscoder67b_assistantonly_w1_s42_20260711` (Table 7 factorial cell):
+- New row `dscoder67b_assistantonly_w1_20260711` (Table 7 factorial cell):
   trained with the released `SingleTrainWithLCS.py` (INCLUDE_PROMPT_IN_LOSS=0,
-  LCS_WEIGHT=1.0, SEED=42), generated and validated with the released harness
+  LCS_WEIGHT=1.0), generated and validated with the released harness
   under the paper protocol.
 - Serving pitfall (documented for reproducers): the trainer tokenizes with a
   whitespace-preserving fast tokenizer and exports a merged model with the

@@ -41,17 +41,17 @@ Reproduce: scripts/compute_d4j_master_metrics.py
 ## Addendum (2026-07-11): assistant-only w=1 factorial cell
 
 New training run completing the loss-scope x weighting factorial
-(`SingleTrainWithLCS.py`, INCLUDE_PROMPT_IN_LOSS=0, LCS_WEIGHT=1.0, SEED=42,
+(`SingleTrainWithLCS.py`, INCLUDE_PROMPT_IN_LOSS=0, LCS_WEIGHT=1.0,
 same data/config as the other ablation rows; served via the run's merged
 model, see the run-identity addendum):
 
 |model|n|pass1_371|avg_aed|med_aed|avg_ccr|med_ccr|
 |---|---|---|---|---|---|---|
-|dscoder67b_assistantonly_w1_s42_20260711|371|6.55|121.47|86.0|71.62|75.0|
+|dscoder67b_assistantonly_w1_20260711|371|6.55|121.47|86.0|71.62|75.0|
 
 Nine faults produced no extractable code block in any draw (12 attempts per
 stored candidate) and count as failed; 18 further candidate slots that never
 yielded a code block are stored with the raw failed-draw text and validate as
 UNCOMPILABLE. Raw archive:
 `analysis_outputs/d4j_dscoder67b_assistantonly_w1_results_20260711.tar.zst`
-(8,449 entries, sha256 eb5b34d3924fcf8034d206d316b5ce782700ccfdcf817ec453b9e38424f9a416).
+(8,449 entries, sha256 437494aa0139fb66c6711e0b7cdda4c79563f64b8b351dc0238745e959835f9d).

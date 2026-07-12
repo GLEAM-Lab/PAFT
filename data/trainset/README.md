@@ -15,6 +15,6 @@ data format (old names in parentheses).
 
 Note on row order: `deepseek_llm_train.json` rows are sorted by line-level diff
 size for historical reasons. This does not affect training: the trainer loads a
-map-style Hugging Face `Dataset` and the HF `Trainer`'s default (seeded) random
+map-style Hugging Face `Dataset` and the HF `Trainer`'s default random
 sampler reshuffles examples every epoch, so no ordered traversal occurs. See
 `analysis_outputs/tse_run_identity_mapping_20260706.md` (2026-07-10 addendum).

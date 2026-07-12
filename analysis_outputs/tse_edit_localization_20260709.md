@@ -1,4 +1,4 @@
-## Edit-localization and region-split copy behavior (DS-Coder-6.7B, seed 42, plausible patches)
+## Edit-localization and region-split copy behavior (DS-Coder-6.7B, plausible patches)
 | method | n_plaus | edit precision | edit recall | edit F1 | stable-preserve | change-region edit |
 |---|---:|---:|---:|---:|---:|---:|
 | Base | 215 | 58.0 | 81.6 | 62.1 | 89.2 | 81.6 |

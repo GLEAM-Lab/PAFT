@@ -23,12 +23,12 @@ reported protocol.
 
 Archive: `d4j_qwen25_14b_paper_results_20260710.tar.zst`
 
-| Seed | Result directory | Bugs | pass@1/5/10 | Avg./Med. AED | Avg./Med. CCR |
-|---:|---|---:|---:|---:|---:|
-| 7401 | `qwen2.5coder14b-d4j-n10-s7401` | 371 | 20.38/21.01/21.02 | 169.17/123.00 | 70.70/78.26 |
-| 7401 | `qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 20.24/22.78/23.72 | 79.43/34.00 | 74.85/83.33 |
-| 7401 | `qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 22.16/24.13/24.80 | 61.18/26.00 | 80.49/88.89 |
-| 7401 | `qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 23.05/24.63/25.07 | 63.53/34.00 | 79.91/88.89 |
+| Result directory | Bugs | pass@1/5/10 | Avg./Med. AED | Avg./Med. CCR |
+|---|---:|---:|---:|---:|
+| `qwen2.5coder14b-d4j-n10-s7401` | 371 | 20.38/21.01/21.02 | 169.17/123.00 | 70.70/78.26 |
+| `qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 20.24/22.78/23.72 | 79.43/34.00 | 74.85/83.33 |
+| `qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 22.16/24.13/24.80 | 61.18/26.00 | 80.49/88.89 |
+| `qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620-d4j-n10-s7401` | 371 | 23.05/24.63/25.07 | 63.53/34.00 | 79.91/88.89 |
 
 These directories supply the main-text rows, the appendix pass@k table, and
 the side-effect diagnostics.

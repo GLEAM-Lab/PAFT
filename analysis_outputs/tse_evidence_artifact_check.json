@@ -3,7 +3,7 @@
     {
       "concern": "larger open backbone",
       "status": "OK",
-      "evidence": "analysis_outputs/d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv: Base/SFT/w1.5/w2 pass@1=20.38/20.24/22.16/23.05; AED=169.17/79.43/61.18/63.53",
+      "evidence": "analysis_outputs/d4j_qwen14_oldrecipe_n10_metrics_20260703.csv: Base/SFT/w1.5/w2 pass@1=20.38/20.24/22.16/23.05; AED=169.17/79.43/61.18/63.53",
       "caveat": ""
     },
     {
@@ -57,7 +57,7 @@
     {
       "concern": "cross-language sanity check",
       "status": "OK",
-      "evidence": "analysis_outputs/quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv: SFT/w1.5/w2 pass@1=43.00/45.00/52.50; pass@5=72.50/85.00/82.50",
+      "evidence": "analysis_outputs/quixbugs_python_qwen14_oldrecipe_summary_with_w2_20260704.csv: SFT/w1.5/w2 pass@1=43.00/45.00/52.50; pass@5=72.50/85.00/82.50",
       "caveat": "Use as PAFT-vs-SFT sanity evidence only; Base remains stronger in raw correctness."
     }
   ],

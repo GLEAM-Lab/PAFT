@@ -31,7 +31,7 @@
 | Base+SFT+PAFT+Prompting+RepairLLaMA+AdaPatcher | RepairLLaMA | 18 | 197.89 | 141.50 | 51.47 | 46.92 |
 | Base+SFT+PAFT+Prompting+RepairLLaMA+AdaPatcher | AdaPatcher | 18 | 142.67 | 82.00 | 73.70 | 78.17 |
 
-## C. PAFT vs each method: paired bootstrap (10k, seed 20260706) + exact McNemar
+## C. PAFT vs each method: paired bootstrap (10k resamples) + exact McNemar
 | comparison | bugs | delta pass@1 (pp) | 95% CI | p(bootstrap) | solved-only PAFT/other | p(McNemar) |
 |---|---:|---:|---|---:|---:|---:|
 | PAFT vs Base | 371 | +4.34 | [2.67, 6.09] | 0.0001 | 46/20 | 0.0019 |

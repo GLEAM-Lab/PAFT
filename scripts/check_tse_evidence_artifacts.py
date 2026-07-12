@@ -48,7 +48,7 @@ def add(checks: list[Check], concern: str, ok: bool, evidence: str, caveat: str 
 
 
 def check_qwen14_d4j(checks: list[Check]) -> None:
-    path = ROOT / "d4j_qwen14_oldrecipe_n10_s7401_metrics_20260703.csv"
+    path = ROOT / "d4j_qwen14_oldrecipe_n10_metrics_20260703.csv"
     rows = read_csv(path)
     base = row_by_model(rows, "qwen2.5coder14b-d4j-n10-s7401")
     sft = row_by_model(rows, "qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620-d4j-n10-s7401")
@@ -365,7 +365,7 @@ def check_attribution_scope(checks: list[Check]) -> None:
 
 
 def check_quixbugs(checks: list[Check]) -> None:
-    path = ROOT / "quixbugs_python_qwen14_oldrecipe_seed7106_summary_with_w2_20260704.csv"
+    path = ROOT / "quixbugs_python_qwen14_oldrecipe_summary_with_w2_20260704.csv"
     rows = read_csv(path)
     sft = row_by_model(rows, "qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620")
     w15 = row_by_model(rows, "qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620")
