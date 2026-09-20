@@ -85,6 +85,27 @@ result directories and manuscript table rows:
   (directory-to-table mapping; see the dated addendum at the top for
   resolutions of the previously open anomalies)
 
+### Major-Revision Additions (2026-09)
+
+Analyses prepared for the TSE major revision, each with the script that
+reproduces it (result directories come from the archives listed below and
+from `defects4j.tar.zst`; the developer references come from MORepair's
+`defects4j/dataset`):
+
+- `analysis_outputs/tse_revision_e1_gradient_scale_plan_20260920.md`
+  (gradient-scale-matched SFT control: measured scale factor c = 1.2131,
+  new trainer options `LOSS_SCALE` / `LEARNING_RATE` / `LOGGING_STEPS`,
+  run script `scripts/e1_run_dscoder.sh`, clipping-rate reader
+  `scripts/e1_clipping_rate.py`; training runs still to be executed)
+- `analysis_outputs/tse_revision_e3_overedit_ratio_20260920.md`
+  (over-editing ratio relative to the developer fix, all DS-Coder settings)
+- `analysis_outputs/tse_revision_e4_complexity_strata_20260920.md`
+  (pass@1 by reference diff size and region count, paired bootstrap CIs;
+  reproduce both with `scripts/tse_rev_overedit_and_strata.py`)
+- `analysis_outputs/tse_revision_e6_train_seq_lengths_20260920.md`
+  (training-instance token lengths per backbone tokenizer as the trainer
+  assembles them; reproduce with `scripts/e6_train_seq_lengths.py`)
+
 ### Open-Backbone Defects4J Results
 
 The following Git LFS archives contain the raw generations and validation

@@ -20,6 +20,9 @@
 
 环境变量配置：
     - LCS_WEIGHT: LCS token 的权重，默认 2.0
+    - LOSS_SCALE: 常数乘到归一化损失上，默认 1.0（梯度尺度匹配对照用）
+    - LEARNING_RATE: 学习率，默认 2e-4
+    - LOGGING_STEPS: 日志步长，默认 100（设为 1 可记录每步的裁剪前梯度范数）
     
 使用示例：
     # 默认 LCS 权重 2.0
@@ -193,6 +196,14 @@ else:
 
 # LCS 加权配置
 LCS_WEIGHT = float(os.environ.get('LCS_WEIGHT', '2.0'))
+# Gradient-scale-matched control (TSE revision, E1): LOSS_SCALE multiplies the
+# normalized loss by a constant; LEARNING_RATE overrides the default 2e-4.
+# LOGGING_STEPS=1 records the pre-clip gradient norm of every optimizer step in
+# trainer_state.json (used by scripts/e1_clipping_rate.py).
+LOSS_SCALE = float(os.environ.get('LOSS_SCALE', '1.0'))
+LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '2e-4'))
+LOGGING_STEPS = int(os.environ.get('LOGGING_STEPS', '100'))
+print(f"  loss scale: {LOSS_SCALE}  learning rate: {LEARNING_RATE}  logging steps: {LOGGING_STEPS}")
 
 print(f"LCS 加权配置:")
 print(f"  LCS token 权重: {LCS_WEIGHT}")
@@ -209,7 +220,8 @@ if wandb_run_id:
         config={
             "model_name": model_name,
             "max_len": max_len,
-            "learning_rate": 2e-4,
+            "learning_rate": LEARNING_RATE,
+            "loss_scale": LOSS_SCALE,
             "num_epochs": EPOCH_NUM,
             "seed": SEED,
             "batch_size": 1,
@@ -228,7 +240,8 @@ else:
         config={
             "model_name": model_name,
             "max_len": max_len,
-            "learning_rate": 2e-4,
+            "learning_rate": LEARNING_RATE,
+            "loss_scale": LOSS_SCALE,
             "num_epochs": EPOCH_NUM,
             "seed": SEED,
             "batch_size": 1,
@@ -480,12 +493,12 @@ training_args = TrainingArguments(
     prediction_loss_only=False,
     max_grad_norm=0.3,
     num_train_epochs=EPOCH_NUM,
-    learning_rate=2e-4,
+    learning_rate=LEARNING_RATE,
     bf16=True,  # 改用 fp16 而不是 bf16
     save_total_limit=3,
     save_strategy="steps",
     save_steps=100,
-    logging_steps=100,
+    logging_steps=LOGGING_STEPS,
     output_dir=output_dir,
     optim="paged_adamw_8bit",  # 使用 8-bit 优化器，减少显存占用
     lr_scheduler_type="constant",
@@ -542,7 +555,7 @@ class LCSWeightedTrainer(Trainer):
         mask = (shift_labels.view(-1) != -100).float()
         
         weighted_loss = loss_per_token * weights * mask
-        total_loss = weighted_loss.sum() / (mask.sum() + 1e-8)
+        total_loss = weighted_loss.sum() / (mask.sum() + 1e-8) * LOSS_SCALE
         
         # 记录统计信息到 wandb
         if self.state.global_step % self.args.logging_steps == 0:

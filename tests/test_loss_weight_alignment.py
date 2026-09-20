@@ -75,6 +75,7 @@ def _load_real_classes():
         # module-level globals the collator reads at call time (mutable per test):
         "eos_token_id": EOS_ID,
         "max_len": 2048,
+        "LOSS_SCALE": 1.0,
         # wandb is only touched when global_step % logging_steps == 0; stub anyway.
         "wandb": SimpleNamespace(log=lambda *a, **k: None),
     }
