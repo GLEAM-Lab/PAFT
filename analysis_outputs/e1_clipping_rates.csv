@@ -1,0 +1,3 @@
+run,steps_logged,clipped_steps,clip_rate_pct,mean_grad_norm,median_grad_norm,p90_grad_norm,max_grad_norm
+deepseek-6.7b-sft-lossscale,1149,721,62.8%,0.373,0.328,0.548,2.015
+deepseek-6.7b-sft-lrscale,1149,330,28.7%,0.282,0.249,0.420,1.551
