@@ -62,6 +62,16 @@ MODEL_PATHS = {
     "qwen2.5coder7b-paft-v2-assistonly-wnorm-20260619": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
     "qwen2.5coder7b-paft-v2-assistonly-wnorm-w15-20260619": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
     "qwen2.5coder7b-paft-v2-assistonly-wnorm-w125-20260619": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "deepseek-6.7b-sft-plain":  "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-logged/deepseek-6.7b-sft-logged_merged",
+    "deepseek-6.7b-a-plain":    "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-lossscale/deepseek-6.7b-sft-lossscale_merged",
+    "deepseek-6.7b-b-plain":    "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-lrscale/deepseek-6.7b-sft-lrscale_merged",
+    "deepseek-6.7b-paft-plain": "/root/autodl-tmp/PAFT/models/deepseek-6.7b-paft-logged/deepseek-6.7b-paft-logged_merged",
+    "deepseek-6.7b-paft-plain-fixed": "/root/autodl-tmp/PAFT/models/deepseek-6.7b-paft-logged/deepseek-6.7b-paft-logged_merged",
+    "deepseek-6.7b-sft-plain-fixed":  "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-logged/deepseek-6.7b-sft-logged_merged",
+    "deepseek-6.7b-a-plain-fixed":    "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-lossscale/deepseek-6.7b-sft-lossscale_merged",
+    "deepseek-6.7b-b-plain-fixed":    "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-lrscale/deepseek-6.7b-sft-lrscale_merged",
+    # "deepseek-6.7b-sft-plain-fixed":    "/root/autodl-tmp/PAFT/models/deepseek-6.7b-sft-lrscale/deepseek-6.7b-sft-lrscale_merged",
+        "deepseek-6.7b-paft-wnorm-plain": "/root/autodl-tmp/PAFT/models/deepseek-6.7b-paft-wnorm-logged/deepseek-6.7b-paft-wnorm-logged_merged",
 }
 
 LORA_ADAPTER_PATHS = {
@@ -112,17 +122,21 @@ def prompt_format(model_key: str) -> tuple[str, str]:
     return "[INST]", "[/INST]"
 
 
+# def extract_first_java_code(text: str) -> str:
+#     matches = re.findall(r"```java(.*?)```", text, re.DOTALL)
+#     if matches:
+#         return matches[0].strip()
+#     marker = "```java"
+#     start = text.find(marker)
+#     if start >= 0:
+#         tail = text[start + len(marker) :]
+#         end = tail.find("```")
+#         return (tail[:end] if end >= 0 else tail).strip()
+#     return ""
+
 def extract_first_java_code(text: str) -> str:
     matches = re.findall(r"```java(.*?)```", text, re.DOTALL)
-    if matches:
-        return matches[0].strip()
-    marker = "```java"
-    start = text.find(marker)
-    if start >= 0:
-        tail = text[start + len(marker) :]
-        end = tail.find("```")
-        return (tail[:end] if end >= 0 else tail).strip()
-    return ""
+    return matches[0].strip() if matches else ""
 
 
 def make_prompt(data: dict, bof: str, eof: str) -> str:

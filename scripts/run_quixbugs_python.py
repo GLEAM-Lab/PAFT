@@ -19,7 +19,7 @@ from typing import Any
 
 
 MODEL_CONFIGS = {
-    "deepseek-6.7b": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    # "deepseek-6.7b": "deepseek-ai/deepseek-coder-6.7b-instruct",
     "deepseek-6.7b-trained": "/home/barty/research/prorepair/merged_models/sft_deepseek7b/codellama_merged",
     "deepseek-6.7b-trained-noprompt": "deepseek-ai/deepseek-coder-6.7b-instruct",
     "deepseek-6.7b-trained-prorepair": "deepseek-ai/deepseek-coder-6.7b-instruct",
@@ -40,6 +40,9 @@ MODEL_CONFIGS = {
     "qwen2.5coder14b-sft-oldrecipe-lr2e4-e3-20260620": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-14B-Instruct/snapshots/aedcc2d42b622764e023cf882b6652e646b95671",
     "qwen2.5coder14b-paft-oldrecipe-w15-lr2e4-e3-20260620": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-14B-Instruct/snapshots/aedcc2d42b622764e023cf882b6652e646b95671",
     "qwen2.5coder14b-paft-oldrecipe-w2-lr2e4-e3-20260620": "/home/barty/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-14B-Instruct/snapshots/aedcc2d42b622764e023cf882b6652e646b95671",
+    "deepseek-6.7b-sft-logged":  "models/deepseek-6.7b-sft-logged/deepseek-6.7b-sft-logged_merged",
+    "deepseek-6.7b-paft-logged": "models/deepseek-6.7b-paft-logged/deepseek-6.7b-paft-logged_merged",
+    "deepseek-6.7b": "models/deepseek-coder-6.7b-instruct",
 }
 
 ADAPTER_CONFIGS = {
@@ -357,6 +360,7 @@ def generate_with_transformers_stream(
                 truncation=True,
                 max_length=4096 - args.max_tokens,
             ).to(model.device)
+            inputs = {k: v for k, v in inputs.items() if k != "token_type_ids"}
             with torch.no_grad():
                 generated = model.generate(
                     **inputs,

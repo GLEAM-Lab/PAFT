@@ -85,8 +85,16 @@ def main():
     ap.add_argument("--dataset", required=True)
     ap.add_argument("--trio", action="append", default=[], help="NAME=base_dir,sft_dir,paft_dir")
     ap.add_argument("--set", action="append", default=[], help="LABEL=dir (for the over-editing table)")
+    ap.add_argument("--exclude-faults", default="",
+                    help="file with one fault id per line (e.g. the E7 memorised faults)")
     a = ap.parse_args()
     ref = load_reference(a.dataset)
+    if a.exclude_faults:
+        drop = {l.strip() for l in open(a.exclude_faults, encoding="utf-8") if l.strip()}
+        before = len(ref)
+        ref = {b: v for b, v in ref.items() if b not in drop}
+        print(f"excluded {before - len(ref)} of {before} faults from {a.exclude_faults}; "
+              f"{len(ref)} remain")
     strata = {k: [b for b, v in ref.items() if line_bin(v[0]) == k] for k in BINS}
     strata["single"] = [b for b, v in ref.items() if v[1] == 1]
     strata["multi"] = [b for b, v in ref.items() if v[1] >= 2]

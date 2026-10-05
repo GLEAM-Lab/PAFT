@@ -454,6 +454,35 @@ MODEL_CONFIGS = {
     'deepseek-6.7b-trained-prorepair': {
         'model_path': 'merged_models/sft_deepseek7b_prorepair'
     },
+#     'deepseek-6.7b-paft1': {
+#     'model_path': 'models/deepseek-6.7b-paft1/deepseek-6.7b-paft_merged',
+#     'type': 'local'
+# },
+    'deepseek-6.7b-sft-lossscale': {
+        'model_path': 'models/deepseek-6.7b-sft-lossscale/deepseek-6.7b-sft-lossscale_merged',
+        'type': 'local'
+    },
+    'deepseek-6.7b-sft-lrscale': {
+        'model_path': 'models/deepseek-6.7b-sft-lrscale/deepseek-6.7b-sft-lrscale_merged',
+        'type': 'local'
+    },
+    'deepseek-6.7b-sft-logged': {
+        'model_path': 'models/deepseek-6.7b-sft-logged/deepseek-6.7b-sft-logged_merged',
+        'type': 'local'
+    },
+    'deepseek-6.7b-paft-logged': {
+        'model_path': 'models/deepseek-6.7b-paft-logged/deepseek-6.7b-paft-logged_merged',
+        'type': 'local'
+    },
+     'deepseek-6.7b-a-plain-d4j': {
+        'model_path': 'models/deepseek-6.7b-sft-lossscale/deepseek-6.7b-sft-lossscale_merged',
+        'type': 'local'
+    },
+     'deepseek-6.7b-paft-plain-d4j': {
+        'model_path': 'models/deepseek-6.7b-paft-logged/deepseek-6.7b-paft-logged_merged',
+        'type': 'local'
+    },
+
    
    
 }
@@ -796,9 +825,10 @@ def cal_vllm(bug_id, code, title, description, filename):
     """使用 vLLM 进行高性能推理"""
     from vllm import SamplingParams
     try:
-        prompt = BOF + "\n# " + title + '\n' + description + '\n' + "This is an incorrect Java code (" + filename + "):\n```java\n" + code + "\n```\nYou are a software engineer. Can you repair the incorrect Java code with the minimal change ?\n" + EOF + "\n```java\n"
+        # prompt = BOF + "\n# " + title + '\n' + description + '\n' + "This is an incorrect Java code (" + filename + "):\n```java\n" + code + "\n```\nYou are a software engineer. Can you repair the incorrect Java code with the minimal change ?\n" + EOF + "\n```java\n"
+        # print(prompt, flush=True)
+        prompt = BOF + "\n# " + title + '\n' + description + '\n' + "This is an incorrect Java code (" + filename + "):\n```java\n" + code + "\n```\nYou are a software engineer. Can you repair the incorrect Java code?\n" + EOF + "\n```java\n"
         print(prompt, flush=True)
-        
         # vLLM 采样参数 - 保守配置
         sampling_params = SamplingParams(
             temperature=1.0,

@@ -11,8 +11,8 @@ Metric defs copied from artifact scripts/recompute_d4j_pass1_metrics.py (strip-o
 import difflib, json, re, statistics, sys, os, glob
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\ADMINI~1\AppData\Local\Temp\claude\C--Users-Administrator-paft-paper\f9e848c1-78b3-45ba-91f3-9e7432b08b84\scratchpad\d4j\defects4j")
-
+# ROOT = Path(r"C:\Users\ADMINI~1\AppData\Local\Temp\claude\C--Users-Administrator-paft-paper\f9e848c1-78b3-45ba-91f3-9e7432b08b84\scratchpad\d4j\defects4j")
+ROOT = Path("/root/autodl-tmp/PAFT/defects4j")
 def edit_distance(a, b):
     a = (a or "").strip(); b = (b or "").strip()
     if not a or not b: return 0
@@ -143,6 +143,20 @@ MODELS = [
     ("qwen3-8b", None), ("qwen3-8b-sft", None), ("qwen3-8b-paft", None),
     ("opencoder8b", None), ("opencoder8b-sft", None), ("opencoder8b-paft", None),
     ("deepseek-v3", None), ("qwen3-max", None),
+    ("deepseek-6.7b-sft-lossscale", None),
+    ("deepseek-6.7b-sft-lrscale", None),
+    ("deepseek-6.7b-sft-logged", None),
+    ("deepseek-6.7b-paft-logged", None),
+    ("deepseek-6.7b-a-plain", None),
+    ("deepseek-6.7b-sft-plain", None),
+    ("deepseek-6.7b-paft-plain", None),
+    ("deepseek-6.7b-a-plain-d4j", None),
+    ("deepseek-6.7b-paft-plain-fixed", None),
+    ("deepseek-6.7b-a-plain-fixed", None),
+    ("deepseek-6.7b-b-plain-fixed", None),
+    ("deepseek-6.7b-sft-plain-fixed", None),
+    ("deepseek-6.7b-paft-wnorm-plain", None),
+    
 ]
 
 if __name__ == "__main__":

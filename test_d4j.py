@@ -24,7 +24,9 @@ if _validation_namespace:
 else:
     ROOT_PATH = os.path.join(PROJECT_ROOT, 'tmp', 'llm4apr_validation') + os.sep
 EXPECTED_PATCH_COUNT = 10
-os.environ.setdefault("JAVA_HOME", "/data1/miniconda3/envs/d4j")
+# os.environ.setdefault("JAVA_HOME", "/data1/miniconda3/envs/d4j")
+# os.environ["PATH"] = os.path.join(os.environ["JAVA_HOME"], "bin") + ":" + os.environ["PATH"]
+os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-8-openjdk-amd64"
 os.environ["PATH"] = os.path.join(os.environ["JAVA_HOME"], "bin") + ":" + os.environ["PATH"]
 def clean_tmp_folder(tmp_dir):
     if os.path.isdir(tmp_dir) and tmp_dir.startswith(ROOT_PATH):
