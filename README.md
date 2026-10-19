@@ -62,8 +62,6 @@ subsequence; the paper describes it accordingly.
 
 The evidence used for the journal revision is summarized in:
 
-- `analysis_outputs/tse_evidence_artifact_check.md`
-
 Statistical analyses added for the revision (paired bootstrap + McNemar,
 common-plausible-subset AED/CCR, alignment coverage), plus the mapping between
 result directories and manuscript table rows:
@@ -92,11 +90,12 @@ reproduces it (result directories come from the archives listed below and
 from `defects4j.tar.zst`; the developer references come from MORepair's
 `defects4j/dataset`):
 
-- `analysis_outputs/tse_revision_e1_gradient_scale_plan_20260920.md`
-  (gradient-scale-matched SFT control: measured scale factor c = 1.2131,
-  new trainer options `LOSS_SCALE` / `LEARNING_RATE` / `LOGGING_STEPS`,
-  run script `scripts/e1_run_dscoder.sh`, clipping-rate reader
-  `scripts/e1_clipping_rate.py`; training runs still to be executed)
+- `analysis_outputs/gradient_scale/`
+  (gradient-scale control reported in
+  Section 5.4 and Table 9: the five rows with their validation metrics, the
+  reported clipping-rate summary, and the analysis scripts; model weights and raw
+  generations are excluded. The scale factor is c = 1.2134 under the mask
+  definition of Section 3.2.)
 - `analysis_outputs/tse_revision_e3_overedit_ratio_20260920.md`
   (over-editing ratio relative to the developer fix, all DS-Coder settings)
 - `analysis_outputs/tse_revision_e4_complexity_strata_20260920.md`

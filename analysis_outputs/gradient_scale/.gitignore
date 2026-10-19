@@ -1,0 +1,3 @@
+# Model weights and 90-150 MB per-run generation directories are never committed.
+runs/*/model
+runs/*/results

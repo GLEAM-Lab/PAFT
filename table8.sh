@@ -13,7 +13,7 @@ echo ""
 # DeepSeek-6.7B variant list
 MODELS=(
     "deepseek-6.7b"
-    "deepseek-6.7b-sft"
+    "deepseek-6.7b-promptloss"
     "deepseek-6.7b-prompting"
     "deepseek-6.7b-paft"
     "deepseek-6.7b-repairllama"

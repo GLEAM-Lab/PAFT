@@ -91,3 +91,6 @@ buildNumber.properties
 
 # Windows metadata copied from downloads
 *:Zone.Identifier
+
+# Large result directories outside the paper evidence
+/unused_results/

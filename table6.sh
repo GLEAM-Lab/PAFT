@@ -12,10 +12,10 @@ echo ""
 
 # 1) Qwen3 series: base + PAFT + SFT
 echo "------------------------------------------"
-echo "Qwen3  (qwen3-8b, qwen3-8b-paft, qwen3-8b-sft)"
+echo "Qwen3  (qwen3-8b, qwen8b-paft, qwen8b-sft)"
 echo "------------------------------------------"
 for MODEL in \
-    "qwen3-8b" "qwen3-8b-paft" "qwen3-8b-sft"; do
+    "qwen3-8b" "qwen8b-paft" "qwen8b-sft"; do
     echo ""
     echo ">>> Model: $MODEL"
     python test_d4j.py -m "$MODEL"

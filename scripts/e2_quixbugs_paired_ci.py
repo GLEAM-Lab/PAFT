@@ -30,9 +30,9 @@ Usage
   python scripts/e2_quixbugs_paired_ci.py \\
       --out-dir analysis_outputs/quixbugs_python_ds67_n10 \\
       --bench-dir data/QuixBugs \\
-      --base deepseek-6.7b --sft deepseek-6.7b-trained-noprompt \\
+      --base models/deepseek-coder-6.7b-instruct --sft models/deepseek-6.7b-sft-logged/deepseek-6.7b-sft-logged_merged \\
       --paft deepseek-6.7b-trained-prorepair \\
-      --md analysis_outputs/tse_revision_e2_quixbugs_n10.md
+      --md analysis_outputs/tse_revision_e2_quixbugs_n10_20261004.md
 """
 
 from __future__ import annotations
