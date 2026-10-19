@@ -6,8 +6,8 @@ sum of weights, so the total loss scale of an instance is
 
     c = sum_t beta_t / N = 1 + (w_align - 1) * |I_align| / N ,
 
-where I_align is the aligned response-token set and N counts every target token
-(prompt + response, full-sequence loss), after the causal shift. This script rebuilds
+where I_align is the aligned response-token set and N counts every unmasked target
+token (prompt + response, full-sequence loss) after the causal shift. This script rebuilds
 each training instance exactly as SingleTrainWithLCS.py does (tokenize the full text,
 keep prompt + first response, cut at max_len-1, append EOS, align with
 difflib.SequenceMatcher on token ids, shift by one) and reports
@@ -98,11 +98,13 @@ def main():
                     weights[prompt_len + pos] = a.w_align
                     n_aligned += 1
         shifted = weights[1:]                      # target x_t is predicted at position t-1
-        N = len(shifted)
-        ratios.append(sum(shifted) / N)
+        # The appended EOS has label -100 because pad_token == eos_token.
+        # Exclude it so that N matches mask.sum() in compute_loss.
+        N = len(shifted) - 1
+        ratios.append(sum(shifted[:N]) / N)
         aligned_frac.append(n_aligned / N)
         resp_cov.append(n_aligned / max(1, resp_len))
-        ns.append((sum(shifted), N))
+        ns.append((sum(shifted[:N]), N))
 
     pooled = sum(s for s, _ in ns) / sum(n for _, n in ns)
     print(f"tokenizer={a.tokenizer} trainset={os.path.basename(a.trainset)} w_align={a.w_align} n={len(data)}")
