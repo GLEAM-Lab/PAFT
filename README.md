@@ -94,8 +94,7 @@ from `defects4j.tar.zst`; the developer references come from MORepair's
   (gradient-scale control reported in
   Section 5.4 and Table 9: the five rows with their validation metrics, the
   reported clipping-rate summary, and the analysis scripts; model weights and raw
-  generations are excluded. The scale factor is c = 1.2134 under the mask
-  definition of Section 3.2.)
+  generations are excluded. The scale factor used in the control runs is c = 1.2131.)
 - `analysis_outputs/tse_revision_e3_overedit_ratio_20260920.md`
   (over-editing ratio relative to the developer fix, all DS-Coder settings)
 - `analysis_outputs/tse_revision_e4_complexity_strata_20260920.md`
