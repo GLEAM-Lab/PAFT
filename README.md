@@ -95,6 +95,10 @@ from `defects4j.tar.zst`; the developer references come from MORepair's
   Section 5.4 and Table 9: the five rows with their validation metrics, the
   reported clipping-rate summary, and the analysis scripts; model weights and raw
   generations are excluded. The scale factor used in the control runs is c = 1.2131.)
+- `analysis_outputs/tse_revision_e2_quixbugs_n10_20261004.md`
+  (QuixBugs-Python robustness check with n = 10 sampling and paired bootstrap
+  confidence intervals; generate results with `scripts/run_quixbugs_python.py`
+  and compute the paired analysis with `scripts/e2_quixbugs_paired_ci.py`)
 - `analysis_outputs/tse_revision_e3_overedit_ratio_20260920.md`
   (over-editing ratio relative to the developer fix, all DS-Coder settings)
 - `analysis_outputs/tse_revision_e4_complexity_strata_20260920.md`
